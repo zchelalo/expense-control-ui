@@ -1,5 +1,9 @@
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
+
+import { MainLayout } from '@/components/main-layout'
+import { Providers } from '@/components/providers'
+
 import '@/app/globals.css'
 
 const nunito = Nunito({
@@ -18,8 +22,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en'>
-      <body className={`${nunito.variable}`}>{children}</body>
+    <html lang='en' suppressHydrationWarning>
+      <body className={`${nunito.variable}`}>
+        <Providers>
+          <MainLayout>{children}</MainLayout>
+        </Providers>
+      </body>
     </html>
   )
 }

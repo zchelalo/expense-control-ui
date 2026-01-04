@@ -1,0 +1,58 @@
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: var(--border-radius-sm);
+  border-style: solid;
+  border-width: var(--border-width);
+  padding: var(--spacing-2) var(--spacing-4);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.variant-primary {
+  --btn-bg-color: var(--primary);
+  --btn-bg-color-hover: var(--primary-hover);
+  --btn-text-color: var(--primary-foreground);
+}
+
+.variant-secondary {
+  --btn-bg-color: var(--secondary);
+  --btn-bg-color-hover: var(--secondary-hover);
+  --btn-text-color: var(--secondary-foreground);
+}
+
+.variant-default {
+  --btn-bg-color: var(--foreground);
+  --btn-bg-color-hover: var(--foreground);
+  --btn-text-color: var(--background);
+}
+
+.appearance-filled {
+  background-color: var(--btn-bg-color);
+  border-color: var(--btn-bg-color);
+  color: var(--btn-text-color);
+}
+
+.appearance-filled:hover {
+  background-color: var(--btn-bg-color-hover);
+  border-color: var(--btn-bg-color-hover);
+  transform: scale(1.02);
+}
+
+.appearance-outlined {
+  background-color: transparent;
+  border-color: var(--btn-bg-color);
+  color: var(--btn-bg-color);
+}
+
+.appearance-outlined:hover {
+  border-color: var(--btn-bg-color-hover);
+  color: var(--btn-bg-color-hover);
+  transform: scale(1.02);
+}
