@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
-
-import { MainLayout } from '@/components/main-layout'
 import { Providers } from '@/components/providers'
+import { MainLayout } from '@/components/templates/main-layout'
 
 import '@/app/globals.css'
 

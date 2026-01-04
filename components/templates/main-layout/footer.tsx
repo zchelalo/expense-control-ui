@@ -2,7 +2,7 @@
 
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { Button } from '@/components/button'
+import { Button } from '@/components/atoms/button'
 import styles from '@/components/main-layout/main-layout.module.css'
 import { Theme } from '@/constants'
 

@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
-import { Footer } from '@/components/main-layout/footer'
-import { Header } from '@/components/main-layout/header'
-
 import styles from '@/components/main-layout/main-layout.module.css'
+import { Footer } from '@/components/templates/main-layout/footer'
+import { Header } from '@/components/templates/main-layout/header'
 
 type MainLayoutProps = {
   readonly children: ReactNode
