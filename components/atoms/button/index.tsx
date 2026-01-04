@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from 'react'
 
-import styles from '@/components/button/button.module.css'
+import styles from '@/components/atoms/button/button.module.css'
 
 type Variant = 'primary' | 'secondary' | 'default'
 type Appearance = 'filled' | 'outlined'

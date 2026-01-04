@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import styles from '@/components/main-layout/main-layout.module.css'
+import styles from '@/components/templates/main-layout/main-layout.module.css'
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
