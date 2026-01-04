@@ -1,13 +1,88 @@
 :root {
-  --background: #ffffff;
+  /* Base */
+  --background: #fafafa;
+  --background-muted: #f0f0f0;
+  --background-hover: #eaeaea;
+  --background-active: #e0e0e0;
+
   --foreground: #171717;
+  --foreground-muted: #6b6b6b;
+  --foreground-hover: #000000;
+  --foreground-disabled: #a1a1a1;
+
+  /* Primary */
+  --primary: #6c5ce7;
+  --primary-hover: #5b4dd6;
+  --primary-active: #4a3fc4;
+  --primary-foreground: #ffffff;
+
+  /* Secondary */
+  --secondary: #a29bfe;
+  --secondary-hover: #8f87f5;
+  --secondary-active: #7b72ec;
+  --secondary-foreground: #1b1b1b;
+
+  /* Borders & focus */
+  --border: #e5e5e5;
+  --border-hover: #d4d4d4;
+  --ring: #6c5ce7;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 100%;
+  --border-width: 1px;
+
+  /* Spacing */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+
+  /* Shadows */
+  --shadow-sm: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  --shadow-md: rgba(0, 0, 0, 0.16) 0px 4px 8px;
+  --shadow-lg: rgba(0, 0, 0, 0.16) 0px 10px 15px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  /* Base */
+  --background: #0b0b0f;
+  --background-muted: #141418;
+  --background-hover: #1b1b20;
+  --background-active: #23232a;
+
+  --foreground: #ededed;
+  --foreground-muted: #a1a1aa;
+  --foreground-hover: #ffffff;
+  --foreground-disabled: #6b6b75;
+
+  /* Primary */
+  --primary: #6c5ce7;
+  --primary-hover: #7d6df0;
+  --primary-active: #8f80f5;
+  --primary-foreground: #ffffff;
+
+  /* Secondary */
+  --secondary: #a29bfe;
+  --secondary-hover: #b3adff;
+  --secondary-active: #c4bfff;
+  --secondary-foreground: #0b0b0f;
+
+  /* Borders & focus */
+  --border: #27272a;
+  --border-hover: #3f3f46;
+  --ring: #a29bfe;
 }
 
 html,
