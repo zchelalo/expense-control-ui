@@ -7,3 +7,7 @@ export enum Language {
   En = 'en',
   Es = 'es',
 }
+
+export enum Namespace {
+  Common = 'common',
+}
