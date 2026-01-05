@@ -70,6 +70,20 @@
   color: var(--background-hover);
 }
 
+.link.active {
+  text-decoration: underline;
+}
+
+.link.active:not(.scrolled) {
+  background-color: var(--foreground-hover);
+  color: var(--background-hover);
+}
+
+.link.active.scrolled {
+  background-color: var(--primary-hover);
+  color: var(--foreground-hover);
+}
+
 .main {
   flex-grow: 1;
 

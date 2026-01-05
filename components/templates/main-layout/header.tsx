@@ -4,10 +4,11 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import styles from '@/components/templates/main-layout/main-layout.module.css'
 import { Namespace } from '@/constants'
-import { Link } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 
 export function Header() {
   const t = useTranslations(Namespace.Common)
+  const pathname = usePathname()
 
   const [scrolled, setScrolled] = useState(false)
 
@@ -23,30 +24,30 @@ export function Header() {
     }
   }, [])
 
+  const getLinkClasses = (href: string) => {
+    const isActive = pathname === href
+    return `
+      ${styles.link}
+      ${scrolled ? styles.scrolled : ''}
+      ${isActive ? styles.active : ''}
+    `
+  }
+
   return (
     <header className={styles.header}>
       <ul className={scrolled ? styles.scrolled : ''}>
         <li>
-          <Link
-            href='/movements'
-            className={`${styles.link} ${scrolled ? styles.scrolled : ''}`}
-          >
+          <Link href='/movements' className={getLinkClasses('/movements')}>
             {t('header.movements')}
           </Link>
         </li>
         <li>
-          <Link
-            href='/income'
-            className={`${styles.link} ${scrolled ? styles.scrolled : ''}`}
-          >
+          <Link href='/income' className={getLinkClasses('/income')}>
             {t('header.incomes')}
           </Link>
         </li>
         <li>
-          <Link
-            href='/expenses'
-            className={`${styles.link} ${scrolled ? styles.scrolled : ''}`}
-          >
+          <Link href='/expenses' className={getLinkClasses('/expenses')}>
             {t('header.expenses')}
           </Link>
         </li>
