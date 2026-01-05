@@ -39,19 +39,19 @@ export function Header() {
       <ul className={scrolled ? styles.scrolled : ''}>
         <li>
           <Link href='/movements' className={getLinkClasses('/movements')}>
-            <ArrowLeftRight size={18} />
+            <ArrowLeftRight size={16} />
             <span>{t('header.movements')}</span>
           </Link>
         </li>
         <li>
           <Link href='/incomes' className={getLinkClasses('/incomes')}>
-            <TrendingUp size={18} />
+            <TrendingUp size={16} />
             <span>{t('header.incomes')}</span>
           </Link>
         </li>
         <li>
           <Link href='/expenses' className={getLinkClasses('/expenses')}>
-            <TrendingDown size={18} />
+            <TrendingDown size={16} />
             <span>{t('header.expenses')}</span>
           </Link>
         </li>
