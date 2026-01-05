@@ -16,10 +16,10 @@ export function Footer() {
         variant='primary'
         appearance='filled'
         onClick={() =>
-          setTheme(theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT)
+          setTheme(theme === Theme.Light ? Theme.Dark : Theme.Light)
         }
       >
-        {theme === Theme.LIGHT ? <Moon size={16} /> : <Sun size={16} />}
+        {theme === Theme.Light ? <Moon size={16} /> : <Sun size={16} />}
       </Button>
     </div>
   )
