@@ -6,11 +6,12 @@ import { ThemeProvider } from 'next-themes'
 type ProvidersProps = {
   readonly children: React.ReactNode
   readonly locale: string
+  readonly messages: Record<string, string>
 }
 
-export function Providers({ children, locale }: ProvidersProps) {
+export function Providers({ children, locale, messages }: ProvidersProps) {
   return (
-    <NextIntlClientProvider locale={locale}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
         {children}
       </ThemeProvider>

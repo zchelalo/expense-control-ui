@@ -27,20 +27,47 @@
 .header > ul {
   list-style: none;
 
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
   justify-content: center;
   align-items: center;
 
-  padding: var(--spacing-2);
-
   transition: all var(--transition-fast);
+
+  overflow: hidden;
 }
 
 .header > ul.scrolled {
   background-color: var(--primary);
 
-  border-radius: var(--border-radius-lg);
+  border-radius: var(--border-radius-sm);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  padding: var(--spacing-2) var(--spacing-4);
+
+  transition: all var(--transition-fast);
+}
+
+.link:not(.scrolled) {
+  border-radius: var(--border-radius-sm);
+}
+
+.link.scrolled:hover {
+  background-color: var(--primary-hover);
+  color: var(--foreground-hover);
+}
+
+.link:not(.scrolled):hover {
+  background-color: var(--foreground-hover);
+  color: var(--background-hover);
 }
 
 .main {

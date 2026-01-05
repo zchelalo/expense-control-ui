@@ -3,5 +3,10 @@
   "metadata": {
     "title": "Control de Gastos",
     "description": "Una aplicación para controlar tus gastos"
+  },
+  "header": {
+    "movements": "Movimientos",
+    "incomes": "Ingresos",
+    "expenses": "Gastos"
   }
 }

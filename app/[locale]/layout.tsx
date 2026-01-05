@@ -1,9 +1,8 @@
 import { Nunito } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { hasLocale } from 'next-intl'
-import { setRequestLocale } from 'next-intl/server'
+import { getMessages, setRequestLocale } from 'next-intl/server'
 import { Providers } from '@/components/infrastructure/providers'
-import { MainLayout } from '@/components/templates/main-layout'
 import { routing } from '@/i18n/routing'
 
 import '@/app/globals.css'
@@ -22,6 +21,8 @@ export default async function RootLayout({
   children,
   params,
 }: RootLayoutProps) {
+  const messages = await getMessages()
+
   const { locale } = await params
   if (!hasLocale(routing.locales, locale)) {
     notFound()
@@ -32,8 +33,8 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={nunito.variable}>
-        <Providers locale={locale}>
-          <MainLayout>{children}</MainLayout>
+        <Providers locale={locale} messages={messages}>
+          {children}
         </Providers>
       </body>
     </html>
