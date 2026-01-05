@@ -1,5 +1,6 @@
 'use client'
 
+import { ArrowLeftRight, TrendingDown, TrendingUp } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import styles from '@/components/templates/main-layout/main-layout.module.css'
@@ -38,17 +39,20 @@ export function Header() {
       <ul className={scrolled ? styles.scrolled : ''}>
         <li>
           <Link href='/movements' className={getLinkClasses('/movements')}>
-            {t('header.movements')}
+            <ArrowLeftRight size={18} />
+            <span>{t('header.movements')}</span>
           </Link>
         </li>
         <li>
-          <Link href='/income' className={getLinkClasses('/income')}>
-            {t('header.incomes')}
+          <Link href='/incomes' className={getLinkClasses('/incomes')}>
+            <TrendingUp size={18} />
+            <span>{t('header.incomes')}</span>
           </Link>
         </li>
         <li>
           <Link href='/expenses' className={getLinkClasses('/expenses')}>
-            {t('header.expenses')}
+            <TrendingDown size={18} />
+            <span>{t('header.expenses')}</span>
           </Link>
         </li>
       </ul>

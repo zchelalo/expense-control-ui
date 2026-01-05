@@ -5,6 +5,6 @@ export const generateMetadata = createGenerateMetadata({
   namespace: Namespace.Common,
 })
 
-export default async function Income() {
+export default async function Incomes() {
   return <div>income</div>
 }

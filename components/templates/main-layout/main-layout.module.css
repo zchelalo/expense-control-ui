@@ -29,9 +29,9 @@
 
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: max-content;
+  grid-auto-columns: 1fr;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
 
   transition: all var(--transition-fast);
 
@@ -49,8 +49,7 @@
   align-items: center;
   justify-content: center;
 
-  width: 100%;
-
+  gap: var(--spacing-2);
   padding: var(--spacing-2) var(--spacing-4);
 
   transition: all var(--transition-fast);
