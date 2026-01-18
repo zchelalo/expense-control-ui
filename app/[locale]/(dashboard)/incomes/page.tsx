@@ -1,4 +1,4 @@
-import { Namespace } from '@/constants'
+import { Namespace } from '@/constants/common'
 import { createGenerateMetadata } from '@/i18n/metadata'
 
 export const generateMetadata = createGenerateMetadata({

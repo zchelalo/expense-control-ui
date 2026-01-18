@@ -4,7 +4,7 @@ import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/atoms/button'
 import styles from '@/components/templates/main-layout/main-layout.module.css'
-import { Theme } from '@/constants'
+import { Theme } from '@/constants/common'
 
 export function Footer() {
   const { theme, setTheme } = useTheme()

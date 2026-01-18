@@ -10,4 +10,5 @@ export enum Language {
 
 export enum Namespace {
   Common = 'common',
+  Landing = 'landing',
 }

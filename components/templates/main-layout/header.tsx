@@ -4,7 +4,7 @@ import { ArrowLeftRight, TrendingDown, TrendingUp } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import styles from '@/components/templates/main-layout/main-layout.module.css'
-import { Namespace } from '@/constants'
+import { Namespace } from '@/constants/common'
 import { Link, usePathname } from '@/i18n/navigation'
 
 export function Header() {

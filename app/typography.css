@@ -1,0 +1,39 @@
+.weight-normal {
+  font-weight: var(--font-weight-normal);
+}
+
+.weight-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.weight-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.size-small {
+  font-size: var(--font-size-xs);
+}
+
+.size-normal {
+  font-size: var(--font-size-sm);
+}
+
+.size-medium {
+  font-size: var(--font-size-md);
+}
+
+.size-large {
+  font-size: var(--font-size-lg);
+}
+
+.size-extraLarge {
+  font-size: var(--font-size-xl);
+}
+
+.textStyle-normal {
+  font-style: normal;
+}
+
+.textStyle-italic {
+  font-style: italic;
+}

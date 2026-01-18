@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { Namespace } from '@/constants'
+import { Namespace } from '@/constants/common'
 
 type FactoryOptions = {
   namespace?: string
