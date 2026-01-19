@@ -3,6 +3,7 @@ import { forwardRef, type HTMLAttributes } from 'react'
 import styles from '@/components/atoms/text/text.module.css'
 import { TYPOGRAPHY_CLASSNAMES, TypographyTypes } from '@/constants/typography'
 import type { TypographyProps } from '@/types/typography'
+import '@/app/typography.css'
 
 type Variant = 'p' | 'span'
 
@@ -29,11 +30,9 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   ) => {
     const classes = clsx(
       styles.text,
-      styles[TYPOGRAPHY_CLASSNAMES[TypographyTypes.Weight][typographyWeight]],
-      styles[TYPOGRAPHY_CLASSNAMES[TypographyTypes.Size][typographySize]],
-      styles[
-        TYPOGRAPHY_CLASSNAMES[TypographyTypes.TextStyle][typographyTextStyle]
-      ],
+      TYPOGRAPHY_CLASSNAMES[TypographyTypes.Weight][typographyWeight],
+      TYPOGRAPHY_CLASSNAMES[TypographyTypes.Size][typographySize],
+      TYPOGRAPHY_CLASSNAMES[TypographyTypes.TextStyle][typographyTextStyle],
       className,
     )
 

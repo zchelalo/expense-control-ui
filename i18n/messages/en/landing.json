@@ -3,5 +3,21 @@
     "title": "Expense Control",
     "description": "Welcome to Expense Control, your personal finance management application"
   },
-  "title": "Control your expenses"
+  "header": {
+    "title": "Control your expenses",
+    "subtitle": "Manage your finances effectively, easily, and quickly",
+    "login_button": "Log in",
+    "signup_button": "Sign up",
+    "chart_illustration_alt": "Chart illustration"
+  },
+  "main": {
+    "features_illustration_alt": "Features illustration",
+    "features_title": "Features",
+    "feature_1_title": "Expense tracking",
+    "feature_1_description": "Easily track your daily expenses and categorize them for better insights.",
+    "feature_2_title": "Budget management",
+    "feature_2_description": "Set budgets for different categories and monitor your spending to stay on track.",
+    "feature_3_title": "Financial reports",
+    "feature_3_description": "Generate detailed reports to analyze your financial habits and make informed decisions."
+  }
 }

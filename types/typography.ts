@@ -6,6 +6,9 @@ export type TypographySize =
   | 'medium'
   | 'large'
   | 'extraLarge'
+  | 'extraLarge2'
+  | 'extraLarge3'
+  | 'extraLarge4'
 
 export interface TypographyProps {
   typographyTextStyle?: TypographyTextStyle

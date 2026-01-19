@@ -1,5 +1,3 @@
-@import "@/app/typography.css";
-
 .text {
   font-family: var(--font-nunito);
   text-wrap: pretty;

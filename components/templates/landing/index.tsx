@@ -1,21 +1,12 @@
-import { getTranslations } from 'next-intl/server'
-import { Title } from '@/components/atoms/title'
+import { Header } from '@/components/templates/landing/header'
 import styles from '@/components/templates/landing/landing.module.css'
-import { Namespace } from '@/constants/common'
+import { Main } from '@/components/templates/landing/main'
 
 export async function Landing() {
-  const t = await getTranslations(Namespace.Landing)
-
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <section className={styles.titleContainer}>
-          <Title variant='h1' typographyWeight='bold' typographySize='large'>
-            {t('title')}
-          </Title>
-        </section>
-        <section></section>
-      </header>
+      <Header />
+      <Main />
     </div>
   )
 }

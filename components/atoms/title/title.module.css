@@ -1,5 +1,3 @@
-@import "@/app/typography.css";
-
 .title {
   font-family: var(--font-nunito);
   margin: 0;

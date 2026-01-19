@@ -10,6 +10,7 @@ import '@/app/globals.css'
 const nunito = Nunito({
   variable: '--font-nunito',
   subsets: ['latin'],
+  weight: ['400', '500', '700'],
 })
 
 type RootLayoutProps = {

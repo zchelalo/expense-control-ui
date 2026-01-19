@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes } from 'react'
 import styles from '@/components/atoms/title/title.module.css'
 import { TYPOGRAPHY_CLASSNAMES, TypographyTypes } from '@/constants/typography'
 import type { TypographyProps } from '@/types/typography'
+import '@/app/typography.css'
 
 type Variant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 
@@ -28,11 +29,9 @@ export const Title = forwardRef<HTMLHeadingElement, TitleProps>(
   ) => {
     const classes = clsx(
       styles.title,
-      styles[TYPOGRAPHY_CLASSNAMES[TypographyTypes.Weight][typographyWeight]],
-      styles[TYPOGRAPHY_CLASSNAMES[TypographyTypes.Size][typographySize]],
-      styles[
-        TYPOGRAPHY_CLASSNAMES[TypographyTypes.TextStyle][typographyTextStyle]
-      ],
+      TYPOGRAPHY_CLASSNAMES[TypographyTypes.Weight][typographyWeight],
+      TYPOGRAPHY_CLASSNAMES[TypographyTypes.Size][typographySize],
+      TYPOGRAPHY_CLASSNAMES[TypographyTypes.TextStyle][typographyTextStyle],
       className,
     )
 

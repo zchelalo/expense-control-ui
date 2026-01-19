@@ -23,6 +23,9 @@ const size: Record<TypographySize, string> = {
   medium: 'size-medium',
   large: 'size-large',
   extraLarge: 'size-extraLarge',
+  extraLarge2: 'size-extraLarge-2',
+  extraLarge3: 'size-extraLarge-3',
+  extraLarge4: 'size-extraLarge-4',
 }
 
 const textStyle: Record<TypographyTextStyle, string> = {

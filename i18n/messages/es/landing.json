@@ -3,5 +3,21 @@
     "title": "Control de Gastos",
     "description": "Bienvenido a Control de Gastos, tu aplicación de gestión financiera personal"
   },
-  "title": "Controla tus gastos"
+  "header": {
+    "title": "Controla tus gastos",
+    "subtitle": "Administra tus finanzas de manera efectiva, sencilla y rápida",
+    "login_button": "Iniciar sesión",
+    "signup_button": "Regístrate",
+    "chart_illustration_alt": "Ilustración de gráfico"
+  },
+  "main": {
+    "features_illustration_alt": "Ilustración de características",
+    "features_title": "Características",
+    "feature_1_title": "Seguimiento de gastos",
+    "feature_1_description": "Realiza un seguimiento fácil de tus gastos diarios y clasifícalos para obtener mejores perspectivas.",
+    "feature_2_title": "Gestión de presupuesto",
+    "feature_2_description": "Establece presupuestos para diferentes categorías y monitorea tus gastos para mantenerte en el camino.",
+    "feature_3_title": "Informes financieros",
+    "feature_3_description": "Genera informes detallados para analizar tus hábitos financieros y tomar decisiones informadas."
+  }
 }
