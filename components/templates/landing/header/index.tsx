@@ -5,6 +5,7 @@ import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
 import styles from '@/components/templates/landing/header/header.module.css'
 import { Namespace } from '@/constants/common'
+import { Link } from '@/i18n/navigation'
 
 export async function Header() {
   const t = await getTranslations(Namespace.Landing)
@@ -28,12 +29,16 @@ export async function Header() {
               </Text>
             </div>
             <div className={styles.buttonsContainer}>
-              <Button variant='primary' appearance='filled'>
-                {t('header.login_button')}
-              </Button>
-              <Button variant='primary' appearance='filled'>
-                {t('header.signup_button')}
-              </Button>
+              <Link href='/login'>
+                <Button variant='primary' appearance='filled'>
+                  {t('header.login_button')}
+                </Button>
+              </Link>
+              <Link href='/signup'>
+                <Button variant='primary' appearance='filled'>
+                  {t('header.signup_button')}
+                </Button>
+              </Link>
             </div>
           </section>
         </div>
