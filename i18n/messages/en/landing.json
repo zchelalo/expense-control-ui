@@ -19,5 +19,10 @@
     "feature_2_description": "Set budgets for different categories and monitor your spending to stay on track.",
     "feature_3_title": "Financial reports",
     "feature_3_description": "Generate detailed reports to analyze your financial habits and make informed decisions."
+  },
+  "footer": {
+    "title": "Manage your finances from anywhere",
+    "subtitle": "Access your expense data on any device, anytime.",
+    "devices_illustration_alt": "Devices illustration"
   }
 }

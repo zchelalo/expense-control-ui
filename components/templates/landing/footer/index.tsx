@@ -1,19 +1,18 @@
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
-import { Button } from '@/components/atoms/button'
 import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
-import styles from '@/components/templates/landing/header/header.module.css'
+import styles from '@/components/templates/landing/footer/footer.module.css'
 import { Namespace } from '@/constants/common'
 
-export async function Header() {
+export async function Footer() {
   const t = await getTranslations(Namespace.Landing)
 
   return (
-    <header className={styles.header}>
-      <div className={styles.headerContainer}>
+    <footer className={styles.footer}>
+      <div className={styles.footerContainer}>
         {/* LEFT SIDE */}
-        <div className={styles.headerContent}>
+        <div className={styles.footerContent}>
           <section className={styles.titleContainer}>
             <div className={styles.textContainer}>
               <Title
@@ -21,35 +20,27 @@ export async function Header() {
                 typographySize='extraLarge4'
                 typographyWeight='bold'
               >
-                {t('header.title')}
+                {t('footer.title')}
               </Title>
               <Text variant='p' typographySize='normal' typographyWeight='bold'>
-                {t('header.subtitle')}
+                {t('footer.subtitle')}
               </Text>
-            </div>
-            <div className={styles.buttonsContainer}>
-              <Button variant='primary' appearance='filled'>
-                {t('header.login_button')}
-              </Button>
-              <Button variant='primary' appearance='filled'>
-                {t('header.signup_button')}
-              </Button>
             </div>
           </section>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className={styles.headerContent}>
+        <div className={styles.footerContent}>
           <section className={styles.imageContainer}>
             <Image
-              src='/img/chart.svg'
-              alt={t('header.chart_illustration_alt')}
+              src='/img/devices.svg'
+              alt={t('footer.devices_illustration_alt')}
               fill
               priority
             />
           </section>
         </div>
       </div>
-    </header>
+    </footer>
   )
 }

@@ -19,5 +19,10 @@
     "feature_2_description": "Establece presupuestos para diferentes categorías y monitorea tus gastos para mantenerte en el camino.",
     "feature_3_title": "Informes financieros",
     "feature_3_description": "Genera informes detallados para analizar tus hábitos financieros y tomar decisiones informadas."
+  },
+  "footer": {
+    "title": "Administra tus finanzas desde cualquier lugar",
+    "subtitle": "Accede a tus datos de gastos en cualquier dispositivo, en cualquier momento.",
+    "device_illustration_alt": "Ilustración de dispositivos"
   }
 }
