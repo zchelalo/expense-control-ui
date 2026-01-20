@@ -34,7 +34,7 @@ export async function Header() {
                   {t('header.login_button')}
                 </Button>
               </Link>
-              <Link href='/signup'>
+              <Link href='/sign-up'>
                 <Button variant='primary' appearance='filled'>
                   {t('header.signup_button')}
                 </Button>
