@@ -1,0 +1,109 @@
+/* CONTAINER */
+.container {
+  position: relative;
+  user-select: none;
+}
+
+/* INPUT BASE */
+.input {
+  width: 100%;
+
+  padding: var(--spacing-2);
+
+  border-style: solid;
+  border-width: var(--border-width);
+  border-color: var(--foreground-muted);
+  border-radius: var(--border-radius-sm);
+
+  font-family: var(--font-nunito);
+  font-size: var(--font-size-sm);
+
+  background-color: var(--background);
+  color: var(--foreground-muted);
+
+  outline: none;
+
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.input::placeholder {
+  color: var(--foreground-muted);
+}
+
+/* INPUT PASSWORD */
+.input--password {
+  padding-right: calc(var(--spacing-2) + var(--icon-size-md) + var(--spacing-1));
+}
+
+/* CONTAINER FOCUS AND HOVER */
+.container:not(.container--disabled):focus-within .input {
+  border-color: var(--foreground);
+  color: var(--foreground);
+}
+
+.container:not(.container--disabled):hover .input {
+  border-color: var(--foreground);
+}
+
+.container:not(.container--disabled):hover .input::placeholder,
+.container:not(.container--disabled):focus-within .input::placeholder {
+  color: var(--foreground);
+}
+
+/* INPUT ERROR */
+.input--error {
+  border-color: var(--error);
+  color: var(--foreground);
+}
+
+/* CONTAINER FOCUS AND HOVER WHEN ERROR */
+.container:not(.container--disabled):focus-within .input--error,
+.container:not(.container--disabled):hover .input--error {
+  border-color: var(--error-hover);
+}
+
+/* INPUT DISABLED */
+.container--disabled .input {
+  cursor: not-allowed;
+  border-color: var(--foreground-muted);
+  color: var(--foreground-muted);
+}
+
+.container--disabled .input::placeholder {
+  color: var(--foreground-muted);
+}
+
+/* ICON BUTTON AND ICON */
+.iconButton {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  right: var(--spacing-2);
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: none;
+  border: none;
+
+  cursor: pointer;
+
+  padding: 0;
+  margin: 0;
+
+  z-index: var(--z-index-first);
+}
+
+.iconButton > .icon {
+  color: var(--foreground-muted);
+  width: var(--icon-inline-md);
+  height: var(--icon-inline-md);
+}
+
+/* ICON WHEN HOVER OR FOCUS */
+.container:not(.container--disabled):focus-within .iconButton > .icon {
+  color: var(--foreground);
+}

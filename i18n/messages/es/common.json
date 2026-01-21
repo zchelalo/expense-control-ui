@@ -8,5 +8,16 @@
     "movements": "Movimientos",
     "incomes": "Ingresos",
     "expenses": "Gastos"
+  },
+  "auth": {
+    "login": {
+      "title": "Inicia sesión en tu cuenta",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "Introduce tu correo electrónico",
+      "password_label": "Contraseña",
+      "password_placeholder": "Introduce tu contraseña",
+      "submit_button": "Iniciar sesión",
+      "no_account_prompt": "¿No tienes una cuenta? Regístrate"
+    }
   }
 }

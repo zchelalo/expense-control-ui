@@ -5,6 +5,6 @@ export const generateMetadata = createGenerateMetadata({
   namespace: Namespace.Common,
 })
 
-export default async function SignUp() {
+export default async function SignUpPage() {
   return <div>sign up</div>
 }

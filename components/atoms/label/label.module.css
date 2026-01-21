@@ -1,0 +1,6 @@
+.label {
+  font-family: var(--font-nunito);
+  text-wrap: pretty;
+  margin: 0;
+  padding: 0;
+}
