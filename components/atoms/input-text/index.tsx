@@ -1,5 +1,8 @@
+'use client'
+
 import clsx from 'clsx'
-import { InputPasswordToggle } from '@/components/atoms/input-text/input-password-toggle'
+import { Eye, EyeClosed } from 'lucide-react'
+import { useState } from 'react'
 import styles from '@/components/atoms/input-text/input-text.module.css'
 
 interface InputTextProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -14,8 +17,10 @@ export function InputText({
   disabled = false,
   className,
   id,
+  type,
   ...props
 }: InputTextProps) {
+  const [showPassword, setShowPassword] = useState(false)
   const inputId = id ?? props.name ?? undefined
 
   const inputClasses = clsx(
@@ -30,17 +35,42 @@ export function InputText({
     disabled && styles['container--disabled'],
   )
 
+  const inputType = isPasswordField
+    ? showPassword
+      ? 'text'
+      : 'password'
+    : (type ?? 'text')
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev)
+  }
+
   return (
     <div className={containerClasses}>
       <input
         id={inputId}
-        type={isPasswordField ? 'password' : 'text'}
+        type={inputType}
         className={inputClasses}
         disabled={disabled}
         {...props}
       />
 
-      {isPasswordField && inputId && <InputPasswordToggle inputId={inputId} />}
+      {isPasswordField && (
+        <button
+          type='button'
+          className={styles.iconButton}
+          onClick={togglePasswordVisibility}
+          aria-label={
+            showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+          }
+        >
+          {showPassword ? (
+            <Eye className={styles.icon} />
+          ) : (
+            <EyeClosed className={styles.icon} />
+          )}
+        </button>
+      )}
     </div>
   )
 }
