@@ -19,5 +19,38 @@
       "submit_button": "Iniciar sesión",
       "no_account_prompt": "¿No tienes una cuenta? Regístrate"
     }
+  },
+  "errors": {
+    "zod": {
+      "default": "Entrada inválida",
+      "validation_failed": "La validación falló",
+      "invalid": {
+        "type": "Tipo inválido proporcionado, el tipo debe ser {expectedType}",
+        "element": "Elemento inválido, el elemento debe ser {expectedElement}",
+        "format": "Formato inválido, el formato debe ser {expectedFormat}",
+        "key": "Clave inválida, la clave debe ser {expectedKey}",
+        "union": "Unión inválida, la entrada debe coincidir con uno de los tipos permitidos",
+        "value": "Valor inválido, el valor debe ser {expectedValue}"
+      },
+      "not_multiple_of": "El valor debe ser un múltiplo de {multipleOf}",
+      "too": {
+        "small": "El valor debe ser mayor o igual a {minimum}",
+        "big": "El valor debe ser menor o igual a {maximum}"
+      },
+      "unrecognized_keys": "Claves no reconocidas en el objeto: {keys}",
+      "password": {
+        "lowercase": "La contraseña debe incluir al menos una letra minúscula",
+        "uppercase": "La contraseña debe incluir al menos una letra mayúscula",
+        "digit": "La contraseña debe incluir al menos un dígito",
+        "special": "La contraseña debe incluir al menos un carácter especial"
+      }
+    },
+    "auth_store_error": "Se produjo un error al acceder al almacén de autenticación.",
+    "auth_session_error": "Se produjo un error al acceder a la sesión de autenticación.",
+    "invalid_credentials_error": "Correo electrónico o contraseña inválidos.",
+    "user_already_exists_error": "Ya existe un usuario con este correo electrónico.",
+    "network_error": "Se produjo un error de red. Por favor, inténtalo de nuevo más tarde.",
+    "unknown_error": "Se produjo un error desconocido. Por favor, inténtalo de nuevo más tarde.",
+    "too_many_requests_error": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde."
   }
 }

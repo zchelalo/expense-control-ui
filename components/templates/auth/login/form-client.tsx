@@ -10,7 +10,7 @@ import styles from '@/components/templates/auth/login/login.module.css'
 import {
   type LoginFormState,
   loginAction,
-} from '@/modules/auth/adapters/in/actions'
+} from '@/modules/auth/adapters/in/login-action'
 
 type FormClientProps = {
   translations: Record<string, string>
@@ -43,15 +43,16 @@ export function FormClient({ translations }: FormClientProps) {
             error={!!state.errors?.email}
             defaultValue={state.values.email}
           />
-          {state.errors?.email && (
-            <Text
-              role='alert'
-              variant='span'
-              typographySize='small'
-              className={styles.fieldError}
-            >
-              {state.errors.email}
-            </Text>
+          {state.errors?.email && state.errors.email.length > 0 && (
+            <ul className={styles.fieldListError}>
+              {state.errors?.email?.map((err) => (
+                <li key={err} className={styles.fieldError}>
+                  <Text role='alert' variant='span' typographySize='small'>
+                    {err}
+                  </Text>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
         <div className={styles.formGroup}>
@@ -67,15 +68,16 @@ export function FormClient({ translations }: FormClientProps) {
             isPasswordField
             error={!!state.errors?.password}
           />
-          {state.errors?.password && (
-            <Text
-              role='alert'
-              variant='span'
-              typographySize='small'
-              className={styles.fieldError}
-            >
-              {state.errors.password}
-            </Text>
+          {state.errors?.password && state.errors.password.length > 0 && (
+            <ul className={styles.fieldListError}>
+              {state.errors?.password?.map((err) => (
+                <li key={err} className={styles.fieldError}>
+                  <Text role='alert' variant='span' typographySize='small'>
+                    {err}
+                  </Text>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
         <div className={styles.formGroup}>

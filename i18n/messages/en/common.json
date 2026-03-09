@@ -19,5 +19,38 @@
       "submit_button": "Login",
       "no_account_prompt": "Don't have an account? Sign up"
     }
+  },
+  "errors": {
+    "zod": {
+      "default": "Invalid input",
+      "validation_failed": "Validation failed",
+      "invalid": {
+        "type": "Invalid type provided, type must be {expectedType}",
+        "element": "Invalid element, element must be {expectedElement}",
+        "format": "Invalid format, format must be {expectedFormat}",
+        "key": "Invalid key, key must be {expectedKey}",
+        "union": "Invalid union, input must match one of the allowed types",
+        "value": "Invalid value, value must be {expectedValue}"
+      },
+      "not_multiple_of": "Value must be a multiple of {multipleOf}",
+      "too": {
+        "small": "Value must be greater than or equal to {minimum}",
+        "big": "Value must be less than or equal to {maximum}"
+      },
+      "unrecognized_keys": "Unrecognized keys in object: {keys}",
+      "password": {
+        "lowercase": "Password must include at least one lowercase letter",
+        "uppercase": "Password must include at least one uppercase letter",
+        "digit": "Password must include at least one digit",
+        "special": "Password must include at least one special character"
+      }
+    },
+    "auth_store_error": "An error occurred while accessing the authentication store.",
+    "auth_session_error": "An error occurred while accessing the authentication session.",
+    "invalid_credentials_error": "Invalid email or password.",
+    "user_already_exists_error": "User with this email already exists.",
+    "network_error": "A network error occurred. Please try again later.",
+    "unknown_error": "An unknown error occurred. Please try again later.",
+    "too_many_requests_error": "Too many requests. Please try again later."
   }
 }
