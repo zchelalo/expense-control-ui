@@ -4,9 +4,11 @@ import { useActionState, useId } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
+import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
 import { List } from '@/components/molecules/list'
 import styles from '@/components/templates/auth/sign-up/sign-up.module.css'
+import { Link } from '@/i18n/navigation'
 import {
   type SignUpFormState,
   signUpAction,
@@ -104,6 +106,11 @@ export function FormClient({ translations }: FormClientProps) {
             {translations.signUpSubmitButton}
           </Button>
         </div>
+        <Link href='/login' className={styles.link}>
+          <Text variant='span' typographySize='small'>
+            {translations.signUpHaveAccountPrompt}
+          </Text>
+        </Link>
       </form>
     </div>
   )

@@ -18,6 +18,17 @@
       "password_placeholder": "Introduce tu contraseña",
       "submit_button": "Iniciar sesión",
       "no_account_prompt": "¿No tienes una cuenta? Regístrate"
+    },
+    "sign_up": {
+      "title": "Crea una cuenta nueva",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "Introduce tu correo electrónico",
+      "password_label": "Contraseña",
+      "password_placeholder": "Introduce tu contraseña",
+      "confirm_password_label": "Confirmar contraseña",
+      "confirm_password_placeholder": "Repite tu contraseña",
+      "submit_button": "Registrarse",
+      "have_account_prompt": "¿Ya tienes una cuenta? Inicia sesión"
     }
   },
   "errors": {

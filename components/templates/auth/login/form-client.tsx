@@ -4,9 +4,11 @@ import { useActionState, useId } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
+import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
 import { List } from '@/components/molecules/list'
 import styles from '@/components/templates/auth/login/login.module.css'
+import { Link } from '@/i18n/navigation'
 import {
   type LoginFormState,
   loginAction,
@@ -80,6 +82,11 @@ export function FormClient({ translations }: FormClientProps) {
             {translations.loginSubmitButton}
           </Button>
         </div>
+        <Link href='/sign-up' className={styles.link}>
+          <Text variant='span' typographySize='small'>
+            {translations.loginNoAccountPrompt}
+          </Text>
+        </Link>
       </form>
     </div>
   )

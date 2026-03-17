@@ -12,6 +12,7 @@ export async function SignUp() {
         signUpEmailLabel: t('auth.sign_up.email_label'),
         signUpEmailPlaceholder: t('auth.sign_up.email_placeholder'),
         signUpPasswordLabel: t('auth.sign_up.password_label'),
+        signUpPasswordPlaceholder: t('auth.sign_up.password_placeholder'),
         signUpConfirmPasswordLabel: t('auth.sign_up.confirm_password_label'),
         signUpConfirmPasswordPlaceholder: t(
           'auth.sign_up.confirm_password_placeholder',
