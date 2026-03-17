@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useId } from 'react'
+import { useActionState, useEffect, useId } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
@@ -13,6 +13,7 @@ import {
   type LoginFormState,
   loginAction,
 } from '@/modules/auth/adapters/in/login-action'
+import { toast } from '@/utils/toast'
 
 type FormClientProps = {
   translations: Record<string, string>
@@ -20,6 +21,7 @@ type FormClientProps = {
 
 const initialState: LoginFormState = {
   errors: null,
+  globalError: null,
   values: { email: '' },
 }
 
@@ -28,6 +30,12 @@ export function FormClient({ translations }: FormClientProps) {
     loginAction,
     initialState,
   )
+
+  useEffect(() => {
+    if (state.globalError) {
+      toast.error(state.globalError.message)
+    }
+  }, [state.globalError])
 
   const emailId = useId()
   const passwordId = useId()

@@ -1,10 +1,9 @@
 'use server'
 
-import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
-import { Auth } from '@/constants/auth'
 import { Namespace } from '@/constants/common'
 import { makeErrorMap } from '@/errors/zod/error-map'
+import { mapAuthErrorToMessage } from '@/modules/auth/adapters/in/error-handler'
 import { formDataToSignUp } from '@/modules/auth/adapters/in/form-data-mapper'
 import { signUpSchema } from '@/modules/auth/adapters/in/schemas'
 import { AuthRepository } from '@/modules/auth/adapters/out/auth-repository'
@@ -19,6 +18,7 @@ export type SignUpErrors = Partial<
 
 export type SignUpFormState = {
   errors: SignUpErrors | null
+  globalError: { message: string; timestamp: number } | null
   values: {
     email: string
   }
@@ -46,26 +46,27 @@ export async function signUpAction(
 
     return {
       errors: fieldErrors,
+      globalError: null,
       values: { email: data.email ?? '' },
     }
   }
 
-  const session = await signUpUseCase.execute(
-    data.email,
-    data.password,
-    data.confirmPassword,
-  )
-  const cookieStore = await cookies()
-  cookieStore.set(Auth.AccessToken, session.accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    expires: session.accessExpiresAt,
-  })
+  try {
+    await signUpUseCase.execute(data.email, data.password, data.confirmPassword)
 
-  return {
-    errors: null,
-    values: { email: data.email ?? '' },
+    return {
+      errors: null,
+      globalError: null,
+      values: { email: data.email ?? '' },
+    }
+  } catch (error) {
+    return {
+      errors: null,
+      globalError: {
+        message: mapAuthErrorToMessage(error, (key: string) => t(key)),
+        timestamp: Date.now(),
+      },
+      values: { email: data.email ?? '' },
+    }
   }
 }

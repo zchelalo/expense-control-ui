@@ -1,10 +1,9 @@
 'use server'
 
-import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
-import { Auth } from '@/constants/auth'
 import { Namespace } from '@/constants/common'
 import { makeErrorMap } from '@/errors/zod/error-map'
+import { mapAuthErrorToMessage } from '@/modules/auth/adapters/in/error-handler'
 import { formDataToLogin } from '@/modules/auth/adapters/in/form-data-mapper'
 import { loginSchema } from '@/modules/auth/adapters/in/schemas'
 import { AuthRepository } from '@/modules/auth/adapters/out/auth-repository'
@@ -17,6 +16,7 @@ export type LoginErrors = Partial<Record<'email' | 'password', string[]>>
 
 export type LoginFormState = {
   errors: LoginErrors | null
+  globalError: { message: string; timestamp: number } | null
   values: {
     email: string
   }
@@ -43,22 +43,27 @@ export async function loginAction(
 
     return {
       errors: fieldErrors,
+      globalError: null,
       values: { email: data.email ?? '' },
     }
   }
 
-  const session = await loginUseCase.execute(data.email, data.password)
-  const cookieStore = await cookies()
-  cookieStore.set(Auth.AccessToken, session.accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    expires: session.accessExpiresAt,
-  })
+  try {
+    await loginUseCase.execute(data.email, data.password)
 
-  return {
-    errors: null,
-    values: { email: data.email ?? '' },
+    return {
+      errors: null,
+      globalError: null,
+      values: { email: data.email ?? '' },
+    }
+  } catch (error) {
+    return {
+      errors: null,
+      globalError: {
+        message: mapAuthErrorToMessage(error, (key: string) => t(key)),
+        timestamp: Date.now(),
+      },
+      values: { email: data.email ?? '' },
+    }
   }
 }
