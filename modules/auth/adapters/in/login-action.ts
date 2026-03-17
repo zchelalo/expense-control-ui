@@ -1,8 +1,9 @@
 'use server'
 
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { Namespace } from '@/constants/common'
 import { makeErrorMap } from '@/errors/zod/error-map'
+import { redirect } from '@/i18n/navigation'
 import { mapAuthErrorToMessage } from '@/modules/auth/adapters/in/error-handler'
 import { formDataToLogin } from '@/modules/auth/adapters/in/form-data-mapper'
 import { loginSchema } from '@/modules/auth/adapters/in/schemas'
@@ -26,6 +27,7 @@ export async function loginAction(
   _prev: LoginFormState,
   formData: FormData,
 ): Promise<LoginFormState> {
+  const locale = await getLocale()
   const t = await getTranslations(Namespace.Common)
   const data = formDataToLogin(formData)
 
@@ -50,12 +52,6 @@ export async function loginAction(
 
   try {
     await loginUseCase.execute(data.email, data.password)
-
-    return {
-      errors: null,
-      globalError: null,
-      values: { email: data.email ?? '' },
-    }
   } catch (error) {
     return {
       errors: null,
@@ -65,5 +61,15 @@ export async function loginAction(
       },
       values: { email: data.email ?? '' },
     }
+  }
+
+  redirect({
+    href: '/dashboard',
+    locale,
+  })
+  return {
+    errors: null,
+    globalError: null,
+    values: { email: data.email ?? '' },
   }
 }

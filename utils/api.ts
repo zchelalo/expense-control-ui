@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
-import { Language } from '@/constants/common'
+import { getLocale } from 'next-intl/server'
+import { redirect } from '@/i18n/navigation'
 import { logger } from '@/utils/logger'
 import { toast } from '@/utils/toast'
 
@@ -20,6 +21,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
  * ```
  */
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
+  const locale = await getLocale()
   const isServer = typeof window === 'undefined'
 
   const mergedOptions: RequestInit = {
@@ -87,10 +89,10 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
             'Su sesión ha expirado. Por favor, inicie sesión de nuevo.',
           )
         }
-        const { redirect } = await import('@/i18n/navigation')
+
         redirect({
           href: '/login',
-          locale: Language.Es,
+          locale,
         })
       }
     } catch (e) {

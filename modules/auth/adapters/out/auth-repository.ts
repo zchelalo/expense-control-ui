@@ -30,72 +30,92 @@ function mapToAuthError(
 
 export class AuthRepository implements AuthStore {
   async login(loginCredentials: LoginCredentialsEntity): Promise<void> {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: loginCredentials.getEmail(),
+            password: loginCredentials.getPassword(),
+          }),
+          credentials: 'include',
+          cache: 'no-store',
         },
-        body: JSON.stringify({
-          email: loginCredentials.getEmail(),
-          password: loginCredentials.getPassword(),
-        }),
-        credentials: 'include',
-        cache: 'no-store',
-      },
-    )
+      )
 
-    if (!response.ok) {
-      const error = await parseApiError(response)
-      mapToAuthError(response.status, error)
+      if (!response.ok) {
+        const error = await parseApiError(response)
+        mapToAuthError(response.status, error)
+      }
+    } catch (error) {
+      if (error instanceof AuthError) throw error
+      throw new AuthError('network_error', (error as Error).message)
     }
   }
 
   async signUp(signUpCredentials: SignUpCredentialsEntity): Promise<void> {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/register`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/register`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: signUpCredentials.getEmail(),
+            password: signUpCredentials.getPassword(),
+          }),
+          credentials: 'include',
+          cache: 'no-store',
         },
-        body: JSON.stringify({
-          email: signUpCredentials.getEmail(),
-          password: signUpCredentials.getPassword(),
-        }),
-        credentials: 'include',
-        cache: 'no-store',
-      },
-    )
+      )
 
-    if (!response.ok) {
-      const error = await parseApiError(response)
-      mapToAuthError(response.status, error)
+      if (!response.ok) {
+        const error = await parseApiError(response)
+        mapToAuthError(response.status, error)
+      }
+    } catch (error) {
+      if (error instanceof AuthError) throw error
+      throw new AuthError('network_error', (error as Error).message)
     }
   }
 
   async logout(): Promise<void> {
-    const response = await fetchWithAuth(`/v1/auth/logout`, {
-      method: 'POST',
-      cache: 'no-store',
-    })
+    try {
+      const response = await fetchWithAuth('/v1/auth/logout', {
+        method: 'POST',
+        cache: 'no-store',
+      })
 
-    if (!response.ok) {
-      const error = await parseApiError(response)
-      mapToAuthError(response.status, error)
+      if (!response.ok) {
+        const error = await parseApiError(response)
+        mapToAuthError(response.status, error)
+      }
+    } catch (error) {
+      if (error instanceof AuthError) throw error
+      throw new AuthError('network_error', (error as Error).message)
     }
   }
 
   async refresh(): Promise<void> {
-    const response = await fetchWithAuth(`/v1/auth/refresh`, {
-      method: 'POST',
-      cache: 'no-store',
-    })
+    try {
+      const response = await fetchWithAuth('/v1/auth/refresh', {
+        method: 'POST',
+        cache: 'no-store',
+      })
 
-    if (!response.ok) {
-      const error = await parseApiError(response)
-      mapToAuthError(response.status, error)
+      if (!response.ok) {
+        const error = await parseApiError(response)
+        mapToAuthError(response.status, error)
+      }
+    } catch (error) {
+      if (error instanceof AuthError) throw error
+      throw new AuthError('network_error', (error as Error).message)
     }
   }
 }

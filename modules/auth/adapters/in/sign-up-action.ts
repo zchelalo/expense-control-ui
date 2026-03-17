@@ -1,8 +1,9 @@
 'use server'
 
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { Namespace } from '@/constants/common'
 import { makeErrorMap } from '@/errors/zod/error-map'
+import { redirect } from '@/i18n/navigation'
 import { mapAuthErrorToMessage } from '@/modules/auth/adapters/in/error-handler'
 import { formDataToSignUp } from '@/modules/auth/adapters/in/form-data-mapper'
 import { signUpSchema } from '@/modules/auth/adapters/in/schemas'
@@ -28,6 +29,7 @@ export async function signUpAction(
   _prev: SignUpFormState,
   formData: FormData,
 ): Promise<SignUpFormState> {
+  const locale = await getLocale()
   const t = await getTranslations(Namespace.Common)
   const data = formDataToSignUp(formData)
 
@@ -53,12 +55,6 @@ export async function signUpAction(
 
   try {
     await signUpUseCase.execute(data.email, data.password, data.confirmPassword)
-
-    return {
-      errors: null,
-      globalError: null,
-      values: { email: data.email ?? '' },
-    }
   } catch (error) {
     return {
       errors: null,
@@ -68,5 +64,15 @@ export async function signUpAction(
       },
       values: { email: data.email ?? '' },
     }
+  }
+
+  redirect({
+    href: '/dashboard',
+    locale,
+  })
+  return {
+    errors: null,
+    globalError: null,
+    values: { email: data.email ?? '' },
   }
 }
