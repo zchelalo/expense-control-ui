@@ -83,6 +83,10 @@ export const makeErrorMap = (t: T): z.core.$ZodErrorMap => {
             return {
               message: t('errors.zod.password.special'),
             }
+          case 'match':
+            return {
+              message: t('errors.zod.password.match'),
+            }
           default:
             return {
               message: issue.message || t('errors.zod.default'),

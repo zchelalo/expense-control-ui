@@ -53,7 +53,8 @@
         "lowercase": "La contraseña debe incluir al menos una letra minúscula",
         "uppercase": "La contraseña debe incluir al menos una letra mayúscula",
         "digit": "La contraseña debe incluir al menos un dígito",
-        "special": "La contraseña debe incluir al menos un carácter especial"
+        "special": "La contraseña debe incluir al menos un carácter especial",
+        "match": "Las contraseñas deben coincidir"
       }
     },
     "auth_store_error": "Se produjo un error al acceder al almacén de autenticación.",

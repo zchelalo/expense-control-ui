@@ -30,5 +30,6 @@ export const signUpSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    params: { rule: 'passwords_match' },
+    path: ['confirmPassword'],
+    params: { rule: 'match' },
   })

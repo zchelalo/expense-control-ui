@@ -53,7 +53,8 @@
         "lowercase": "Password must include at least one lowercase letter",
         "uppercase": "Password must include at least one uppercase letter",
         "digit": "Password must include at least one digit",
-        "special": "Password must include at least one special character"
+        "special": "Password must include at least one special character",
+        "match": "Passwords must match"
       }
     },
     "auth_store_error": "An error occurred while accessing the authentication store.",

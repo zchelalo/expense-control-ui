@@ -38,7 +38,8 @@ export async function signUpAction(
 
     for (const issue of result.error.issues) {
       const key = issue.path[0]
-      if (key !== 'email' && key !== 'password') continue
+      if (key !== 'email' && key !== 'password' && key !== 'confirmPassword')
+        continue
       if (!fieldErrors[key]) fieldErrors[key] = [issue.message]
       else fieldErrors[key].push(issue.message)
     }
