@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useId } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
@@ -27,6 +27,9 @@ export function FormClient({ translations }: FormClientProps) {
     initialState,
   )
 
+  const emailId = useId()
+  const passwordId = useId()
+
   return (
     <div className={styles.main}>
       <form className={styles.form} action={formAction}>
@@ -34,9 +37,9 @@ export function FormClient({ translations }: FormClientProps) {
           {translations.loginTitle}
         </Title>
         <div className={styles.formGroup}>
-          <Label htmlFor='login-email'>{translations.loginEmailLabel}</Label>
+          <Label htmlFor={emailId}>{translations.loginEmailLabel}</Label>
           <InputText
-            id='login-email'
+            id={emailId}
             name='email'
             placeholder={translations.loginEmailPlaceholder}
             autoComplete='email'
@@ -53,11 +56,9 @@ export function FormClient({ translations }: FormClientProps) {
           )}
         </div>
         <div className={styles.formGroup}>
-          <Label htmlFor='login-password'>
-            {translations.loginPasswordLabel}
-          </Label>
+          <Label htmlFor={passwordId}>{translations.loginPasswordLabel}</Label>
           <InputText
-            id='login-password'
+            id={passwordId}
             name='password'
             type='password'
             placeholder={translations.loginPasswordPlaceholder}

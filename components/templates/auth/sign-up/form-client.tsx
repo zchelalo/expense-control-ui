@@ -1,11 +1,11 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useId } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
-import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
+import { List } from '@/components/molecules/list'
 import styles from '@/components/templates/auth/sign-up/sign-up.module.css'
 import {
   type SignUpFormState,
@@ -27,6 +27,10 @@ export function FormClient({ translations }: FormClientProps) {
     FormData
   >(signUpAction, initialState)
 
+  const emailId = useId()
+  const passwordId = useId()
+  const confirmPasswordId = useId()
+
   return (
     <div className={styles.main}>
       <form className={styles.form} action={formAction}>
@@ -34,9 +38,9 @@ export function FormClient({ translations }: FormClientProps) {
           {translations.signUpTitle}
         </Title>
         <div className={styles.formGroup}>
-          <Label htmlFor='sign-up-email'>{translations.signUpEmailLabel}</Label>
+          <Label htmlFor={emailId}>{translations.signUpEmailLabel}</Label>
           <InputText
-            id='sign-up-email'
+            id={emailId}
             name='email'
             placeholder={translations.signUpEmailPlaceholder}
             autoComplete='email'
@@ -44,23 +48,18 @@ export function FormClient({ translations }: FormClientProps) {
             defaultValue={state.values.email}
           />
           {state.errors?.email && state.errors.email.length > 0 && (
-            <ul className={styles.fieldListError}>
-              {state.errors?.email?.map((err) => (
-                <li key={err} className={styles.fieldError}>
-                  <Text role='alert' variant='span' typographySize='small'>
-                    {err}
-                  </Text>
-                </li>
-              ))}
-            </ul>
+            <List
+              listStyle='disc'
+              messages={state.errors?.email}
+              className={styles.listError}
+              isErrorList
+            />
           )}
         </div>
         <div className={styles.formGroup}>
-          <Label htmlFor='sign-up-password'>
-            {translations.signUpPasswordLabel}
-          </Label>
+          <Label htmlFor={passwordId}>{translations.signUpPasswordLabel}</Label>
           <InputText
-            id='sign-up-password'
+            id={passwordId}
             name='password'
             type='password'
             placeholder={translations.signUpPasswordPlaceholder}
@@ -69,23 +68,20 @@ export function FormClient({ translations }: FormClientProps) {
             error={!!state.errors?.password}
           />
           {state.errors?.password && state.errors.password.length > 0 && (
-            <ul className={styles.fieldListError}>
-              {state.errors?.password?.map((err) => (
-                <li key={err} className={styles.fieldError}>
-                  <Text role='alert' variant='span' typographySize='small'>
-                    {err}
-                  </Text>
-                </li>
-              ))}
-            </ul>
+            <List
+              listStyle='disc'
+              messages={state.errors?.password}
+              className={styles.listError}
+              isErrorList
+            />
           )}
         </div>
         <div className={styles.formGroup}>
-          <Label htmlFor='sign-up-confirm-password'>
+          <Label htmlFor={confirmPasswordId}>
             {translations.signUpConfirmPasswordLabel}
           </Label>
           <InputText
-            id='sign-up-confirm-password'
+            id={confirmPasswordId}
             name='confirmPassword'
             type='password'
             placeholder={translations.signUpConfirmPasswordPlaceholder}
@@ -95,15 +91,12 @@ export function FormClient({ translations }: FormClientProps) {
           />
           {state.errors?.confirmPassword &&
             state.errors.confirmPassword.length > 0 && (
-              <ul className={styles.fieldListError}>
-                {state.errors?.confirmPassword?.map((err) => (
-                  <li key={err} className={styles.fieldError}>
-                    <Text role='alert' variant='span' typographySize='small'>
-                      {err}
-                    </Text>
-                  </li>
-                ))}
-              </ul>
+              <List
+                listStyle='disc'
+                messages={state.errors?.confirmPassword}
+                className={styles.listError}
+                isErrorList
+              />
             )}
         </div>
         <div className={styles.formGroup}>
