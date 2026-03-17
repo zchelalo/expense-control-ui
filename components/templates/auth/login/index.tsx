@@ -14,6 +14,7 @@ export async function Login() {
         loginPasswordLabel: t('auth.login.password_label'),
         loginPasswordPlaceholder: t('auth.login.password_placeholder'),
         loginSubmitButton: t('auth.login.submit_button'),
+        loginNoAccountPrompt: t('auth.login.no_account_prompt'),
       }}
     />
   )

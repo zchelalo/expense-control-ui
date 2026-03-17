@@ -18,6 +18,17 @@
       "password_placeholder": "Enter your password",
       "submit_button": "Login",
       "no_account_prompt": "Don't have an account? Sign up"
+    },
+    "sign_up": {
+      "title": "Create a new account",
+      "email_label": "Email",
+      "email_placeholder": "Enter your email",
+      "password_label": "Password",
+      "password_placeholder": "Enter your password",
+      "confirm_password_label": "Confirm Password",
+      "confirm_password_placeholder": "Re-enter your password",
+      "submit_button": "Sign Up",
+      "have_account_prompt": "Already have an account? Login"
     }
   },
   "errors": {

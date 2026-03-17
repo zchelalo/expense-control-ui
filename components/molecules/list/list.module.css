@@ -1,0 +1,17 @@
+.disc {
+  list-style-type: disc;
+}
+
+.numeric {
+  list-style-type: decimal;
+}
+
+.fieldError {
+  color: var(--error);
+  padding: var(--spacing-1) 0;
+}
+
+.fieldItem {
+  color: var(--foreground);
+  padding: var(--spacing-1) 0;
+}

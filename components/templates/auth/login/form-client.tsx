@@ -4,8 +4,8 @@ import { useActionState } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
-import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
+import { List } from '@/components/molecules/list'
 import styles from '@/components/templates/auth/login/login.module.css'
 import {
   type LoginFormState,
@@ -44,15 +44,12 @@ export function FormClient({ translations }: FormClientProps) {
             defaultValue={state.values.email}
           />
           {state.errors?.email && state.errors.email.length > 0 && (
-            <ul className={styles.fieldListError}>
-              {state.errors?.email?.map((err) => (
-                <li key={err} className={styles.fieldError}>
-                  <Text role='alert' variant='span' typographySize='small'>
-                    {err}
-                  </Text>
-                </li>
-              ))}
-            </ul>
+            <List
+              listStyle='disc'
+              messages={state.errors?.email}
+              className={styles.listError}
+              isErrorList
+            />
           )}
         </div>
         <div className={styles.formGroup}>
@@ -69,15 +66,12 @@ export function FormClient({ translations }: FormClientProps) {
             error={!!state.errors?.password}
           />
           {state.errors?.password && state.errors.password.length > 0 && (
-            <ul className={styles.fieldListError}>
-              {state.errors?.password?.map((err) => (
-                <li key={err} className={styles.fieldError}>
-                  <Text role='alert' variant='span' typographySize='small'>
-                    {err}
-                  </Text>
-                </li>
-              ))}
-            </ul>
+            <List
+              listStyle='disc'
+              messages={state.errors?.password}
+              className={styles.listError}
+              isErrorList
+            />
           )}
         </div>
         <div className={styles.formGroup}>

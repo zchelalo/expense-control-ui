@@ -5,34 +5,36 @@ import { getTranslations } from 'next-intl/server'
 import { Auth } from '@/constants/auth'
 import { Namespace } from '@/constants/common'
 import { makeErrorMap } from '@/errors/zod/error-map'
-import { formDataToLogin } from '@/modules/auth/adapters/in/form-data-mapper'
-import { loginSchema } from '@/modules/auth/adapters/in/schemas'
+import { formDataToSignUp } from '@/modules/auth/adapters/in/form-data-mapper'
+import { signUpSchema } from '@/modules/auth/adapters/in/schemas'
 import { AuthRepository } from '@/modules/auth/adapters/out/auth-repository'
-import { LoginUseCase } from '@/modules/auth/application/use-cases/login'
+import { SignUpUseCase } from '@/modules/auth/application/use-cases/sign-up'
 
 const authRepository = new AuthRepository()
-const loginUseCase = new LoginUseCase(authRepository)
+const signUpUseCase = new SignUpUseCase(authRepository)
 
-export type LoginErrors = Partial<Record<'email' | 'password', string[]>>
+export type SignUpErrors = Partial<
+  Record<'email' | 'password' | 'confirmPassword', string[]>
+>
 
-export type LoginFormState = {
-  errors: LoginErrors | null
+export type SignUpFormState = {
+  errors: SignUpErrors | null
   values: {
     email: string
   }
 }
 
-export async function loginAction(
-  _prev: LoginFormState,
+export async function signUpAction(
+  _prev: SignUpFormState,
   formData: FormData,
-): Promise<LoginFormState> {
+): Promise<SignUpFormState> {
   const t = await getTranslations(Namespace.Common)
-  const data = formDataToLogin(formData)
+  const data = formDataToSignUp(formData)
 
-  const result = loginSchema.safeParse(data, { error: makeErrorMap(t) })
+  const result = signUpSchema.safeParse(data, { error: makeErrorMap(t) })
 
   if (!result.success) {
-    const fieldErrors: LoginErrors = {}
+    const fieldErrors: SignUpErrors = {}
 
     for (const issue of result.error.issues) {
       const key = issue.path[0]
@@ -47,7 +49,11 @@ export async function loginAction(
     }
   }
 
-  const session = await loginUseCase.execute(data.email, data.password)
+  const session = await signUpUseCase.execute(
+    data.email,
+    data.password,
+    data.confirmPassword,
+  )
   const cookieStore = await cookies()
   cookieStore.set(Auth.AccessToken, session.accessToken, {
     httpOnly: true,
