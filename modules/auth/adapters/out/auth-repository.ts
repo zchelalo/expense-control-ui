@@ -1,18 +1,9 @@
 import type { LoginCredentialsEntity } from '@/modules/auth/domain/login-credentials-entity'
 import type { SignUpCredentialsEntity } from '@/modules/auth/domain/signup-credentials-entity'
-import type { AuthSession } from '@/modules/auth/ports/auth-session'
 import type { AuthStore } from '@/modules/auth/ports/auth-store'
 import { AuthError } from '@/modules/auth/ports/errors'
+import { fetchWithAuth } from '@/utils/api'
 import { type ErrorResponse, parseApiError } from '@/utils/parse'
-
-type AuthResponse = {
-  data: {
-    subject_id: string
-    access_token: string
-    access_expires_at: string
-  }
-  request_id: string
-}
 
 function mapToAuthError(
   status: number,
@@ -38,7 +29,7 @@ function mapToAuthError(
 }
 
 export class AuthRepository implements AuthStore {
-  async login(loginCredentials: LoginCredentialsEntity): Promise<AuthSession> {
+  async login(loginCredentials: LoginCredentialsEntity): Promise<void> {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login`,
       {
@@ -59,18 +50,9 @@ export class AuthRepository implements AuthStore {
       const error = await parseApiError(response)
       mapToAuthError(response.status, error)
     }
-
-    const responseData: AuthResponse = await response.json()
-
-    return {
-      accessToken: responseData.data.access_token,
-      accessExpiresAt: new Date(responseData.data.access_expires_at),
-    }
   }
 
-  async signUp(
-    signUpCredentials: SignUpCredentialsEntity,
-  ): Promise<AuthSession> {
+  async signUp(signUpCredentials: SignUpCredentialsEntity): Promise<void> {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/register`,
       {
@@ -91,27 +73,25 @@ export class AuthRepository implements AuthStore {
       const error = await parseApiError(response)
       mapToAuthError(response.status, error)
     }
-
-    const responseData: AuthResponse = await response.json()
-
-    return {
-      accessToken: responseData.data.access_token,
-      accessExpiresAt: new Date(responseData.data.access_expires_at),
-    }
   }
 
   async logout(): Promise<void> {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/logout`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        cache: 'no-store',
-      },
-    )
+    const response = await fetchWithAuth(`/v1/auth/logout`, {
+      method: 'POST',
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      const error = await parseApiError(response)
+      mapToAuthError(response.status, error)
+    }
+  }
+
+  async refresh(): Promise<void> {
+    const response = await fetchWithAuth(`/v1/auth/refresh`, {
+      method: 'POST',
+      cache: 'no-store',
+    })
 
     if (!response.ok) {
       const error = await parseApiError(response)
