@@ -1,19 +1,16 @@
-import { cookies } from 'next/headers'
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import { Button } from '@/components/atoms/button'
 import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
 import styles from '@/components/templates/landing/header/header.module.css'
-import { Auth } from '@/constants/auth'
 import { Namespace } from '@/constants/common'
 import { Link } from '@/i18n/navigation'
+import { getAuthSession } from '@/utils/auth'
 
 export async function Header() {
   const t = await getTranslations(Namespace.Landing)
-  const cookieStore = await cookies()
-  const isAuthenticated =
-    cookieStore.has(Auth.AccessToken) || cookieStore.has(Auth.RefreshToken)
+  const { isAuthenticated } = await getAuthSession()
 
   return (
     <header className={styles.header}>

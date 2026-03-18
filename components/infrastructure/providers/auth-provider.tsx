@@ -1,10 +1,9 @@
 'use client'
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 type AuthContextType = {
   isAuthenticated: boolean
-  // user: User | null
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -18,8 +17,12 @@ export function AuthProvider({
   children,
   initialIsAuthenticated,
 }: AuthProviderProps) {
-  // Initialize the authentication state based on the server-rendered value
-  const [isAuthenticated] = useState(initialIsAuthenticated)
+  // Sincronized state to ensure client-side updates when authentication status changes
+  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated)
+
+  useEffect(() => {
+    setIsAuthenticated(initialIsAuthenticated)
+  }, [initialIsAuthenticated])
 
   return (
     <AuthContext.Provider value={{ isAuthenticated }}>
@@ -29,7 +32,7 @@ export function AuthProvider({
 }
 
 /**
- * Custom hook to access authentication state. Must be used within an AuthProvider.
+ * Custom hook to access authentication status. Must be used within an AuthProvider.
  */
 export function useAuth() {
   const context = useContext(AuthContext)
