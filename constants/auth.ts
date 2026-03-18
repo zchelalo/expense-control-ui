@@ -1,4 +1,13 @@
 export enum Auth {
+  RefreshToken = 'refresh_token',
   AccessToken = 'access_token',
-  AccessExpiresAt = 'access_expires_at',
+}
+
+export enum SharedPages {
+  Home = '/',
+}
+
+export enum PublicPages {
+  Login = '/login',
+  SignUp = '/sign-up',
 }
