@@ -64,7 +64,7 @@ export async function loginAction(
   }
 
   redirect({
-    href: '/dashboard',
+    href: '/dashboard/movements',
     locale,
   })
   return {
