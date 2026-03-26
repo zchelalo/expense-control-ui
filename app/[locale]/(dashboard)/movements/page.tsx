@@ -5,6 +5,6 @@ export const generateMetadata = createGenerateMetadata({
   namespace: Namespace.Common,
 })
 
-export default async function Movements() {
+export default async function MovementsPage() {
   return <div>movements</div>
 }

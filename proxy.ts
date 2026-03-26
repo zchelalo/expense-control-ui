@@ -46,7 +46,7 @@ export default async function middleware(request: NextRequest) {
   // User is authenticated and trying to access login/sign-up
   if (isAuthenticated && isPublicPage) {
     const locale = pathname.split('/')[1] || Language.Es
-    const dashboardUrl = new URL(`/${locale}/movements`, request.url)
+    const dashboardUrl = new URL(`/${locale}/accounts`, request.url)
     return NextResponse.redirect(dashboardUrl)
   }
 

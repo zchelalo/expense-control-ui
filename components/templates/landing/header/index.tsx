@@ -30,7 +30,7 @@ export async function Header() {
                 {t('header.subtitle')}
               </Text>
             </div>
-            {!isAuthenticated && (
+            {!isAuthenticated ? (
               <div className={styles.buttonsContainer}>
                 <Link href='/login'>
                   <Button variant='primary' appearance='filled'>
@@ -40,6 +40,14 @@ export async function Header() {
                 <Link href='/sign-up'>
                   <Button variant='primary' appearance='filled'>
                     {t('header.signup_button')}
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className={styles.buttonsContainer}>
+                <Link href='/accounts'>
+                  <Button variant='primary' appearance='filled'>
+                    {t('header.accounts_button')}
                   </Button>
                 </Link>
               </div>

@@ -8,7 +8,8 @@
     "subtitle": "Manage your finances effectively, easily, and quickly",
     "login_button": "Log in",
     "signup_button": "Sign up",
-    "chart_illustration_alt": "Chart illustration"
+    "chart_illustration_alt": "Chart illustration",
+    "accounts_button": "Go to accounts"
   },
   "main": {
     "features_illustration_alt": "Features illustration",

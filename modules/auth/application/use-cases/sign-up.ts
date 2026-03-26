@@ -1,5 +1,4 @@
 import { SignUpCredentialsEntity } from '@/modules/auth/domain/signup-credentials-entity'
-import type { AuthSession } from '@/modules/auth/ports/auth-session'
 import type { AuthStore } from '@/modules/auth/ports/auth-store'
 
 export class SignUpUseCase {
@@ -9,7 +8,7 @@ export class SignUpUseCase {
     email: string,
     password: string,
     confirmPassword: string,
-  ): Promise<AuthSession> {
+  ): Promise<void> {
     const signUpCredentials = new SignUpCredentialsEntity(
       email,
       password,

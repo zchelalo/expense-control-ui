@@ -19,7 +19,11 @@ export function Providers({
   initialIsAuthenticated,
 }: ProvidersProps) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+      timeZone='America/Hermosillo'
+    >
       <AuthProvider initialIsAuthenticated={initialIsAuthenticated}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
           <ToastProvider />
