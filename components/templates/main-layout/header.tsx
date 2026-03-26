@@ -1,11 +1,13 @@
 'use client'
 
-import { ArrowLeftRight, TrendingDown, TrendingUp } from 'lucide-react'
+import { ArrowLeftRight, Wallet } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import styles from '@/components/templates/main-layout/main-layout.module.css'
 import { Namespace } from '@/constants/common'
 import { Link, usePathname } from '@/i18n/navigation'
+
+// TrendingDown, TrendingUp
 
 export function Header() {
   const t = useTranslations(Namespace.Common)
@@ -40,21 +42,15 @@ export function Header() {
     <header className={styles.header}>
       <ul className={scrolled ? styles.scrolled : ''}>
         <li>
+          <Link href='/accounts' className={getLinkClasses('/accounts')}>
+            <Wallet size={16} />
+            <span>{t('header.accounts')}</span>
+          </Link>
+        </li>
+        <li>
           <Link href='/movements' className={getLinkClasses('/movements')}>
             <ArrowLeftRight size={16} />
             <span>{t('header.movements')}</span>
-          </Link>
-        </li>
-        <li>
-          <Link href='/incomes' className={getLinkClasses('/incomes')}>
-            <TrendingUp size={16} />
-            <span>{t('header.incomes')}</span>
-          </Link>
-        </li>
-        <li>
-          <Link href='/expenses' className={getLinkClasses('/expenses')}>
-            <TrendingDown size={16} />
-            <span>{t('header.expenses')}</span>
           </Link>
         </li>
       </ul>
