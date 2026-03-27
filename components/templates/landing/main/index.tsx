@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
+import { Box } from '@/components/atoms/box'
+import { FlexBox } from '@/components/atoms/flex-box'
 import { Text } from '@/components/atoms/text'
 import { Title } from '@/components/atoms/title'
 import styles from '@/components/templates/landing/main/main.module.css'
@@ -9,23 +11,52 @@ export async function Main() {
   const t = await getTranslations(Namespace.Landing)
 
   return (
-    <main className={styles.main}>
-      <div className={styles.mainContainer}>
+    <FlexBox
+      variant='main'
+      alignItems='center'
+      justifyContent='center'
+      className={styles.main}
+    >
+      <Box variant='div' className={styles.mainContainer}>
         {/* LEFT SIDE */}
-        <div className={styles.mainContent}>
-          <section className={styles.imageContainer}>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='center'
+          justifyContent='center'
+          padding={12}
+        >
+          <FlexBox
+            variant='section'
+            alignItems='center'
+            justifyContent='center'
+            className={styles.imageContainer}
+          >
             <Image
               src='/img/features.svg'
               alt={t('main.features_illustration_alt')}
               fill
               priority
             />
-          </section>
-        </div>
+          </FlexBox>
+        </FlexBox>
 
         {/* RIGHT SIDE */}
-        <div className={styles.mainContent}>
-          <section className={styles.titleContainer}>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='center'
+          justifyContent='center'
+          padding={12}
+        >
+          <FlexBox
+            variant='section'
+            direction='column'
+            alignItems='start'
+            justifyContent='center'
+            gap={4}
+            className={styles.titleContainer}
+          >
             <Title
               variant='h2'
               typographySize='extraLarge4'
@@ -71,9 +102,9 @@ export async function Main() {
                 </Text>
               </li>
             </ul>
-          </section>
-        </div>
-      </div>
-    </main>
+          </FlexBox>
+        </FlexBox>
+      </Box>
+    </FlexBox>
   )
 }

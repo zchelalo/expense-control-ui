@@ -67,7 +67,7 @@ export async function signUpAction(
   }
 
   redirect({
-    href: '/movements',
+    href: '/accounts',
     locale,
   })
   return {

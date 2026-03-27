@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { forwardRef } from 'react'
 import { Box, type BoxProps } from '@/components/atoms/box'
-import styles from '@/components/atoms/flexbox/flex-box.module.css'
+import styles from '@/components/atoms/flex-box/flex-box.module.css'
 
 interface FlexBoxProps extends BoxProps {
   direction?: 'row' | 'column'
@@ -33,7 +33,7 @@ export const FlexBox = forwardRef<HTMLDivElement, FlexBoxProps>(
     },
     ref,
   ) => {
-    const flexBoxClassnames = clsx(
+    const flexBoxClassNames = clsx(
       styles.flexBox,
       styles[`flexDirection-${direction ?? 'row'}`],
       styles[`alignItems-${alignItems ?? 'start'}`],
@@ -47,7 +47,7 @@ export const FlexBox = forwardRef<HTMLDivElement, FlexBoxProps>(
       <Box
         ref={ref}
         variant={variant}
-        className={flexBoxClassnames}
+        className={flexBoxClassNames}
         {...props}
       />
     )

@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server'
+import { FlexBox } from '@/components/atoms/flex-box'
 import styles from '@/components/templates/dashboard/accounts/accounts.module.css'
 import { Search } from '@/components/templates/dashboard/accounts/search'
 import { Namespace } from '@/constants/common'
@@ -22,12 +23,6 @@ export async function Accounts({
   search = null,
 }: AccountsProps) {
   const t = await getTranslations(Namespace.Account)
-  console.log('Accounts component rendered with props:', {
-    limit,
-    afterCursor,
-    beforeCursor,
-    search,
-  })
   const accounts = await findAllUseCase.execute(
     Number(limit),
     afterCursor,
@@ -36,7 +31,14 @@ export async function Accounts({
   )
 
   return (
-    <div className={styles.container}>
+    <FlexBox
+      variant='div'
+      direction='column'
+      alignItems='start'
+      justifyContent='center'
+      padding={12}
+      gap={12}
+    >
       <Search
         translations={{
           searchLabel: t('search.label'),
@@ -45,6 +47,6 @@ export async function Accounts({
         }}
       />
       <pre>{JSON.stringify(accounts, null, 2)}</pre>
-    </div>
+    </FlexBox>
   )
 }

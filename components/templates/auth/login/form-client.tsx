@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useId } from 'react'
 import { Button } from '@/components/atoms/button'
+import { FlexBox } from '@/components/atoms/flex-box'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
 import { Text } from '@/components/atoms/text'
@@ -41,12 +42,24 @@ export function FormClient({ translations }: FormClientProps) {
   const passwordId = useId()
 
   return (
-    <div className={styles.main}>
+    <FlexBox
+      variant='div'
+      direction='column'
+      alignItems='center'
+      justifyContent='center'
+      className={styles.main}
+    >
       <form className={styles.form} action={formAction}>
         <Title variant='h1' typographySize='extraLarge'>
           {translations.loginTitle}
         </Title>
-        <div className={styles.formGroup}>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='stretch'
+          gap={2}
+          className={styles.formGroup}
+        >
           <Label htmlFor={emailId}>{translations.loginEmailLabel}</Label>
           <InputText
             id={emailId}
@@ -64,8 +77,14 @@ export function FormClient({ translations }: FormClientProps) {
               isErrorList
             />
           )}
-        </div>
-        <div className={styles.formGroup}>
+        </FlexBox>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='stretch'
+          gap={2}
+          className={styles.formGroup}
+        >
           <Label htmlFor={passwordId}>{translations.loginPasswordLabel}</Label>
           <InputText
             id={passwordId}
@@ -84,18 +103,24 @@ export function FormClient({ translations }: FormClientProps) {
               isErrorList
             />
           )}
-        </div>
-        <div className={styles.formGroup}>
+        </FlexBox>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='stretch'
+          gap={2}
+          className={styles.formGroup}
+        >
           <Button type='submit' disabled={pending}>
             {translations.loginSubmitButton}
           </Button>
-        </div>
+        </FlexBox>
         <Link href='/sign-up' className={styles.link}>
           <Text variant='span' typographySize='small'>
             {translations.loginNoAccountPrompt}
           </Text>
         </Link>
       </form>
-    </div>
+    </FlexBox>
   )
 }

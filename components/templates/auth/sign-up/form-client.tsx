@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useId } from 'react'
 import { Button } from '@/components/atoms/button'
+import { FlexBox } from '@/components/atoms/flex-box'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
 import { Text } from '@/components/atoms/text'
@@ -42,12 +43,24 @@ export function FormClient({ translations }: FormClientProps) {
   const confirmPasswordId = useId()
 
   return (
-    <div className={styles.main}>
+    <FlexBox
+      variant='div'
+      direction='column'
+      alignItems='center'
+      justifyContent='center'
+      className={styles.main}
+    >
       <form className={styles.form} action={formAction}>
         <Title variant='h1' typographySize='extraLarge'>
           {translations.signUpTitle}
         </Title>
-        <div className={styles.formGroup}>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='stretch'
+          gap={2}
+          className={styles.formGroup}
+        >
           <Label htmlFor={emailId}>{translations.signUpEmailLabel}</Label>
           <InputText
             id={emailId}
@@ -65,8 +78,14 @@ export function FormClient({ translations }: FormClientProps) {
               isErrorList
             />
           )}
-        </div>
-        <div className={styles.formGroup}>
+        </FlexBox>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='stretch'
+          gap={2}
+          className={styles.formGroup}
+        >
           <Label htmlFor={passwordId}>{translations.signUpPasswordLabel}</Label>
           <InputText
             id={passwordId}
@@ -85,8 +104,14 @@ export function FormClient({ translations }: FormClientProps) {
               isErrorList
             />
           )}
-        </div>
-        <div className={styles.formGroup}>
+        </FlexBox>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='stretch'
+          gap={2}
+          className={styles.formGroup}
+        >
           <Label htmlFor={confirmPasswordId}>
             {translations.signUpConfirmPasswordLabel}
           </Label>
@@ -108,18 +133,24 @@ export function FormClient({ translations }: FormClientProps) {
                 isErrorList
               />
             )}
-        </div>
-        <div className={styles.formGroup}>
+        </FlexBox>
+        <FlexBox
+          variant='div'
+          direction='column'
+          alignItems='stretch'
+          gap={2}
+          className={styles.formGroup}
+        >
           <Button type='submit' disabled={pending}>
             {translations.signUpSubmitButton}
           </Button>
-        </div>
+        </FlexBox>
         <Link href='/login' className={styles.link}>
           <Text variant='span' typographySize='small'>
             {translations.signUpHaveAccountPrompt}
           </Text>
         </Link>
       </form>
-    </div>
+    </FlexBox>
   )
 }
