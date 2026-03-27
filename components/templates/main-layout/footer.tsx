@@ -3,6 +3,7 @@
 import { ArrowLeftFromLine, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/atoms/button'
+import { FlexBox } from '@/components/atoms/flex-box'
 import { useAuth } from '@/components/infrastructure/providers/auth-provider'
 import styles from '@/components/templates/main-layout/main-layout.module.css'
 import { Theme } from '@/constants/common'
@@ -13,7 +14,13 @@ export function Footer() {
   const { isAuthenticated } = useAuth()
 
   return (
-    <div className={styles.footer}>
+    <FlexBox
+      variant='footer'
+      alignItems='center'
+      justifyContent='end'
+      gap={1}
+      className={styles.footer}
+    >
       {isAuthenticated && (
         <Button
           type='button'
@@ -34,6 +41,6 @@ export function Footer() {
       >
         {theme === Theme.Light ? <Moon size={16} /> : <Sun size={16} />}
       </Button>
-    </div>
+    </FlexBox>
   )
 }

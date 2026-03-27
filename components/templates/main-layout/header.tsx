@@ -3,6 +3,7 @@
 import { ArrowLeftRight, Wallet } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
+import { FlexBox } from '@/components/atoms/flex-box'
 import styles from '@/components/templates/main-layout/main-layout.module.css'
 import { Namespace } from '@/constants/common'
 import { Link, usePathname } from '@/i18n/navigation'
@@ -39,7 +40,14 @@ export function Header() {
   }
 
   return (
-    <header className={styles.header}>
+    <FlexBox
+      variant='header'
+      direction='column'
+      alignItems='center'
+      justifyContent='center'
+      padding={4}
+      className={styles.header}
+    >
       <ul className={scrolled ? styles.scrolled : ''}>
         <li>
           <Link href='/accounts' className={getLinkClasses('/accounts')}>
@@ -54,6 +62,6 @@ export function Header() {
           </Link>
         </li>
       </ul>
-    </header>
+    </FlexBox>
   )
 }
