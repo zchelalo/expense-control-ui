@@ -1,12 +1,7 @@
 .footer {
   width: 100%;
-
   background-color: var(--background-muted);
   box-shadow: var(--shadow-sm);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .footerContainer {
@@ -20,40 +15,7 @@
   gap: var(--spacing-6);
 }
 
-.footerContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  padding: var(--spacing-12);
-}
-
-.titleContainer {
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-
-  gap: var(--spacing-2);
-}
-
-.textContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-}
-
 .imageContainer {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   width: 100%;
   height: 100%;
 }
