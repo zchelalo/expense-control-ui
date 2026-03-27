@@ -64,6 +64,8 @@ export class AccountRepository implements AccountStore {
       )
     } catch (error) {
       if (error instanceof AccountError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
       throw new AccountError('network_error', (error as Error).message)
     }
   }
@@ -112,6 +114,8 @@ export class AccountRepository implements AccountStore {
       }
     } catch (error) {
       if (error instanceof AccountError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
       throw new AccountError('network_error', (error as Error).message)
     }
   }
@@ -137,6 +141,8 @@ export class AccountRepository implements AccountStore {
       )
     } catch (error) {
       if (error instanceof AccountError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
       throw new AccountError('network_error', (error as Error).message)
     }
   }
@@ -166,6 +172,8 @@ export class AccountRepository implements AccountStore {
       )
     } catch (error) {
       if (error instanceof AccountError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
       throw new AccountError('network_error', (error as Error).message)
     }
   }
@@ -191,6 +199,8 @@ export class AccountRepository implements AccountStore {
       }
     } catch (error) {
       if (error instanceof AccountError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
       throw new AccountError('network_error', (error as Error).message)
     }
   }

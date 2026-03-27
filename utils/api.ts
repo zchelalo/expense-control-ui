@@ -42,7 +42,6 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
         Cookie: cookieStore.toString(),
       }
     } catch (e) {
-      // Ignore if there is not cookie store
       logger.warn(
         'fetchWithAuth: No se pudieron obtener cookies del servidor. Esto es normal en build time.',
         e,
@@ -51,6 +50,7 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   }
 
   let response: Response
+
   try {
     response = await fetch(`${API_URL}${url}`, mergedOptions)
   } catch (e) {
@@ -61,54 +61,59 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     throw e
   }
 
-  // If status is 401, refresh token and retry once
+  // Handle 401: try refresh
   if (response.status === 401) {
+    let refreshResponse: Response
+
     try {
-      const refreshResponse = await fetch(`${API_URL}/v1/auth/refresh`, {
+      refreshResponse = await fetch(`${API_URL}/v1/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
-        headers: mergedOptions.headers, // Pass existing headers (including cookies)
+        headers: mergedOptions.headers,
       })
-
-      if (refreshResponse.ok) {
-        if (isServer) {
-          const setCookie = refreshResponse.headers.get('set-cookie')
-          if (setCookie) {
-            mergedOptions.headers = {
-              ...mergedOptions.headers,
-              Cookie: setCookie,
-            }
-          }
-        }
-        // Retry original request after successful refresh
-        return await fetch(`${API_URL}${url}`, mergedOptions)
-      } else {
-        // If refresh also fails, redirect to login
-        if (!isServer) {
-          toast.error(
-            'Su sesión ha expirado. Por favor, inicie sesión de nuevo.',
-          )
-        }
-
-        redirect({
-          href: '/login',
-          locale,
-        })
-      }
     } catch (e) {
-      logger.error(
-        'fetchWithAuth: Error crítico durante el refresh o redirección',
-        e,
-      )
+      logger.error('fetchWithAuth: Error durante refresh', e)
+
       if (!isServer) {
         toast.error('Error crítico de autenticación')
         window.location.href = '/login'
+        return response
       }
+
+      throw e
     }
+
+    if (refreshResponse.ok) {
+      // Update cookies in server context
+      if (isServer) {
+        const setCookie = refreshResponse.headers.get('set-cookie')
+        if (setCookie) {
+          mergedOptions.headers = {
+            ...mergedOptions.headers,
+            Cookie: setCookie,
+          }
+        }
+      }
+
+      // Retry original request
+      return await fetch(`${API_URL}${url}`, mergedOptions)
+    }
+
+    // If refresh failed: redirect / logout
+    if (!isServer) {
+      toast.error('Su sesión ha expirado. Por favor, inicie sesión de nuevo.')
+      window.location.href = '/login'
+      return response
+    }
+
+    redirect({
+      href: '/login',
+      locale,
+    })
   }
 
   if (!response.ok && !isServer) {
-    toast.error(`Error en la petición`)
+    toast.error('Error en la petición')
   }
 
   return response
