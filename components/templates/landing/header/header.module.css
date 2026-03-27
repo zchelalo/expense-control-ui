@@ -1,12 +1,7 @@
 .header {
   width: 100%;
-
   background-color: var(--background-muted);
   box-shadow: var(--shadow-sm);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .headerContainer {
@@ -20,49 +15,11 @@
   gap: var(--spacing-6);
 }
 
-.headerContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  padding: var(--spacing-12);
-}
-
 .titleContainer {
   width: 100%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-
-  gap: var(--spacing-2);
-}
-
-.textContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.buttonsContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-
-  gap: var(--spacing-4);
 }
 
 .imageContainer {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   width: 100%;
   height: 100%;
 }
