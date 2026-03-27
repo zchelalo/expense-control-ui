@@ -1,5 +1,8 @@
 import { getTranslations } from 'next-intl/server'
+import { Box } from '@/components/atoms/box'
 import { FlexBox } from '@/components/atoms/flex-box'
+import { Text } from '@/components/atoms/text'
+import { Card } from '@/components/molecules/card'
 import styles from '@/components/templates/dashboard/accounts/accounts.module.css'
 import { Search } from '@/components/templates/dashboard/accounts/search'
 import { Namespace } from '@/constants/common'
@@ -38,6 +41,7 @@ export async function Accounts({
       justifyContent='center'
       padding={12}
       gap={12}
+      className={styles.container}
     >
       <Search
         translations={{
@@ -46,7 +50,36 @@ export async function Accounts({
           searchSubmitButton: t('search.submit_button'),
         }}
       />
-      <pre>{JSON.stringify(accounts, null, 2)}</pre>
+      <Box variant='div' className={styles.accounts}>
+        {accounts.items.length > 0 &&
+          accounts.items.map((account) => (
+            <Card key={account.getId()}>
+              <FlexBox
+                variant='div'
+                alignItems='center'
+                justifyContent='spaceBetween'
+                gap={8}
+              >
+                <Text
+                  variant='span'
+                  typographySize='normal'
+                  typographyTextStyle='normal'
+                  typographyWeight='medium'
+                >
+                  {account.getName()}
+                </Text>
+                <Text
+                  variant='span'
+                  typographySize='normal'
+                  typographyTextStyle='normal'
+                  typographyWeight='medium'
+                >
+                  {account.getBalance()}
+                </Text>
+              </FlexBox>
+            </Card>
+          ))}
+      </Box>
     </FlexBox>
   )
 }

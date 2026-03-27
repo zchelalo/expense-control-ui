@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
 import { FlexBox } from '@/components/atoms/flex-box'
-import styles from '@/components/molecules/Card/Card.module.css'
+import styles from '@/components/molecules/card/card.module.css'
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   header?: ReactNode

@@ -1,0 +1,29 @@
+.card {
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-bg-alt);
+  padding: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
+  gap: var(--spacing-2);
+}
+
+.card.clickable {
+  cursor: pointer;
+}
+
+.card.clickable:hover {
+  box-shadow: var(--shadow-md);
+  transform: scale(1.02);
+}
+
+.header,
+.body,
+.footer {
+  width: 100%;
+}
+
+.body {
+  flex: 1;
+}

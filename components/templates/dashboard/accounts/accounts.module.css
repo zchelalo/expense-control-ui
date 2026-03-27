@@ -1,0 +1,10 @@
+.container {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.accounts {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3fr;
+}
