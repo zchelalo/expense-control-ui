@@ -10,7 +10,12 @@ type MainLayoutProps = {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <FlexBox variant='div' direction='column' className={styles.container}>
+    <FlexBox
+      variant='div'
+      direction='column'
+      alignItems='stretch'
+      className={styles.container}
+    >
       <Header />
       <FlexBox variant='main' padding={16} className={styles.main}>
         {children}

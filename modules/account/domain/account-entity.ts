@@ -25,24 +25,24 @@ export class AccountEntity {
     this.updatedAt = new UpdatedAtVO(updatedAt)
   }
 
-  getId(): string {
-    return this.id.getValue()
+  getId(): IdVO {
+    return this.id
   }
 
-  getName(): string {
-    return this.name.getValue()
+  getName(): NameVO {
+    return this.name
   }
 
-  getBalance(): number {
-    return this.balance.getValue()
+  getBalance(): BalanceVO {
+    return this.balance
   }
 
-  getCreatedAt(): string {
-    return this.createdAt.getValue()
+  getCreatedAt(): CreatedAtVO {
+    return this.createdAt
   }
 
-  getUpdatedAt(): string {
-    return this.updatedAt.getValue()
+  getUpdatedAt(): UpdatedAtVO {
+    return this.updatedAt
   }
 }
 

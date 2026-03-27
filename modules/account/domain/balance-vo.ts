@@ -8,4 +8,14 @@ export class BalanceVO {
   getValue(): number {
     return this.balance
   }
+
+  public toCurrency(
+    locale: string = 'es-MX',
+    currency: string = 'MXN',
+  ): string {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+    }).format(this.balance)
+  }
 }
