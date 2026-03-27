@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { getLocale } from 'next-intl/server'
 import { redirect } from '@/i18n/navigation'
 import { logger } from '@/utils/logger'
@@ -7,18 +7,19 @@ import { toast } from '@/utils/toast'
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 /**
+ * Extracts only name=value pairs from Set-Cookie headers for use in Cookie header.
+ */
+function parseSetCookieToCookie(setCookieHeaders: string[]): string {
+  return setCookieHeaders
+    .map((cookieStr) => {
+      const parts = cookieStr.split(';')
+      return parts[0] // The first part is always name=value
+    })
+    .join('; ')
+}
+
+/**
  * Wrapper around fetch that automatically includes credentials and handles 401 responses by attempting a token refresh.
- *
- * @param url - Relative URL of the API endpoint (e.g. '/v1/auth/refresh')
- * @param options - Fetch options (method, headers, body, etc.)
- * @returns - A Promise resolving to the Response object
- * @example
- * ```ts
- * const response = await fetchWithAuth('/v1/protected/resource', {
- *   method: 'GET',
- * })
- * const data = await response.json()
- * ```
  */
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const locale = await getLocale()
@@ -33,17 +34,41 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     },
   }
 
-  // Inject cookies in server context
+  // Inject headers in server context
   if (isServer) {
     try {
       const cookieStore = await cookies()
-      mergedOptions.headers = {
-        ...mergedOptions.headers,
-        Cookie: cookieStore.toString(),
+      const headerStore = await headers()
+
+      // Forward ALL cookies from the incoming request
+      const cookieString = cookieStore.toString()
+      if (cookieString) {
+        mergedOptions.headers = {
+          ...mergedOptions.headers,
+          Cookie: cookieString,
+        }
+      }
+
+      // Forward User-Agent and other potentially relevant headers for session validation
+      const userAgent = headerStore.get('user-agent')
+      if (userAgent) {
+        mergedOptions.headers = {
+          ...mergedOptions.headers,
+          'User-Agent': userAgent,
+        }
+      }
+
+      // Forward X-Forwarded-For if behind a proxy
+      const forwardedFor = headerStore.get('x-forwarded-for')
+      if (forwardedFor) {
+        mergedOptions.headers = {
+          ...mergedOptions.headers,
+          'X-Forwarded-For': forwardedFor,
+        }
       }
     } catch (e) {
       logger.warn(
-        'fetchWithAuth: No se pudieron obtener cookies del servidor. Esto es normal en build time.',
+        'fetchWithAuth: No se pudieron obtener headers/cookies del servidor. Esto es normal en build time.',
         e,
       )
     }
@@ -84,13 +109,14 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     }
 
     if (refreshResponse.ok) {
-      // Update cookies in server context
+      // Update cookies for the retry request
       if (isServer) {
-        const setCookie = refreshResponse.headers.get('set-cookie')
-        if (setCookie) {
+        const setCookieHeaders = refreshResponse.headers.getSetCookie()
+        if (setCookieHeaders.length > 0) {
+          const newCookies = parseSetCookieToCookie(setCookieHeaders)
           mergedOptions.headers = {
             ...mergedOptions.headers,
-            Cookie: setCookie,
+            Cookie: newCookies,
           }
         }
       }
