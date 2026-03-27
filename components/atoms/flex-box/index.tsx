@@ -13,9 +13,9 @@ interface FlexBoxProps extends BoxProps {
     | 'spaceBetween'
     | 'spaceAround'
     | 'spaceEvenly'
-  gap?: 0 | 1 | 2 | 3 | 4 | 8 | 8 | 10 | 12 | 16
-  padding?: 0 | 1 | 2 | 3 | 4 | 8 | 8 | 10 | 12 | 16
-  margin?: 0 | 1 | 2 | 3 | 4 | 8 | 8 | 10 | 12 | 16
+  gap?: 0 | 1 | 2 | 3 | 4 | 6 | 8 | 10 | 12 | 16
+  padding?: 0 | 1 | 2 | 3 | 4 | 6 | 8 | 10 | 12 | 16
+  margin?: 0 | 1 | 2 | 3 | 4 | 6 | 8 | 10 | 12 | 16
 }
 
 export const FlexBox = forwardRef<HTMLDivElement, FlexBoxProps>(
