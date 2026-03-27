@@ -58,7 +58,9 @@ async function forwardCookies(response: Response) {
     }
 
     for (const attr of parts) {
-      const [attrKey, attrValue] = attr.split('=')
+      const equalsIdx = attr.indexOf('=')
+      const attrKey = equalsIdx === -1 ? attr : attr.substring(0, equalsIdx)
+      const attrValue = equalsIdx === -1 ? '' : attr.substring(equalsIdx + 1)
       const lowerKey = attrKey.toLowerCase()
 
       switch (lowerKey) {
@@ -78,7 +80,7 @@ async function forwardCookies(response: Response) {
             samesite === 'strict' ||
             samesite === 'none'
           ) {
-            options.sameSite = samesite
+            options.sameSite = samesite as 'lax' | 'strict' | 'none'
           }
           break
         }

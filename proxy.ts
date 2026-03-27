@@ -23,12 +23,21 @@ export default async function middleware(request: NextRequest) {
 
   // Initial state
   const response = intlMiddleware(request)
-  let hasRefreshToken = request.cookies.has(Auth.RefreshToken)
-  let hasAccessToken = request.cookies.has(Auth.AccessToken)
+  let accessToken = request.cookies.get(Auth.AccessToken)?.value
+  let refreshToken = request.cookies.get(Auth.RefreshToken)?.value
 
-  // Silent Refresh: If we have refresh but no access, try to get a new one
-  if (hasRefreshToken && !hasAccessToken) {
-    const refreshToken = request.cookies.get(Auth.RefreshToken)?.value
+  // Auth Check
+  let isAuthenticated = !!accessToken || !!refreshToken
+  const isPublicPage = Object.values(PublicPages).includes(
+    pathnameWithoutLocale as PublicPages,
+  )
+  const isSharedPage = Object.values(SharedPages).includes(
+    pathnameWithoutLocale as SharedPages,
+  )
+  const isAllowedWithoutAuth = isPublicPage || isSharedPage
+
+  // Silent Refresh / Session Verification:
+  if (refreshToken && (!accessToken || isPublicPage)) {
     try {
       const refreshResponse = await fetch(`${API_URL}/v1/auth/refresh`, {
         method: 'POST',
@@ -50,34 +59,31 @@ export default async function middleware(request: NextRequest) {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
           })
-          // Update local state for subsequent checks in THIS execution
-          if (name === Auth.AccessToken) hasAccessToken = true
-          if (name === Auth.RefreshToken) hasRefreshToken = true
+          if (name === Auth.AccessToken) accessToken = value
+          if (name === Auth.RefreshToken) refreshToken = value
         }
-      } else if (
-        refreshResponse.status === 401 ||
-        refreshResponse.status === 400
-      ) {
-        // Token is definitively dead, clear it to avoid loops
+        isAuthenticated = !!accessToken || !!refreshToken
+      } else {
+        // Token is definitively dead, clear it and STAY on the public page; If we were going to a private page, the logic below will redirect to login.
+        const loginUrl = new URL(`/${locale}/login`, request.url)
+        const redirectResponse = NextResponse.redirect(loginUrl)
+        redirectResponse.cookies.delete(Auth.RefreshToken)
+        redirectResponse.cookies.delete(Auth.AccessToken)
+
+        // Only redirect if we were attempting to access a PRIVATE page
+        if (!isAllowedWithoutAuth) {
+          return redirectResponse
+        }
+
+        // If already on a public page, just clear cookies in the current response and stay here
         response.cookies.delete(Auth.RefreshToken)
         response.cookies.delete(Auth.AccessToken)
-        hasRefreshToken = false
-        hasAccessToken = false
+        isAuthenticated = false
       }
     } catch (error) {
       console.error('Middleware Refresh Error:', error)
     }
   }
-
-  // Final Auth Check
-  const isAuthenticated = hasRefreshToken || hasAccessToken
-  const isPublicPage = Object.values(PublicPages).includes(
-    pathnameWithoutLocale as PublicPages,
-  )
-  const isSharedPage = Object.values(SharedPages).includes(
-    pathnameWithoutLocale as SharedPages,
-  )
-  const isAllowedWithoutAuth = isPublicPage || isSharedPage
 
   // Redirect to login if private and not auth
   if (!isAuthenticated && !isAllowedWithoutAuth) {
@@ -85,7 +91,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // Redirect to dashboard if public and auth
+  // Redirect to dashboard if public and authenticated
   if (isAuthenticated && isPublicPage) {
     const dashboardUrl = new URL(`/${locale}/accounts`, request.url)
     return NextResponse.redirect(dashboardUrl)
