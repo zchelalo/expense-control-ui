@@ -3,6 +3,9 @@ type PortError =
   | 'account_not_found_error'
   | 'account_update_error'
   | 'account_delete_error'
+  | 'unknown_error'
+  | 'too_many_requests_error'
+  | 'network_error'
 
 export class AccountError extends Error {
   public readonly code: PortError

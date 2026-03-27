@@ -14,13 +14,13 @@ export class AccountEntity {
   constructor(
     id: string,
     name: string,
-    balance: string,
+    balance: number,
     createdAt: string,
     updatedAt: string,
   ) {
     this.id = new IdVO(id)
     this.name = new NameVO(name)
-    this.balance = new BalanceVO(parseFloat(balance))
+    this.balance = new BalanceVO(balance)
     this.createdAt = new CreatedAtVO(createdAt)
     this.updatedAt = new UpdatedAtVO(updatedAt)
   }
@@ -44,4 +44,10 @@ export class AccountEntity {
   getUpdatedAt(): string {
     return this.updatedAt.getValue()
   }
+}
+
+export interface PaginatedResult {
+  items: AccountEntity[]
+  nextCursor: string | null
+  prevCursor: string | null
 }

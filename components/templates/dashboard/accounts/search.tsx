@@ -35,22 +35,24 @@ export function Search({ translations }: SearchProps) {
 
   const searchId = useId()
 
-  return (
-    <form className={styles.form} action={formAction}>
-      <div className={styles.formGroup}>
-        <Label htmlFor={searchId}>{translations.searchLabel}</Label>
-        <InputText
-          id={searchId}
-          name='search'
-          placeholder={translations.searchPlaceholder}
-          defaultValue={state.values.search}
-        />
-      </div>
-      <div className={styles.formGroup}>
-        <Button type='submit' disabled={pending}>
-          {translations.searchSubmitButton}
-        </Button>
-      </div>
-    </form>
-  )
+  // return (
+  //   <form className={styles.form} action={formAction}>
+  //     <div className={styles.formGroup}>
+  //       <Label htmlFor={searchId}>{translations.searchLabel}</Label>
+  //       <InputText
+  //         id={searchId}
+  //         name='search'
+  //         placeholder={translations.searchPlaceholder}
+  //         defaultValue={state.values.search}
+  //       />
+  //     </div>
+  //     <div className={styles.formGroup}>
+  //       <Button type='submit' disabled={pending}>
+  //         {translations.searchSubmitButton}
+  //       </Button>
+  //     </div>
+  //   </form>
+  // )
+
+  return <div>Search Component</div>
 }
