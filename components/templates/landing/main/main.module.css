@@ -50,8 +50,7 @@
     align-items: stretch;
   }
 
-  .titleContainer,
-  .textContainer {
+  .titleContainer {
     align-items: flex-start;
   }
 
