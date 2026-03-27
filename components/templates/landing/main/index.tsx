@@ -25,6 +25,7 @@ export async function Main() {
           alignItems='center'
           justifyContent='center'
           padding={12}
+          className={styles.mainContent}
         >
           <FlexBox
             variant='section'
@@ -48,6 +49,7 @@ export async function Main() {
           alignItems='center'
           justifyContent='center'
           padding={12}
+          className={styles.mainContent}
         >
           <FlexBox
             variant='section'
