@@ -22,6 +22,12 @@ export async function Accounts({
   search = null,
 }: AccountsProps) {
   const t = await getTranslations(Namespace.Account)
+  console.log('Accounts component rendered with props:', {
+    limit,
+    afterCursor,
+    beforeCursor,
+    search,
+  })
   const accounts = await findAllUseCase.execute(
     Number(limit),
     afterCursor,

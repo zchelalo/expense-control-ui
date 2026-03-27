@@ -6,6 +6,27 @@ export const generateMetadata = createGenerateMetadata({
   namespace: Namespace.Common,
 })
 
-export default async function AccountsPage() {
-  return <Accounts />
+type AccountsPageProps = {
+  searchParams?: Promise<{
+    limit?: string
+    afterCursor?: string
+    beforeCursor?: string
+    search?: string
+  }>
+}
+
+export default async function AccountsPage({
+  searchParams,
+}: AccountsPageProps) {
+  const params = (await searchParams) ?? {}
+  const { limit, afterCursor, beforeCursor, search } = params
+
+  return (
+    <Accounts
+      limit={limit}
+      afterCursor={afterCursor}
+      beforeCursor={beforeCursor}
+      search={search}
+    />
+  )
 }
