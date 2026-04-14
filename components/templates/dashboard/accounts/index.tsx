@@ -8,6 +8,7 @@ import styles from '@/components/templates/dashboard/accounts/accounts.module.cs
 import { Search } from '@/components/templates/dashboard/accounts/search'
 import { type Language, Namespace } from '@/constants/common'
 import { Link } from '@/i18n/navigation'
+import { buildAccountsSearchParams } from '@/modules/account/adapters/in/query-params'
 import { AccountRepository } from '@/modules/account/adapters/out/account-repository'
 import { FindAllUseCase } from '@/modules/account/application/use-cases/find-all'
 import { getCurrencyFromLanguage } from '@/utils/currency'
@@ -23,7 +24,7 @@ type AccountsProps = {
 }
 
 export async function Accounts({
-  limit = '10',
+  limit = '3',
   afterCursor = null,
   beforeCursor = null,
   search = null,
@@ -36,6 +37,20 @@ export async function Accounts({
     beforeCursor,
     search,
   )
+  const previousHref = accounts.prevCursor
+    ? `/accounts?${buildAccountsSearchParams({
+        limit,
+        beforeCursor: accounts.prevCursor,
+        search,
+      }).toString()}`
+    : null
+  const nextHref = accounts.nextCursor
+    ? `/accounts?${buildAccountsSearchParams({
+        limit,
+        afterCursor: accounts.nextCursor,
+        search,
+      }).toString()}`
+    : null
 
   return (
     <FlexBox
@@ -52,6 +67,8 @@ export async function Accounts({
           searchPlaceholder: t('search.placeholder'),
           searchSubmitButton: t('search.submit_button'),
         }}
+        search={search}
+        limit={limit}
       />
       <Box variant='div' className={styles.accounts}>
         {accounts.items.length > 0 &&
@@ -100,7 +117,33 @@ export async function Accounts({
               </Card>
             </Link>
           ))}
+        {accounts.items.length === 0 && <Text variant='p'>{t('empty')}</Text>}
       </Box>
+      <FlexBox
+        variant='div'
+        alignItems='center'
+        justifyContent='spaceBetween'
+        className={styles.pagination}
+      >
+        {previousHref ? (
+          <Link href={previousHref} className={styles.paginationLink}>
+            {t('pagination.previous')}
+          </Link>
+        ) : (
+          <Text variant='span' className={styles.paginationLinkDisabled}>
+            {t('pagination.previous')}
+          </Text>
+        )}
+        {nextHref ? (
+          <Link href={nextHref} className={styles.paginationLink}>
+            {t('pagination.next')}
+          </Link>
+        ) : (
+          <Text variant='span' className={styles.paginationLinkDisabled}>
+            {t('pagination.next')}
+          </Text>
+        )}
+      </FlexBox>
     </FlexBox>
   )
 }

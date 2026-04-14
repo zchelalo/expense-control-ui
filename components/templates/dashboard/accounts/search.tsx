@@ -1,58 +1,36 @@
 'use client'
 
-import { useActionState, useEffect, useId } from 'react'
+import { useId } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
 import styles from '@/components/templates/dashboard/accounts/accounts.module.css'
-import {
-  type SearchFormState,
-  searchAction,
-} from '@/modules/account/adapters/in/search-action'
-import { toast } from '@/utils/toast'
+import { normalizeAccountSearch } from '@/modules/account/adapters/in/query-params'
 
 type SearchProps = {
   translations: Record<string, string>
+  search?: string | null
+  limit?: string
 }
 
-const initialState: SearchFormState = {
-  globalError: null,
-  values: { search: '' },
-  data: null,
-}
-
-export function Search({ translations }: SearchProps) {
-  // const [state, formAction, pending] = useActionState<
-  //   SearchFormState,
-  //   FormData
-  // >(searchAction, initialState)
-
-  // useEffect(() => {
-  //   if (state.globalError) {
-  //     toast.error(state.globalError.message)
-  //   }
-  // }, [state.globalError])
-
+export function Search({ translations, search, limit = '10' }: SearchProps) {
   const searchId = useId()
 
-  // return (
-  //   <form className={styles.form} action={formAction}>
-  //     <div className={styles.formGroup}>
-  //       <Label htmlFor={searchId}>{translations.searchLabel}</Label>
-  //       <InputText
-  //         id={searchId}
-  //         name='search'
-  //         placeholder={translations.searchPlaceholder}
-  //         defaultValue={state.values.search}
-  //       />
-  //     </div>
-  //     <div className={styles.formGroup}>
-  //       <Button type='submit' disabled={pending}>
-  //         {translations.searchSubmitButton}
-  //       </Button>
-  //     </div>
-  //   </form>
-  // )
-
-  return <div>Search Component</div>
+  return (
+    <form className={styles.form} method='GET'>
+      <input type='hidden' name='limit' value={limit} />
+      <div className={styles.formGroup}>
+        <Label htmlFor={searchId}>{translations.searchLabel}</Label>
+        <InputText
+          id={searchId}
+          name='search'
+          placeholder={translations.searchPlaceholder}
+          defaultValue={normalizeAccountSearch(search)}
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <Button type='submit'>{translations.searchSubmitButton}</Button>
+      </div>
+    </form>
+  )
 }

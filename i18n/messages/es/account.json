@@ -3,5 +3,10 @@
     "label": "Buscar",
     "placeholder": "Buscar cuentas...",
     "submit_button": "Buscar"
+  },
+  "empty": "No hay cuentas para mostrar.",
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente"
   }
 }

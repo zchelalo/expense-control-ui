@@ -2,6 +2,23 @@
   width: 100%;
 }
 
+.form {
+  width: 100%;
+  display: flex;
+  align-items: end;
+  gap: var(--spacing-3);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.formGroup:first-child {
+  flex: 1;
+}
+
 .accounts {
   width: 100%;
   display: grid;
@@ -21,4 +38,48 @@
 .accountContent {
   flex-grow: 1;
   padding-right: var(--spacing-4);
+}
+
+.pagination {
+  width: 100%;
+}
+
+.paginationLink,
+.paginationLinkDisabled {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7rem;
+  min-height: 2.5rem;
+  padding: 0 var(--spacing-4);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.paginationLink:hover {
+  background-color: var(--background-hover);
+}
+
+.paginationLinkDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .accounts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .accounts {
+    grid-template-columns: 1fr;
+  }
 }
