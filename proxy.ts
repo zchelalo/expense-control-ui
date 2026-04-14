@@ -42,7 +42,7 @@ export default async function middleware(request: NextRequest) {
       const refreshResponse = await fetch(`${API_URL}/v1/auth/refresh`, {
         method: 'POST',
         headers: {
-          Cookie: `${Auth.RefreshToken}=${refreshToken}`,
+          Cookie: `${Auth.RefreshToken}=${refreshToken}; ${Auth.AccessToken}=${accessToken}`,
           'User-Agent': request.headers.get('user-agent') || '',
         },
       })
