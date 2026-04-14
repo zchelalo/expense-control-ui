@@ -7,6 +7,71 @@ import { routing } from '@/i18n/routing'
 const intlMiddleware = createMiddleware(routing)
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+function applyResponseCookies(
+  response: NextResponse,
+  setCookieHeaders: string[],
+): Record<string, string> {
+  const updatedCookies: Record<string, string> = {}
+
+  for (const cookieStr of setCookieHeaders) {
+    const parts = cookieStr.split(';').map((part) => part.trim())
+    const nameValue = parts.shift()
+    if (!nameValue) continue
+
+    const separatorIndex = nameValue.indexOf('=')
+    if (separatorIndex === -1) continue
+
+    const name = nameValue.slice(0, separatorIndex)
+    const value = nameValue.slice(separatorIndex + 1)
+    updatedCookies[name] = value
+
+    const options: Parameters<typeof response.cookies.set>[2] = {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    }
+
+    for (const attr of parts) {
+      const attrSeparatorIndex = attr.indexOf('=')
+      const attrKey =
+        attrSeparatorIndex === -1 ? attr : attr.slice(0, attrSeparatorIndex)
+      const attrValue =
+        attrSeparatorIndex === -1 ? '' : attr.slice(attrSeparatorIndex + 1)
+
+      switch (attrKey.toLowerCase()) {
+        case 'httponly':
+          options.httpOnly = true
+          break
+        case 'secure':
+          options.secure = true
+          break
+        case 'samesite': {
+          const sameSite = attrValue.toLowerCase()
+          if (
+            sameSite === 'lax' ||
+            sameSite === 'strict' ||
+            sameSite === 'none'
+          ) {
+            options.sameSite = sameSite
+          }
+          break
+        }
+        case 'expires':
+          options.expires = new Date(attrValue)
+          break
+        case 'max-age':
+          options.maxAge = Number.parseInt(attrValue, 10)
+          break
+      }
+    }
+
+    response.cookies.set(name, value, options)
+  }
+
+  return updatedCookies
+}
+
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const locale = pathname.split('/')[1] || Language.Es
@@ -48,20 +113,12 @@ export default async function middleware(request: NextRequest) {
       })
 
       if (refreshResponse.ok) {
-        const setCookieHeaders = refreshResponse.headers.getSetCookie()
-        for (const cookieStr of setCookieHeaders) {
-          const parts = cookieStr.split(';').map((p) => p.trim())
-          const [nameValue] = parts
-          const [name, value] = nameValue.split('=')
-          response.cookies.set(name, value, {
-            path: '/',
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-          })
-          if (name === Auth.AccessToken) accessToken = value
-          if (name === Auth.RefreshToken) refreshToken = value
-        }
+        const updatedCookies = applyResponseCookies(
+          response,
+          refreshResponse.headers.getSetCookie(),
+        )
+        accessToken = updatedCookies[Auth.AccessToken] ?? accessToken
+        refreshToken = updatedCookies[Auth.RefreshToken] ?? refreshToken
         isAuthenticated = !!accessToken || !!refreshToken
       } else {
         // Token is definitively dead, clear it and STAY on the public page; If we were going to a private page, the logic below will redirect to login.
