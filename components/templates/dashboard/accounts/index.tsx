@@ -1,6 +1,7 @@
-import { ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { Box } from '@/components/atoms/box'
+import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { Text } from '@/components/atoms/text'
 import { Card } from '@/components/molecules/card'
@@ -8,7 +9,11 @@ import styles from '@/components/templates/dashboard/accounts/accounts.module.cs
 import { Search } from '@/components/templates/dashboard/accounts/search'
 import { type Language, Namespace } from '@/constants/common'
 import { Link } from '@/i18n/navigation'
-import { buildAccountsSearchParams } from '@/modules/account/adapters/in/query-params'
+import {
+  buildAccountsSearchParams,
+  parseCursorStack,
+  stringifyCursorStack,
+} from '@/modules/account/adapters/in/query-params'
 import { AccountRepository } from '@/modules/account/adapters/out/account-repository'
 import { FindAllUseCase } from '@/modules/account/application/use-cases/find-all'
 import { getCurrencyFromLanguage } from '@/utils/currency'
@@ -21,6 +26,7 @@ type AccountsProps = {
   afterCursor?: string | null
   beforeCursor?: string | null
   search?: string | null
+  cursorStack?: string | null
 }
 
 export async function Accounts({
@@ -28,27 +34,40 @@ export async function Accounts({
   afterCursor = null,
   beforeCursor = null,
   search = null,
+  cursorStack = null,
 }: AccountsProps) {
   const locale = await getLocale()
   const t = await getTranslations(Namespace.Account)
+  const currentCursorStack = parseCursorStack(cursorStack)
   const accounts = await findAllUseCase.execute(
     Number(limit),
     afterCursor,
     beforeCursor,
     search,
   )
-  const previousHref = accounts.prevCursor
-    ? `/accounts?${buildAccountsSearchParams({
-        limit,
-        beforeCursor: accounts.prevCursor,
-        search,
-      }).toString()}`
+  const previousCursorStack = currentCursorStack.slice(0, -1)
+  const previousAfterCursor =
+    previousCursorStack.length > 0
+      ? previousCursorStack[previousCursorStack.length - 1]
+      : null
+  const previousHref =
+    currentCursorStack.length > 0
+      ? `/accounts?${buildAccountsSearchParams({
+          limit,
+          afterCursor: previousAfterCursor,
+          search,
+          cursorStack: stringifyCursorStack(previousCursorStack),
+        }).toString()}`
+      : null
+  const nextCursorStack = accounts.nextCursor
+    ? [...currentCursorStack, accounts.nextCursor]
     : null
   const nextHref = accounts.nextCursor
     ? `/accounts?${buildAccountsSearchParams({
         limit,
         afterCursor: accounts.nextCursor,
         search,
+        cursorStack: stringifyCursorStack(nextCursorStack ?? []),
       }).toString()}`
     : null
 
@@ -122,26 +141,41 @@ export async function Accounts({
       <FlexBox
         variant='div'
         alignItems='center'
-        justifyContent='spaceBetween'
+        justifyContent='end'
+        gap={2}
         className={styles.pagination}
       >
         {previousHref ? (
-          <Link href={previousHref} className={styles.paginationLink}>
-            {t('pagination.previous')}
+          <Link href={previousHref}>
+            <Button type='button' className={styles['pagination-button']}>
+              <ChevronLeft size={18} />
+            </Button>
           </Link>
         ) : (
-          <Text variant='span' className={styles.paginationLinkDisabled}>
-            {t('pagination.previous')}
-          </Text>
+          <Button
+            type='button'
+            appearance='outlined'
+            disabled
+            className={styles['pagination-button']}
+          >
+            <ChevronLeft size={18} />
+          </Button>
         )}
         {nextHref ? (
-          <Link href={nextHref} className={styles.paginationLink}>
-            {t('pagination.next')}
+          <Link href={nextHref}>
+            <Button type='button' className={styles['pagination-button']}>
+              <ChevronRight size={18} />
+            </Button>
           </Link>
         ) : (
-          <Text variant='span' className={styles.paginationLinkDisabled}>
-            {t('pagination.next')}
-          </Text>
+          <Button
+            type='button'
+            appearance='outlined'
+            disabled
+            className={styles['pagination-button']}
+          >
+            <ChevronRight size={18} />
+          </Button>
         )}
       </FlexBox>
     </FlexBox>

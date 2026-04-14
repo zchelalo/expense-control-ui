@@ -12,6 +12,7 @@ type AccountsPageProps = {
     afterCursor?: string
     beforeCursor?: string
     search?: string
+    cursorStack?: string
   }>
 }
 
@@ -19,7 +20,7 @@ export default async function AccountsPage({
   searchParams,
 }: AccountsPageProps) {
   const params = (await searchParams) ?? {}
-  const { limit, afterCursor, beforeCursor, search } = params
+  const { limit, afterCursor, beforeCursor, search, cursorStack } = params
 
   return (
     <Accounts
@@ -27,6 +28,7 @@ export default async function AccountsPage({
       afterCursor={afterCursor}
       beforeCursor={beforeCursor}
       search={search}
+      cursorStack={cursorStack}
     />
   )
 }

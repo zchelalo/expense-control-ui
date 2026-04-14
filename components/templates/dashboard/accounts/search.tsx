@@ -1,5 +1,6 @@
 'use client'
 
+import { SearchIcon } from 'lucide-react'
 import { useId } from 'react'
 import { Button } from '@/components/atoms/button'
 import { InputText } from '@/components/atoms/input-text'
@@ -29,7 +30,9 @@ export function Search({ translations, search, limit = '10' }: SearchProps) {
         />
       </div>
       <div className={styles.formGroup}>
-        <Button type='submit'>{translations.searchSubmitButton}</Button>
+        <Button type='submit' className={styles.searchButton}>
+          <SearchIcon size={18} />
+        </Button>
       </div>
     </form>
   )

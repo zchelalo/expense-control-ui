@@ -56,8 +56,8 @@
 }
 
 .link:not(.scrolled):hover {
-  background-color: var(--foreground-hover);
-  color: var(--background-hover);
+  background-color: var(--primary-hover);
+  color: var(--primary-foreground);
 }
 
 .link.active {
@@ -65,8 +65,8 @@
 }
 
 .link.active:not(.scrolled) {
-  background-color: var(--foreground-hover);
-  color: var(--background-hover);
+  background-color: var(--primary-hover);
+  color: var(--primary-foreground);
 }
 
 .link.active.scrolled {
