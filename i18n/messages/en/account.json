@@ -4,9 +4,5 @@
     "placeholder": "Search accounts...",
     "submit_button": "Search"
   },
-  "empty": "There are no accounts to display.",
-  "pagination": {
-    "previous": "Previous",
-    "next": "Next"
-  }
+  "empty": "There are no accounts to display."
 }

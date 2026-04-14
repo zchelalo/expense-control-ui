@@ -30,7 +30,7 @@ type AccountsProps = {
 }
 
 export async function Accounts({
-  limit = '3',
+  limit = '12',
   afterCursor = null,
   beforeCursor = null,
   search = null,
