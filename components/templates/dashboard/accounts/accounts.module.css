@@ -23,6 +23,8 @@
 .account {
   justify-content: space-between;
   transition: all var(--transition-fast);
+
+  height: 100%;
 }
 
 .account:hover {
