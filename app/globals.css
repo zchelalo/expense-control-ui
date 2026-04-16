@@ -104,10 +104,10 @@
 
 html.dark {
   /* Base */
-  --background: #0b0b0f;
-  --background-muted: #141418;
-  --background-hover: #1b1b20;
-  --background-active: #23232a;
+  --background: #15151d;
+  --background-muted: #24242c;
+  --background-hover: #2a2a33;
+  --background-active: #34343f;
 
   --foreground: #ededed;
   --foreground-muted: #a1a1aa;
