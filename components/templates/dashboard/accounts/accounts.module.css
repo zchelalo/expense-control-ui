@@ -9,10 +9,6 @@
   gap: var(--spacing-3);
 }
 
-.formGroup:first-child {
-  flex: 1;
-}
-
 .searchButton {
   padding: var(--spacing-2);
 }
@@ -55,6 +51,15 @@
 @media (max-width: 768px) {
   .form {
     align-items: stretch;
+  }
+
+  .formGroup:first-of-type {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .searchButton {
+    flex-shrink: 0;
   }
 
   .accounts {

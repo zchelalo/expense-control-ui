@@ -20,7 +20,12 @@ export function Search({ translations, search, limit = '10' }: SearchProps) {
   return (
     <form className={styles.form} method='GET'>
       <input type='hidden' name='limit' value={limit} />
-      <FlexBox direction='column' gap={2} className={styles.formGroup}>
+      <FlexBox
+        direction='column'
+        alignItems='stretch'
+        gap={2}
+        className={styles.formGroup}
+      >
         <InputText
           id={searchId}
           name='search'
@@ -28,7 +33,12 @@ export function Search({ translations, search, limit = '10' }: SearchProps) {
           defaultValue={normalizeAccountSearch(search)}
         />
       </FlexBox>
-      <FlexBox direction='column' gap={2} className={styles.formGroup}>
+      <FlexBox
+        direction='column'
+        alignItems='stretch'
+        gap={2}
+        className={styles.formGroup}
+      >
         <Button type='submit' className={styles.searchButton}>
           <SearchIcon size={18} />
         </Button>
