@@ -1,11 +1,14 @@
-import type { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies'
-import { cookies } from 'next/headers'
 import type { LoginCredentialsEntity } from '@/modules/auth/domain/login-credentials-entity'
 import type { SignUpCredentialsEntity } from '@/modules/auth/domain/signup-credentials-entity'
 import type { AuthStore } from '@/modules/auth/ports/auth-store'
 import { AuthError } from '@/modules/auth/ports/errors'
 import { fetchWithAuth } from '@/utils/api'
+import { extractBackendSessionFromResponse } from '@/utils/backend-auth'
 import { type ErrorResponse, parseApiError } from '@/utils/parse'
+import { getApiUrl } from '@/utils/server-config'
+import { clearAppSession, writeAppSession } from '@/utils/session/server'
+
+const apiUrl = getApiUrl()
 
 function mapToAuthError(
   status: number,
@@ -30,98 +33,35 @@ function mapToAuthError(
   throw new AuthError('unknown_error', error?.message)
 }
 
-/**
- * Utility to forward cookies from backend response to Next.js cookie store.
- */
-async function forwardCookies(response: Response) {
-  const setCookieHeaders = response.headers.getSetCookie()
-  if (setCookieHeaders.length === 0) return
-
-  const cookieStore = await cookies()
-
-  for (const cookieStr of setCookieHeaders) {
-    const parts = cookieStr.split(';').map((p) => p.trim())
-    const nameValue = parts.shift()
-    if (!nameValue) continue
-
-    const equalsIndex = nameValue.indexOf('=')
-    if (equalsIndex === -1) continue
-
-    const name = nameValue.substring(0, equalsIndex)
-    const value = nameValue.substring(equalsIndex + 1)
-
-    const options: Partial<ResponseCookie> = {
-      path: '/', // Always force root path for frontend access
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    }
-
-    for (const attr of parts) {
-      const equalsIdx = attr.indexOf('=')
-      const attrKey = equalsIdx === -1 ? attr : attr.substring(0, equalsIdx)
-      const attrValue = equalsIdx === -1 ? '' : attr.substring(equalsIdx + 1)
-      const lowerKey = attrKey.toLowerCase()
-
-      switch (lowerKey) {
-        case 'httponly':
-          options.httpOnly = true
-          break
-        case 'secure':
-          options.secure = true
-          break
-        case 'path':
-          // Ignore the backend path and use '/'
-          break
-        case 'samesite': {
-          const samesite = attrValue?.toLowerCase()
-          if (
-            samesite === 'lax' ||
-            samesite === 'strict' ||
-            samesite === 'none'
-          ) {
-            options.sameSite = samesite as 'lax' | 'strict' | 'none'
-          }
-          break
-        }
-        case 'expires':
-          options.expires = new Date(attrValue).getTime()
-          break
-        case 'max-age':
-          options.maxAge = Number.parseInt(attrValue, 10)
-          break
-      }
-    }
-
-    cookieStore.set(name, value, options)
-  }
-}
-
 export class AuthRepository implements AuthStore {
   async login(loginCredentials: LoginCredentialsEntity): Promise<void> {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: loginCredentials.getEmail(),
-            password: loginCredentials.getPassword(),
-          }),
-          credentials: 'include',
-          cache: 'no-store',
+      const response = await fetch(`${apiUrl}/v1/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+        body: JSON.stringify({
+          email: loginCredentials.getEmail(),
+          password: loginCredentials.getPassword(),
+        }),
+        credentials: 'include',
+        cache: 'no-store',
+      })
 
       if (!response.ok) {
         const error = await parseApiError(response)
         mapToAuthError(response.status, error)
       }
 
-      await forwardCookies(response)
+      const session = extractBackendSessionFromResponse(response)
+
+      if (!session || !(await writeAppSession(session))) {
+        throw new AuthError(
+          'auth_session_error',
+          'The backend response did not produce a valid local session.',
+        )
+      }
     } catch (error) {
       if (error instanceof AuthError) throw error
       throw new AuthError('network_error', (error as Error).message)
@@ -130,28 +70,32 @@ export class AuthRepository implements AuthStore {
 
   async signUp(signUpCredentials: SignUpCredentialsEntity): Promise<void> {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/register`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: signUpCredentials.getEmail(),
-            password: signUpCredentials.getPassword(),
-          }),
-          credentials: 'include',
-          cache: 'no-store',
+      const response = await fetch(`${apiUrl}/v1/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+        body: JSON.stringify({
+          email: signUpCredentials.getEmail(),
+          password: signUpCredentials.getPassword(),
+        }),
+        credentials: 'include',
+        cache: 'no-store',
+      })
 
       if (!response.ok) {
         const error = await parseApiError(response)
         mapToAuthError(response.status, error)
       }
 
-      await forwardCookies(response)
+      const session = extractBackendSessionFromResponse(response)
+
+      if (!session || !(await writeAppSession(session))) {
+        throw new AuthError(
+          'auth_session_error',
+          'The backend response did not produce a valid local session.',
+        )
+      }
     } catch (error) {
       if (error instanceof AuthError) throw error
       throw new AuthError('network_error', (error as Error).message)
@@ -163,21 +107,18 @@ export class AuthRepository implements AuthStore {
       const response = await fetchWithAuth('/v1/auth/logout', {
         method: 'POST',
         cache: 'no-store',
+        redirectOnAuthFailure: false,
       })
 
-      if (!response.ok) {
+      if (!response.ok && response.status !== 401) {
         const error = await parseApiError(response)
         mapToAuthError(response.status, error)
-      }
-
-      // Clear cookies on logout if needed
-      const setCookieHeaders = response.headers.getSetCookie()
-      if (setCookieHeaders.length > 0) {
-        await forwardCookies(response)
       }
     } catch (error) {
       if (error instanceof AuthError) throw error
       throw new AuthError('network_error', (error as Error).message)
+    } finally {
+      await clearAppSession()
     }
   }
 
@@ -192,8 +133,6 @@ export class AuthRepository implements AuthStore {
         const error = await parseApiError(response)
         mapToAuthError(response.status, error)
       }
-
-      await forwardCookies(response)
     } catch (error) {
       if (error instanceof AuthError) throw error
       throw new AuthError('network_error', (error as Error).message)

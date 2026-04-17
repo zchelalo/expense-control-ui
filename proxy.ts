@@ -1,98 +1,215 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
-import { Auth, PublicPages, SharedPages } from '@/constants/auth'
+import { PublicPages, SharedPages } from '@/constants/auth'
 import { Language } from '@/constants/common'
 import { routing } from '@/i18n/routing'
+import { extractBackendSessionFromResponse } from '@/utils/backend-auth'
+import {
+  type AppSession,
+  buildBackendCookieHeader,
+  decodeSessionCookie,
+  encodeSessionCookie,
+  getSessionCookieName,
+  hasRecoverableSession,
+  isAuthenticatedSession,
+  shouldRefreshAccessToken,
+} from '@/utils/session/shared'
 
 const intlMiddleware = createMiddleware(routing)
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+const apiUrl = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL
+const refreshRequests = new Map<string, Promise<AppSession | null>>()
 
-function applyResponseCookies(
-  response: NextResponse,
-  setCookieHeaders: string[],
-): Record<string, string> {
-  const updatedCookies: Record<string, string> = {}
+function clearSessionCookie(response: NextResponse) {
+  response.cookies.delete(getSessionCookieName())
+}
 
-  for (const cookieStr of setCookieHeaders) {
-    const parts = cookieStr.split(';').map((part) => part.trim())
-    const nameValue = parts.shift()
-    if (!nameValue) continue
+function redirectToLogin(request: NextRequest, locale: string) {
+  const loginUrl = new URL(`/${locale}/login`, request.url)
+  const redirectResponse = NextResponse.redirect(loginUrl)
+  clearSessionCookie(redirectResponse)
+  return redirectResponse
+}
 
-    const separatorIndex = nameValue.indexOf('=')
-    if (separatorIndex === -1) continue
+function mergeCookieHeader(
+  currentCookieHeader: string | null,
+  name: string,
+  value: string,
+) {
+  const cookieMap = new Map<string, string>()
 
-    const name = nameValue.slice(0, separatorIndex)
-    const value = nameValue.slice(separatorIndex + 1)
-    updatedCookies[name] = value
+  if (currentCookieHeader) {
+    for (const cookie of currentCookieHeader.split(';')) {
+      const trimmedCookie = cookie.trim()
+      if (!trimmedCookie) continue
 
-    const options: Parameters<typeof response.cookies.set>[2] = {
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      const separatorIndex = trimmedCookie.indexOf('=')
+      if (separatorIndex === -1) continue
+
+      const cookieName = trimmedCookie.slice(0, separatorIndex)
+      const cookieValue = trimmedCookie.slice(separatorIndex + 1)
+      cookieMap.set(cookieName, cookieValue)
     }
-
-    for (const attr of parts) {
-      const attrSeparatorIndex = attr.indexOf('=')
-      const attrKey =
-        attrSeparatorIndex === -1 ? attr : attr.slice(0, attrSeparatorIndex)
-      const attrValue =
-        attrSeparatorIndex === -1 ? '' : attr.slice(attrSeparatorIndex + 1)
-
-      switch (attrKey.toLowerCase()) {
-        case 'httponly':
-          options.httpOnly = true
-          break
-        case 'secure':
-          options.secure = true
-          break
-        case 'samesite': {
-          const sameSite = attrValue.toLowerCase()
-          if (
-            sameSite === 'lax' ||
-            sameSite === 'strict' ||
-            sameSite === 'none'
-          ) {
-            options.sameSite = sameSite
-          }
-          break
-        }
-        case 'expires':
-          options.expires = new Date(attrValue)
-          break
-        case 'max-age':
-          options.maxAge = Number.parseInt(attrValue, 10)
-          break
-      }
-    }
-
-    response.cookies.set(name, value, options)
   }
 
-  return updatedCookies
+  cookieMap.set(name, value)
+
+  return Array.from(cookieMap.entries())
+    .map(([cookieName, cookieValue]) => `${cookieName}=${cookieValue}`)
+    .join('; ')
+}
+
+function applyRequestHeaderOverrides(
+  response: NextResponse,
+  requestHeaders: Headers,
+) {
+  const override = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  })
+
+  for (const [header, value] of override.headers.entries()) {
+    if (header === 'x-middleware-override-headers') {
+      response.headers.set(header, value)
+      continue
+    }
+
+    if (header.startsWith('x-middleware-request-')) {
+      response.headers.set(header, value)
+    }
+  }
+}
+
+function writeSessionCookie(
+  response: NextResponse,
+  encodedSession: string,
+  refreshTokenExpiresAt: number,
+) {
+  response.cookies.set(getSessionCookieName(), encodedSession, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    expires: new Date(refreshTokenExpiresAt),
+  })
+}
+
+function buildRefreshHeaders(request: NextRequest, session: AppSession) {
+  const headers = new Headers()
+  headers.set('Cookie', buildBackendCookieHeader(session))
+
+  const userAgent = request.headers.get('user-agent')
+  if (userAgent) {
+    headers.set('User-Agent', userAgent)
+  }
+
+  const forwardedFor = request.headers.get('x-forwarded-for')
+  if (forwardedFor) {
+    headers.set('X-Forwarded-For', forwardedFor)
+  }
+
+  return headers
+}
+
+async function refreshSessionInMiddleware(
+  request: NextRequest,
+  response: NextResponse,
+  session: AppSession,
+) {
+  if (!apiUrl) {
+    throw new Error('API_URL or NEXT_PUBLIC_API_URL must be configured')
+  }
+
+  const refreshKey = session.refreshToken
+  const ongoingRefresh = refreshRequests.get(refreshKey)
+
+  const refreshPromise =
+    ongoingRefresh ??
+    (async () => {
+      const refreshResponse = await fetch(`${apiUrl}/v1/auth/refresh`, {
+        method: 'POST',
+        headers: buildRefreshHeaders(request, session),
+        cache: 'no-store',
+        credentials: 'include',
+      })
+
+      if (!refreshResponse.ok) {
+        return null
+      }
+
+      const refreshedSession = extractBackendSessionFromResponse(
+        refreshResponse,
+        session,
+      )
+
+      if (!refreshedSession) {
+        return null
+      }
+
+      return refreshedSession
+    })()
+
+  if (!ongoingRefresh) {
+    refreshRequests.set(refreshKey, refreshPromise)
+  }
+
+  let refreshedSession: AppSession | null
+
+  try {
+    refreshedSession = await refreshPromise
+  } finally {
+    if (!ongoingRefresh) {
+      refreshRequests.delete(refreshKey)
+    }
+  }
+
+  if (!refreshedSession) {
+    return null
+  }
+
+  const encodedSession = await encodeSessionCookie(refreshedSession)
+  writeSessionCookie(
+    response,
+    encodedSession,
+    refreshedSession.refreshTokenExpiresAt,
+  )
+
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set(
+    'cookie',
+    mergeCookieHeader(
+      request.headers.get('cookie'),
+      getSessionCookieName(),
+      encodedSession,
+    ),
+  )
+  applyRequestHeaderOverrides(response, requestHeaders)
+
+  return refreshedSession
 }
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const locale = pathname.split('/')[1] || Language.Es
+  const shouldClearSession =
+    request.nextUrl.searchParams.get('clearSession') === '1'
 
-  // Normalize pathname
   const locales = Object.values(Language).join('|')
   const localeRegex = new RegExp(`^\\/(?:${locales})(\\/|$)`)
   let pathnameWithoutLocale = pathname.replace(localeRegex, '$1')
-  if (!pathnameWithoutLocale.startsWith('/'))
+
+  if (!pathnameWithoutLocale.startsWith('/')) {
     pathnameWithoutLocale = `/${pathnameWithoutLocale}`
+  }
+
   if (pathnameWithoutLocale.length > 1 && pathnameWithoutLocale.endsWith('/')) {
     pathnameWithoutLocale = pathnameWithoutLocale.slice(0, -1)
   }
 
-  // Initial state
   const response = intlMiddleware(request)
-  let accessToken = request.cookies.get(Auth.AccessToken)?.value
-  let refreshToken = request.cookies.get(Auth.RefreshToken)?.value
-
-  // Auth Check
-  let isAuthenticated = !!accessToken || !!refreshToken
+  const sessionCookie = request.cookies.get(getSessionCookieName())?.value
+  let session = await decodeSessionCookie(sessionCookie)
+  let hasSession = isAuthenticatedSession(session)
   const isPublicPage = Object.values(PublicPages).includes(
     pathnameWithoutLocale as PublicPages,
   )
@@ -101,57 +218,57 @@ export default async function middleware(request: NextRequest) {
   )
   const isAllowedWithoutAuth = isPublicPage || isSharedPage
 
-  // Silent Refresh / Session Verification:
-  if (refreshToken && (!accessToken || isPublicPage)) {
+  if (shouldClearSession) {
+    clearSessionCookie(response)
+
+    if (isAllowedWithoutAuth) {
+      return response
+    }
+
+    return redirectToLogin(request, locale)
+  }
+
+  if (!sessionCookie) {
+    return isAllowedWithoutAuth ? response : redirectToLogin(request, locale)
+  }
+
+  if (hasSession && shouldRefreshAccessToken(session)) {
     try {
-      const refreshResponse = await fetch(`${API_URL}/v1/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          Cookie: `${Auth.RefreshToken}=${refreshToken}; ${Auth.AccessToken}=${accessToken}`,
-          'User-Agent': request.headers.get('user-agent') || '',
-        },
-      })
+      const refreshedSession = await refreshSessionInMiddleware(
+        request,
+        response,
+        session,
+      )
 
-      if (refreshResponse.ok) {
-        const updatedCookies = applyResponseCookies(
-          response,
-          refreshResponse.headers.getSetCookie(),
-        )
-        accessToken = updatedCookies[Auth.AccessToken] ?? accessToken
-        refreshToken = updatedCookies[Auth.RefreshToken] ?? refreshToken
-        isAuthenticated = !!accessToken || !!refreshToken
+      if (hasRecoverableSession(refreshedSession)) {
+        session = refreshedSession
+        hasSession = isAuthenticatedSession(refreshedSession)
       } else {
-        // Token is definitively dead, clear it and STAY on the public page; If we were going to a private page, the logic below will redirect to login.
-        const loginUrl = new URL(`/${locale}/login`, request.url)
-        const redirectResponse = NextResponse.redirect(loginUrl)
-        redirectResponse.cookies.delete(Auth.RefreshToken)
-        redirectResponse.cookies.delete(Auth.AccessToken)
-
-        // Only redirect if we were attempting to access a PRIVATE page
-        if (!isAllowedWithoutAuth) {
-          return redirectResponse
-        }
-
-        // If already on a public page, just clear cookies in the current response and stay here
-        response.cookies.delete(Auth.RefreshToken)
-        response.cookies.delete(Auth.AccessToken)
-        isAuthenticated = false
+        session = null
+        hasSession = false
+        clearSessionCookie(response)
       }
-    } catch (error) {
-      console.error('Middleware Refresh Error:', error)
+    } catch {
+      // Allow the server-side auth fetch path to attempt recovery before
+      // forcing a logout from middleware.
     }
   }
 
-  // Redirect to login if private and not auth
-  if (!isAuthenticated && !isAllowedWithoutAuth) {
-    const loginUrl = new URL(`/${locale}/login`, request.url)
-    return NextResponse.redirect(loginUrl)
+  if (!hasSession && !isAllowedWithoutAuth) {
+    return redirectToLogin(request, locale)
   }
 
-  // Redirect to dashboard if public and authenticated
-  if (isAuthenticated && isPublicPage) {
+  if (hasSession && isPublicPage) {
     const dashboardUrl = new URL(`/${locale}/accounts`, request.url)
     return NextResponse.redirect(dashboardUrl)
+  }
+
+  if (isAllowedWithoutAuth) {
+    if (!hasSession) {
+      clearSessionCookie(response)
+    }
+
+    return response
   }
 
   return response

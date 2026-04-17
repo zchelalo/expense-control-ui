@@ -25,19 +25,35 @@
   animation: slideIn 0.3s ease-out;
 }
 
-.success { border-left: 4px solid var(--success); }
-.error { border-left: 4px solid var(--error); }
-.warning { border-left: 4px solid var(--warning); }
-.info { border-left: 4px solid var(--primary); }
+.success {
+  border-left: 4px solid var(--success);
+}
+.error {
+  border-left: 4px solid var(--error);
+}
+.warning {
+  border-left: 4px solid var(--warning);
+}
+.info {
+  border-left: 4px solid var(--primary);
+}
 
 .icon {
   flex-shrink: 0;
 }
 
-.success .icon { color: var(--success); }
-.error .icon { color: var(--error); }
-.warning .icon { color: var(--warning); }
-.info .icon { color: var(--primary); }
+.success .icon {
+  color: var(--success);
+}
+.error .icon {
+  color: var(--error);
+}
+.warning .icon {
+  color: var(--warning);
+}
+.info .icon {
+  color: var(--primary);
+}
 
 .message {
   font-size: var(--font-size-sm);
