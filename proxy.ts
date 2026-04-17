@@ -207,9 +207,6 @@ export default async function middleware(request: NextRequest) {
   }
 
   const response = intlMiddleware(request)
-  const sessionCookie = request.cookies.get(getSessionCookieName())?.value
-  let session = await decodeSessionCookie(sessionCookie)
-  let hasSession = isAuthenticatedSession(session)
   const isPublicPage = Object.values(PublicPages).includes(
     pathnameWithoutLocale as PublicPages,
   )
@@ -228,11 +225,25 @@ export default async function middleware(request: NextRequest) {
     return redirectToLogin(request, locale)
   }
 
+  const sessionCookie = request.cookies.get(getSessionCookieName())?.value
   if (!sessionCookie) {
     return isAllowedWithoutAuth ? response : redirectToLogin(request, locale)
   }
 
-  if (hasSession && shouldRefreshAccessToken(session)) {
+  let session = await decodeSessionCookie(sessionCookie)
+  let isAuthenticated = isAuthenticatedSession(session)
+
+  if (!isAuthenticated) {
+    clearSessionCookie(response)
+
+    if (isAllowedWithoutAuth) {
+      return response
+    }
+
+    return redirectToLogin(request, locale)
+  }
+
+  if (hasRecoverableSession(session) && shouldRefreshAccessToken(session)) {
     try {
       const refreshedSession = await refreshSessionInMiddleware(
         request,
@@ -242,33 +253,29 @@ export default async function middleware(request: NextRequest) {
 
       if (hasRecoverableSession(refreshedSession)) {
         session = refreshedSession
-        hasSession = isAuthenticatedSession(refreshedSession)
+        isAuthenticated = isAuthenticatedSession(refreshedSession)
       } else {
         session = null
-        hasSession = false
+        isAuthenticated = false
         clearSessionCookie(response)
       }
     } catch {
-      // Allow the server-side auth fetch path to attempt recovery before
-      // forcing a logout from middleware.
+      // Leave recovery to the server-side fetch path if middleware refresh
+      // fails for a transient reason.
     }
   }
 
-  if (!hasSession && !isAllowedWithoutAuth) {
+  if (!isAuthenticated) {
+    if (isAllowedWithoutAuth) {
+      return response
+    }
+
     return redirectToLogin(request, locale)
   }
 
-  if (hasSession && isPublicPage) {
+  if (isPublicPage) {
     const dashboardUrl = new URL(`/${locale}/accounts`, request.url)
     return NextResponse.redirect(dashboardUrl)
-  }
-
-  if (isAllowedWithoutAuth) {
-    if (!hasSession) {
-      clearSessionCookie(response)
-    }
-
-    return response
   }
 
   return response

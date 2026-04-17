@@ -17,6 +17,7 @@ import {
   hasRecoverableSession,
   hasValidRefreshToken,
   isAuthenticatedSession,
+  shouldRefreshAccessToken,
 } from '@/utils/session/shared'
 
 type FetchWithAuthOptions = RequestInit & {
@@ -178,6 +179,7 @@ export async function fetchWithAuth(
   options: FetchWithAuthOptions = {},
 ) {
   const locale = await getLocale()
+  const isRefreshRequest = url === '/v1/auth/refresh'
   const redirectOnAuthFailure = options.redirectOnAuthFailure ?? true
   const requestHeaders = await buildServerHeaders(options.headers, options.body)
   const session = await readAppSession()
@@ -187,47 +189,69 @@ export async function fetchWithAuth(
   }
 
   let activeSession: AppSession = session
+  let didRefreshSession = false
 
-  const mergedOptions: RequestInit = {
+  const baseOptions: RequestInit = {
     ...options,
     credentials: 'include',
-    headers: withBackendAuthHeaders(requestHeaders, activeSession),
   }
 
-  let response: Response
+  async function refreshActiveSession() {
+    if (!hasValidRefreshToken(activeSession)) {
+      return null
+    }
 
-  try {
-    response = await fetch(`${apiUrl}${url}`, mergedOptions)
-  } catch (error) {
-    logger.error(`fetchWithAuth: Request to ${url} failed`, error)
-    throw error
+    const refreshedSession = await refreshAppSession(
+      activeSession,
+      requestHeaders,
+    )
+
+    if (!hasRecoverableSession(refreshedSession)) {
+      return null
+    }
+
+    activeSession = refreshedSession
+    didRefreshSession = true
+    await writeAppSession(activeSession)
+
+    return activeSession
   }
 
-  const shouldRetryWithRefresh =
-    response.status === 401 && url !== '/v1/auth/refresh'
+  async function performAuthenticatedRequest() {
+    try {
+      return await fetch(`${apiUrl}${url}`, {
+        ...baseOptions,
+        headers: withBackendAuthHeaders(requestHeaders, activeSession),
+      })
+    } catch (error) {
+      logger.error(`fetchWithAuth: Request to ${url} failed`, error)
+      throw error
+    }
+  }
 
-  if (!shouldRetryWithRefresh) {
+  if (!isRefreshRequest && shouldRefreshAccessToken(activeSession)) {
+    const refreshedSession = await refreshActiveSession()
+
+    if (!refreshedSession) {
+      return handleAuthFailure(locale, redirectOnAuthFailure)
+    }
+  }
+
+  const response = await performAuthenticatedRequest()
+
+  if (response.status !== 401 || isRefreshRequest) {
     return response
   }
 
-  if (!hasValidRefreshToken(activeSession)) {
+  if (didRefreshSession) {
     return handleAuthFailure(locale, redirectOnAuthFailure)
   }
 
-  const refreshedSession = await refreshAppSession(
-    activeSession,
-    requestHeaders,
-  )
+  const refreshedSession = await refreshActiveSession()
 
-  if (!hasRecoverableSession(refreshedSession)) {
+  if (!refreshedSession) {
     return handleAuthFailure(locale, redirectOnAuthFailure)
   }
 
-  activeSession = refreshedSession
-  await writeAppSession(activeSession)
-
-  return fetch(`${apiUrl}${url}`, {
-    ...mergedOptions,
-    headers: withBackendAuthHeaders(requestHeaders, activeSession),
-  })
+  return performAuthenticatedRequest()
 }
