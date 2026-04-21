@@ -1,0 +1,15 @@
+.paginator {
+  width: 100%;
+}
+
+.paginator .paginator-button {
+  padding: var(--spacing-2);
+}
+
+.paginator-button-disabled {
+  cursor: default;
+}
+
+.paginator-button-disabled:hover {
+  transform: scale(1);
+}

@@ -36,22 +36,6 @@
   padding-right: var(--spacing-4);
 }
 
-.pagination {
-  width: 100%;
-}
-
-.pagination .pagination-button {
-  padding: var(--spacing-2);
-}
-
-.pagination-button-disabled {
-  cursor: default;
-}
-
-.pagination-button-disabled:hover {
-  transform: scale(1);
-}
-
 @media (max-width: 1024px) {
   .accounts {
     grid-template-columns: 1fr 1fr;

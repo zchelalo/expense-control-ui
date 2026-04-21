@@ -1,10 +1,10 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { Box } from '@/components/atoms/box'
-import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { Text } from '@/components/atoms/text'
 import { Card } from '@/components/molecules/card'
+import { Paginator } from '@/components/molecules/paginator'
 import styles from '@/components/templates/dashboard/accounts/accounts.module.css'
 import { Search } from '@/components/templates/dashboard/accounts/search'
 import { type Language, Namespace } from '@/constants/common'
@@ -138,54 +138,7 @@ export async function Accounts({
           ))}
         {accounts.items.length === 0 && <Text variant='p'>{t('empty')}</Text>}
       </Box>
-      <FlexBox
-        variant='div'
-        alignItems='center'
-        justifyContent='end'
-        gap={2}
-        className={styles.pagination}
-      >
-        {previousHref ? (
-          <Link href={previousHref}>
-            <Button type='button' className={styles['pagination-button']}>
-              <ChevronLeft size={18} />
-            </Button>
-          </Link>
-        ) : (
-          <Button
-            type='button'
-            appearance='outlined'
-            disabled
-            className={
-              styles['pagination-button'] +
-              ' ' +
-              styles['pagination-button-disabled']
-            }
-          >
-            <ChevronLeft size={18} />
-          </Button>
-        )}
-        {nextHref ? (
-          <Link href={nextHref}>
-            <Button type='button' className={styles['pagination-button']}>
-              <ChevronRight size={18} />
-            </Button>
-          </Link>
-        ) : (
-          <Button
-            type='button'
-            appearance='outlined'
-            disabled
-            className={
-              styles['pagination-button'] +
-              ' ' +
-              styles['pagination-button-disabled']
-            }
-          >
-            <ChevronRight size={18} />
-          </Button>
-        )}
-      </FlexBox>
+      <Paginator previousHref={previousHref} nextHref={nextHref} />
     </FlexBox>
   )
 }
