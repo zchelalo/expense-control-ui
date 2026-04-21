@@ -156,7 +156,11 @@ export async function Accounts({
             type='button'
             appearance='outlined'
             disabled
-            className={styles['pagination-button']}
+            className={
+              styles['pagination-button'] +
+              ' ' +
+              styles['pagination-button-disabled']
+            }
           >
             <ChevronLeft size={18} />
           </Button>
@@ -172,7 +176,11 @@ export async function Accounts({
             type='button'
             appearance='outlined'
             disabled
-            className={styles['pagination-button']}
+            className={
+              styles['pagination-button'] +
+              ' ' +
+              styles['pagination-button-disabled']
+            }
           >
             <ChevronRight size={18} />
           </Button>
