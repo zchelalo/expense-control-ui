@@ -1,3 +1,4 @@
+import { Movements } from '@/components/templates/dashboard/movements'
 import { Namespace } from '@/constants/common'
 import { createGenerateMetadata } from '@/i18n/metadata'
 
@@ -6,5 +7,5 @@ export const generateMetadata = createGenerateMetadata({
 })
 
 export default async function MovementsPage() {
-  return <div>movements</div>
+  return <Movements />
 }
