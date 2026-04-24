@@ -21,7 +21,3 @@
 .amountContainer {
   align-self: stretch;
 }
-
-.deleteButton {
-  padding: var(--spacing-1);
-}

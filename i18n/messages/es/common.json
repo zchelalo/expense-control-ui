@@ -63,5 +63,6 @@
     "network_error": "Se produjo un error de red. Por favor, inténtalo de nuevo más tarde.",
     "unknown_error": "Se produjo un error desconocido. Por favor, inténtalo de nuevo más tarde.",
     "too_many_requests_error": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde."
-  }
+  },
+  "delete": "Eliminar"
 }

@@ -1,6 +1,5 @@
-import { Trash, TrendingDown, TrendingUp } from 'lucide-react'
+import { TrendingDown, TrendingUp } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { LocalDateTime } from '@/components/atoms/local-date-time'
 import { Text } from '@/components/atoms/text'
@@ -220,13 +219,6 @@ export async function Movements({
                         getCurrencyFromLanguage(locale as Language),
                       )}
                   </Text>
-                  <Button
-                    type='button'
-                    variant='danger'
-                    className={styles.deleteButton}
-                  >
-                    <Trash size={16} />
-                  </Button>
                 </FlexBox>
               </FlexBox>
             </Card>

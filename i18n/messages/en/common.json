@@ -63,5 +63,6 @@
     "network_error": "A network error occurred. Please try again later.",
     "unknown_error": "An unknown error occurred. Please try again later.",
     "too_many_requests_error": "Too many requests. Please try again later."
-  }
+  },
+  "delete": "Delete"
 }
