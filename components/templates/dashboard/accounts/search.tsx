@@ -6,6 +6,7 @@ import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { InputText } from '@/components/atoms/input-text'
 import styles from '@/components/templates/dashboard/accounts/accounts.module.css'
+import { useObservedElementHeight } from '@/hooks/use-observed-element-height'
 import { normalizeAccountSearch } from '@/modules/account/adapters/in/query-params'
 
 type SearchProps = {
@@ -16,6 +17,8 @@ type SearchProps = {
 
 export function Search({ translations, search, limit = '10' }: SearchProps) {
   const searchId = useId()
+  const { elementRef: searchFieldRef, elementHeight: searchButtonSize } =
+    useObservedElementHeight<HTMLDivElement>()
 
   return (
     <form className={styles.form} method='GET'>
@@ -25,6 +28,7 @@ export function Search({ translations, search, limit = '10' }: SearchProps) {
         alignItems='stretch'
         gap={2}
         className={styles.formGroup}
+        ref={searchFieldRef}
       >
         <InputText
           id={searchId}
@@ -39,7 +43,18 @@ export function Search({ translations, search, limit = '10' }: SearchProps) {
         gap={2}
         className={styles.formGroup}
       >
-        <Button type='submit' className={styles.searchButton}>
+        <Button
+          type='submit'
+          className={styles.searchButton}
+          style={
+            searchButtonSize
+              ? {
+                  width: searchButtonSize,
+                  height: searchButtonSize,
+                }
+              : undefined
+          }
+        >
           <SearchIcon size={18} />
         </Button>
       </FlexBox>
