@@ -3,7 +3,13 @@ import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from 'react'
 
 import styles from '@/components/atoms/button/button.module.css'
 
-type Variant = 'primary' | 'secondary' | 'default'
+type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'default'
+  | 'danger'
+  | 'success'
+  | 'warning'
 type Appearance = 'filled' | 'outlined'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -28,6 +34,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary: styles['variant-primary'],
       secondary: styles['variant-secondary'],
       default: styles['variant-default'],
+      danger: styles['variant-danger'],
+      success: styles['variant-success'],
+      warning: styles['variant-warning'],
     }
 
     const appearanceClasses: Record<Appearance, string> = {

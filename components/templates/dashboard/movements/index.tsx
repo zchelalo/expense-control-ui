@@ -222,7 +222,7 @@ export async function Movements({
                   </Text>
                   <Button
                     type='button'
-                    variant='primary'
+                    variant='danger'
                     className={styles.deleteButton}
                   >
                     <Trash size={16} />

@@ -33,6 +33,24 @@
   --btn-text-color: var(--background);
 }
 
+.variant-danger {
+  --btn-bg-color: var(--error);
+  --btn-bg-color-hover: var(--error-hover);
+  --btn-text-color: var(--primary-foreground);
+}
+
+.variant-success {
+  --btn-bg-color: var(--success);
+  --btn-bg-color-hover: var(--success-hover);
+  --btn-text-color: var(--primary-foreground);
+}
+
+.variant-warning {
+  --btn-bg-color: var(--warning);
+  --btn-bg-color-hover: var(--warning-hover);
+  --btn-text-color: var(--primary-foreground);
+}
+
 .appearance-filled {
   background-color: var(--btn-bg-color);
   border-color: var(--btn-bg-color);
