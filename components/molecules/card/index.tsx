@@ -32,6 +32,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         direction='column'
         justifyContent='center'
         alignItems='start'
+        padding={4}
+        gap={2}
         ref={ref}
         className={cardClasses}
         {...props}

@@ -1,12 +1,10 @@
 .card {
   border-radius: var(--border-radius-sm);
   background-color: var(--color-bg-alt);
-  padding: var(--spacing-4);
   box-shadow: var(--shadow-sm);
   transition:
     box-shadow var(--transition-base),
     transform var(--transition-base);
-  gap: var(--spacing-2);
 }
 
 .card.clickable {

@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { ThemeProvider } from 'next-themes'
 import { AuthProvider } from '@/components/infrastructure/providers/auth-provider'
 import { ToastProvider } from '@/components/infrastructure/providers/toast-provider'
+import { APP_TIME_ZONE } from '@/constants/common'
 
 type ProvidersProps = {
   readonly children: React.ReactNode
@@ -22,7 +23,7 @@ export function Providers({
     <NextIntlClientProvider
       locale={locale}
       messages={messages}
-      timeZone='America/Hermosillo'
+      timeZone={APP_TIME_ZONE}
     >
       <AuthProvider initialIsAuthenticated={initialIsAuthenticated}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>

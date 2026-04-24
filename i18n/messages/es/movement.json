@@ -1,1 +1,6 @@
-{}
+{
+  "movement_type": {
+    "income": "Ingreso",
+    "expense": "Gasto"
+  }
+}

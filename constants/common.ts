@@ -3,6 +3,8 @@ export enum Theme {
   Dark = 'dark',
 }
 
+export const APP_TIME_ZONE = 'America/Hermosillo'
+
 export enum Language {
   En = 'en',
   Es = 'es',

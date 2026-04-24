@@ -10,7 +10,7 @@
 }
 
 .searchButton {
-  padding: var(--spacing-2);
+  padding: var(--spacing-1);
 }
 
 .accounts {
@@ -50,10 +50,6 @@
   .formGroup:first-of-type {
     flex: 1;
     min-width: 0;
-  }
-
-  .searchButton {
-    flex-shrink: 0;
   }
 
   .accounts {

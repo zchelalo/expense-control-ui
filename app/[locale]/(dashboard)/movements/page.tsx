@@ -6,6 +6,41 @@ export const generateMetadata = createGenerateMetadata({
   namespace: Namespace.Common,
 })
 
-export default async function MovementsPage() {
-  return <Movements />
+type MovementsPageProps = {
+  searchParams?: Promise<{
+    limit?: string
+    afterCursor?: string
+    beforeCursor?: string
+    accountId?: string
+    categoryId?: string
+    movementTypeId?: string
+    cursorStack?: string
+  }>
+}
+
+export default async function MovementsPage({
+  searchParams,
+}: MovementsPageProps) {
+  const params = (await searchParams) ?? {}
+  const {
+    limit,
+    afterCursor,
+    beforeCursor,
+    accountId,
+    categoryId,
+    movementTypeId,
+    cursorStack,
+  } = params
+
+  return (
+    <Movements
+      limit={limit}
+      afterCursor={afterCursor}
+      beforeCursor={beforeCursor}
+      accountId={accountId}
+      categoryId={categoryId}
+      movementTypeId={movementTypeId}
+      cursorStack={cursorStack}
+    />
+  )
 }

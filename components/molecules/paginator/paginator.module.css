@@ -3,7 +3,7 @@
 }
 
 .paginator .paginator-button {
-  padding: var(--spacing-2);
+  padding: var(--spacing-1);
 }
 
 .paginator-button-disabled {

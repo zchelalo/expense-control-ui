@@ -1,3 +1,27 @@
 .container {
   width: 100%;
 }
+
+.body {
+  width: 100%;
+}
+
+.noMovementsCard {
+  width: 100%;
+}
+
+.movementCard {
+  width: 100%;
+}
+
+.accountContent {
+  width: 100%;
+}
+
+.amountContainer {
+  align-self: stretch;
+}
+
+.deleteButton {
+  padding: var(--spacing-1);
+}
