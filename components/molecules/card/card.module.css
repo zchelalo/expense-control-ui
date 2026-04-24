@@ -1,6 +1,6 @@
 .card {
   border-radius: var(--border-radius-sm);
-  background-color: var(--color-bg-alt);
+  background-color: var(--background-muted);
   box-shadow: var(--shadow-sm);
   transition:
     box-shadow var(--transition-base),

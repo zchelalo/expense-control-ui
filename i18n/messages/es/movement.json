@@ -1,6 +1,19 @@
 {
+  "noMovements": "No hay movimientos",
   "movement_type": {
     "income": "Ingreso",
     "expense": "Gasto"
+  },
+  "delete": {
+    "action": "Eliminar",
+    "success": "Movimiento eliminado correctamente"
+  },
+  "errors": {
+    "movement_store_error": "Se produjo un error al acceder al almacén de movimientos.",
+    "movement_not_found_error": "No se encontró el movimiento solicitado.",
+    "movement_delete_error": "No fue posible eliminar el movimiento.",
+    "unknown_error": "Se produjo un error desconocido. Por favor, inténtalo de nuevo más tarde.",
+    "too_many_requests_error": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde.",
+    "network_error": "Se produjo un error de red. Por favor, inténtalo de nuevo más tarde."
   }
 }

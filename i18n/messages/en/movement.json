@@ -1,6 +1,19 @@
 {
+  "noMovements": "No movements yet",
   "movement_type": {
     "income": "Income",
     "expense": "Expense"
+  },
+  "delete": {
+    "action": "Delete",
+    "success": "Movement deleted successfully"
+  },
+  "errors": {
+    "movement_store_error": "An error occurred while accessing the movement store.",
+    "movement_not_found_error": "The requested movement could not be found.",
+    "movement_delete_error": "The movement could not be deleted.",
+    "unknown_error": "An unknown error occurred. Please try again later.",
+    "too_many_requests_error": "Too many requests. Please try again later.",
+    "network_error": "A network error occurred. Please try again later."
   }
 }

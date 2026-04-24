@@ -29,3 +29,10 @@ export type FindAllResponse = {
   }
   request_id: string
 }
+
+export type DeleteResponse = {
+  data: {
+    success: boolean
+  }
+  request_id: string
+}

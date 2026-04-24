@@ -11,4 +11,5 @@ export type FindAllMovementsFilters = {
 
 export interface MovementStore {
   findAll(filters: FindAllMovementsFilters): Promise<PaginatedResult>
+  delete(id: string): Promise<void>
 }

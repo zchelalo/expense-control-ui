@@ -9,7 +9,10 @@ import type {
   FindAllMovementsFilters,
   MovementStore,
 } from '@/modules/movement/ports/movement-store'
-import type { FindAllResponse } from '@/modules/movement/ports/responses'
+import type {
+  DeleteResponse,
+  FindAllResponse,
+} from '@/modules/movement/ports/responses'
 import { fetchWithAuth } from '@/utils/api'
 import { type ErrorResponse, parseApiError } from '@/utils/parse'
 
@@ -90,6 +93,34 @@ export class MovementRepository implements MovementStore {
         ),
         nextCursor: movementsData.data.next_cursor || null,
         prevCursor: movementsData.data.prev_cursor || null,
+      }
+    } catch (error) {
+      if (error instanceof MovementError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
+      throw new MovementError('network_error', (error as Error).message)
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    try {
+      const response = await fetchWithAuth(`/v1/movement/${id}`, {
+        method: 'DELETE',
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        const error = await parseApiError(response)
+        mapToMovementError(response.status, error)
+      }
+
+      const movementData: DeleteResponse = await response.json()
+
+      if (!movementData.data.success) {
+        throw new MovementError(
+          'movement_delete_error',
+          'Failed to delete movement',
+        )
       }
     } catch (error) {
       if (error instanceof MovementError) throw error

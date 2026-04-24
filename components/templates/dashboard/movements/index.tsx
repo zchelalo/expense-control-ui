@@ -1,12 +1,8 @@
-import { TrendingDown, TrendingUp } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { FlexBox } from '@/components/atoms/flex-box'
-import { LocalDateTime } from '@/components/atoms/local-date-time'
-import { Text } from '@/components/atoms/text'
-import { Badge } from '@/components/molecules/badge'
-import { Card } from '@/components/molecules/card'
 import { Paginator } from '@/components/molecules/paginator'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
+import { SwipeableMovementsList } from '@/components/templates/dashboard/movements/swipeable-movements-list'
 import { type Language, Namespace } from '@/constants/common'
 import {
   buildMovementsSearchParams,
@@ -80,17 +76,6 @@ export async function Movements({
       }).toString()}`
     : null
 
-  const getMovementTypeColor = (movementTypeKey: string) => {
-    switch (movementTypeKey) {
-      case 'income':
-        return 'success'
-      case 'expense':
-        return 'error'
-      default:
-        return 'default'
-    }
-  }
-
   const getMovementTypeText = (movementTypeKey: string) => {
     switch (movementTypeKey) {
       case 'income':
@@ -102,16 +87,19 @@ export async function Movements({
     }
   }
 
-  const getMovementTypeIcon = (movementTypeKey: string) => {
-    switch (movementTypeKey) {
-      case 'income':
-        return <TrendingUp size={16} />
-      case 'expense':
-        return <TrendingDown size={16} />
-      default:
-        return null
-    }
-  }
+  const movementItems = movements.items.map((movement) => ({
+    id: movement.getId().getValue(),
+    description: movement.getDescription().getValue(),
+    categoryName: movement.getCategory().getName().getValue(),
+    createdAt: movement.getCreatedAt().getValue(),
+    movementTypeKey: movement.getMovementType().getKey().getValue(),
+    movementTypeText: getMovementTypeText(
+      movement.getMovementType().getKey().getValue(),
+    ),
+    amount: movement
+      .getAmount()
+      .toCurrency(locale, getCurrencyFromLanguage(locale as Language)),
+  }))
 
   return (
     <FlexBox
@@ -130,100 +118,11 @@ export async function Movements({
         gap={3}
         className={styles.body}
       >
-        {movements.items.length === 0 ? (
-          <Card className={styles.noMovementsCard}>
-            <Text>{t('noMovements')}</Text>
-          </Card>
-        ) : (
-          movements.items.map((movement) => (
-            <Card
-              key={movement.getId().getValue()}
-              className={styles.movementCard}
-            >
-              <FlexBox
-                variant='div'
-                alignItems='center'
-                justifyContent='spaceBetween'
-                gap={8}
-                className={styles.accountContent}
-              >
-                <FlexBox
-                  variant='div'
-                  direction='column'
-                  alignItems='start'
-                  justifyContent='center'
-                  gap={2}
-                >
-                  <Text
-                    variant='span'
-                    typographySize='normal'
-                    typographyTextStyle='normal'
-                    typographyWeight='medium'
-                  >
-                    {movement.getDescription().getValue()}
-                  </Text>
-                  <Text
-                    variant='span'
-                    typographySize='normal'
-                    typographyTextStyle='normal'
-                    typographyWeight='medium'
-                  >
-                    {movement.getCategory().getName().getValue()}
-                  </Text>
-                  <Text
-                    variant='span'
-                    typographySize='normal'
-                    typographyTextStyle='normal'
-                    typographyWeight='medium'
-                  >
-                    <LocalDateTime value={movement.getCreatedAt().getValue()} />
-                  </Text>
-                </FlexBox>
-                <FlexBox
-                  variant='div'
-                  direction='column'
-                  alignItems='end'
-                  justifyContent='start'
-                  gap={2}
-                  className={styles.amountContainer}
-                >
-                  <Badge
-                    variant={getMovementTypeColor(
-                      movement.getMovementType().getKey().getValue(),
-                    )}
-                    icon={getMovementTypeIcon(
-                      movement.getMovementType().getKey().getValue(),
-                    )}
-                  >
-                    <Text
-                      variant='span'
-                      typographySize='small'
-                      typographyTextStyle='normal'
-                      typographyWeight='light'
-                    >
-                      {getMovementTypeText(
-                        movement.getMovementType().getKey().getValue(),
-                      )}
-                    </Text>
-                  </Badge>
-                  <Text
-                    variant='span'
-                    typographySize='normal'
-                    typographyTextStyle='normal'
-                    typographyWeight='medium'
-                  >
-                    {movement
-                      .getAmount()
-                      .toCurrency(
-                        locale,
-                        getCurrencyFromLanguage(locale as Language),
-                      )}
-                  </Text>
-                </FlexBox>
-              </FlexBox>
-            </Card>
-          ))
-        )}
+        <SwipeableMovementsList
+          items={movementItems}
+          emptyText={t('noMovements')}
+          deleteLabel={t('delete.action')}
+        />
       </FlexBox>
       <Paginator previousHref={previousHref} nextHref={nextHref} />
     </FlexBox>
