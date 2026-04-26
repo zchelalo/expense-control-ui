@@ -44,6 +44,7 @@ export default async function RootLayout({
         >
           {children}
         </Providers>
+        <div id='modal' />
       </body>
     </html>
   )
