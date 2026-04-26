@@ -1,5 +1,6 @@
 {
-  "noMovements": "No hay movimientos",
+  "no_movements": "No hay movimientos",
+  "new_movement": "Nuevo Movimiento",
   "movement_type": {
     "income": "Ingreso",
     "expense": "Gasto"

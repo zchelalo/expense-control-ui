@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { Paginator } from '@/components/molecules/paginator'
+import { CreateMovement } from '@/components/templates/dashboard/movements/create-movement'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
 import { SwipeableMovementsList } from '@/components/templates/dashboard/movements/swipeable-movements-list'
 import { type Language, Namespace } from '@/constants/common'
@@ -118,9 +119,22 @@ export async function Movements({
         gap={3}
         className={styles.body}
       >
+        <FlexBox
+          variant='div'
+          direction='row'
+          justifyContent='center'
+          alignItems='start'
+          gap={2}
+        >
+          <CreateMovement
+            translations={{
+              newMovement: t('new_movement'),
+            }}
+          />
+        </FlexBox>
         <SwipeableMovementsList
           items={movementItems}
-          emptyText={t('noMovements')}
+          emptyText={t('no_movements')}
           deleteLabel={t('delete.action')}
         />
       </FlexBox>

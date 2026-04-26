@@ -19,8 +19,8 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
     }, [])
 
     const modalClassnames = clsx(
-      styles['modal-modalBackground'],
-      isOpen ? styles['modal-open'] : styles['modal-closed'],
+      styles.modalBackground,
+      isOpen ? styles.modalOpen : styles.modalClosed,
       className,
     )
 
