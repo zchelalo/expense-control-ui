@@ -8,6 +8,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  overflow-y: auto;
   z-index: var(--z-index-first);
 }
 
@@ -32,9 +33,8 @@
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-4);
-  overflow-y: auto;
+  overflow: visible;
   width: 50%;
-  max-height: 80%;
 }
 
 .modalContentTitle {
@@ -60,6 +60,5 @@
 @media (max-width: 480px) {
   .modalContent {
     width: 90%;
-    max-height: 90%;
   }
 }

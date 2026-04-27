@@ -9,16 +9,28 @@ type CategoryResponse = {
   name: string
 }
 
+type AccountResponse = {
+  id: string
+  name: string
+}
+
 type MovementResponse = {
   id: string
   amount: number
   description: string
   movement_type: MovementTypeResponse
   category: CategoryResponse
-  account_id: string
+  account: AccountResponse
   user_id: string
   created_at: string
   updated_at: string
+}
+
+export type CreateResponse = {
+  data: {
+    movement: MovementResponse
+  }
+  request_id: string
 }
 
 export type FindAllResponse = {

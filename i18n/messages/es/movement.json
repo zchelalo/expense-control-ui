@@ -1,6 +1,32 @@
 {
   "no_movements": "No hay movimientos",
   "new_movement": "Nuevo Movimiento",
+  "form": {
+    "account_label": "Cuenta",
+    "account_placeholder": "Selecciona una cuenta",
+    "amount_label": "Monto",
+    "amount_placeholder": "Ingresa el monto",
+    "description_label": "Descripción",
+    "description_placeholder": "Ingresa una descripción",
+    "movement_type_label": "Tipo de movimiento",
+    "movement_type_placeholder": "Selecciona un tipo de movimiento",
+    "category_label": "Categoría",
+    "category_placeholder": "Selecciona una categoría",
+    "search_account_placeholder": "Buscar cuenta",
+    "search_category_placeholder": "Buscar categoría",
+    "submit_button": "Crear movimiento",
+    "submitting": "Creando movimiento...",
+    "success": "Movimiento creado correctamente",
+    "validation": {
+      "account_required": "Selecciona una cuenta",
+      "amount_required": "Ingresa un monto",
+      "amount_invalid": "Ingresa un monto válido",
+      "amount_non_negative": "El monto debe ser mayor o igual a 0",
+      "description_required": "Ingresa una descripción",
+      "movement_type_required": "Selecciona un tipo de movimiento",
+      "category_required": "Selecciona una categoría"
+    }
+  },
   "movement_type": {
     "income": "Ingreso",
     "expense": "Gasto"
@@ -12,6 +38,7 @@
   "errors": {
     "movement_store_error": "Se produjo un error al acceder al almacén de movimientos.",
     "movement_not_found_error": "No se encontró el movimiento solicitado.",
+    "insufficient_account_balance_error": "La cuenta no tiene saldo suficiente para registrar este movimiento.",
     "movement_delete_error": "No fue posible eliminar el movimiento.",
     "unknown_error": "Se produjo un error desconocido. Por favor, inténtalo de nuevo más tarde.",
     "too_many_requests_error": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde.",

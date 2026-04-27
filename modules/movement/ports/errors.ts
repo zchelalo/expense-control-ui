@@ -1,6 +1,7 @@
 type PortError =
   | 'movement_store_error'
   | 'movement_not_found_error'
+  | 'insufficient_account_balance_error'
   | 'movement_update_error'
   | 'movement_delete_error'
   | 'unknown_error'

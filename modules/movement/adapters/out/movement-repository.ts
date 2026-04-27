@@ -1,3 +1,4 @@
+import { AccountRef } from '@/modules/movement/domain/account-ref'
 import { CategoryRef } from '@/modules/movement/domain/category-ref'
 import {
   MovementEntity,
@@ -6,10 +7,12 @@ import {
 import { MovementTypeRef } from '@/modules/movement/domain/movement-type-ref'
 import { MovementError } from '@/modules/movement/ports/errors'
 import type {
+  CreateMovementInput,
   FindAllMovementsFilters,
   MovementStore,
 } from '@/modules/movement/ports/movement-store'
 import type {
+  CreateResponse,
   DeleteResponse,
   FindAllResponse,
 } from '@/modules/movement/ports/responses'
@@ -28,6 +31,13 @@ function mapToMovementError(
     throw new MovementError('movement_not_found_error', error?.message)
   }
 
+  if (status === 409 && error?.code === 'insufficient_account_balance') {
+    throw new MovementError(
+      'insufficient_account_balance_error',
+      error?.message,
+    )
+  }
+
   if (status === 429) {
     throw new MovementError('too_many_requests_error', error?.message)
   }
@@ -40,6 +50,51 @@ function mapToMovementError(
 }
 
 export class MovementRepository implements MovementStore {
+  async create({
+    accountId,
+    amount,
+    description,
+    movementTypeId,
+    categoryId,
+  }: CreateMovementInput) {
+    try {
+      const response = await fetchWithAuth(`/v1/movement/${accountId}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          amount,
+          description,
+          movement_type_id: movementTypeId,
+          category_id: categoryId,
+        }),
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        const error = await parseApiError(response)
+        mapToMovementError(response.status, error)
+      }
+
+      const movementData: CreateResponse = await response.json()
+
+      return {
+        id: movementData.data.movement.id,
+        amount: movementData.data.movement.amount,
+        description: movementData.data.movement.description,
+        movementTypeId: movementData.data.movement.movement_type.id,
+        categoryId: movementData.data.movement.category.id,
+        accountId: movementData.data.movement.account.id,
+        userId: movementData.data.movement.user_id,
+        createdAt: movementData.data.movement.created_at,
+        updatedAt: movementData.data.movement.updated_at,
+      }
+    } catch (error) {
+      if (error instanceof MovementError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
+      throw new MovementError('network_error', (error as Error).message)
+    }
+  }
+
   async findAll({
     limit,
     afterCursor,
@@ -85,7 +140,7 @@ export class MovementRepository implements MovementStore {
                 movement.movement_type.name,
               ),
               new CategoryRef(movement.category.id, movement.category.name),
-              movement.account_id,
+              new AccountRef(movement.account.id, movement.account.name),
               movement.user_id,
               movement.created_at,
               movement.updated_at,

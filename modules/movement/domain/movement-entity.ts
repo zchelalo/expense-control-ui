@@ -1,3 +1,4 @@
+import type { AccountRef } from '@/modules/movement/domain/account-ref'
 import { AmountVO } from '@/modules/movement/domain/amount-vo'
 import type { CategoryRef } from '@/modules/movement/domain/category-ref'
 import { CreatedAtVO } from '@/modules/movement/domain/created-at-vo'
@@ -12,7 +13,7 @@ export class MovementEntity {
   private readonly description: DescriptionVO
   private readonly movementType: MovementTypeRef
   private readonly category: CategoryRef
-  private readonly accountId: IdVO
+  private readonly account: AccountRef
   private readonly userId: IdVO
   private readonly createdAt: CreatedAtVO
   private readonly updatedAt: UpdatedAtVO
@@ -23,7 +24,7 @@ export class MovementEntity {
     description: string,
     movementType: MovementTypeRef,
     category: CategoryRef,
-    accountId: string,
+    account: AccountRef,
     userId: string,
     createdAt: string,
     updatedAt: string,
@@ -33,7 +34,7 @@ export class MovementEntity {
     this.description = new DescriptionVO(description)
     this.movementType = movementType
     this.category = category
-    this.accountId = new IdVO(accountId)
+    this.account = account
     this.userId = new IdVO(userId)
     this.createdAt = new CreatedAtVO(createdAt)
     this.updatedAt = new UpdatedAtVO(updatedAt)
@@ -59,8 +60,8 @@ export class MovementEntity {
     return this.category
   }
 
-  getAccountId(): IdVO {
-    return this.accountId
+  getAccount(): AccountRef {
+    return this.account
   }
 
   getUserId(): IdVO {

@@ -9,7 +9,28 @@ export type FindAllMovementsFilters = {
   movementTypeId?: string | null
 }
 
+export type CreateMovementInput = {
+  accountId: string
+  amount: number
+  description: string
+  movementTypeId: string
+  categoryId: string
+}
+
+export type CreatedMovement = {
+  id: string
+  amount: number
+  description: string
+  movementTypeId: string
+  categoryId: string
+  accountId: string
+  userId: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface MovementStore {
+  create(input: CreateMovementInput): Promise<CreatedMovement>
   findAll(filters: FindAllMovementsFilters): Promise<PaginatedResult>
   delete(id: string): Promise<void>
 }

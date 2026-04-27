@@ -1,6 +1,32 @@
 {
   "no_movements": "No movements yet",
   "new_movement": "New Movement",
+  "form": {
+    "account_label": "Account",
+    "account_placeholder": "Select an account",
+    "amount_label": "Amount",
+    "amount_placeholder": "Enter the amount",
+    "description_label": "Description",
+    "description_placeholder": "Enter a description",
+    "movement_type_label": "Movement type",
+    "movement_type_placeholder": "Select a movement type",
+    "category_label": "Category",
+    "category_placeholder": "Select a category",
+    "search_account_placeholder": "Search account",
+    "search_category_placeholder": "Search category",
+    "submit_button": "Create movement",
+    "submitting": "Creating movement...",
+    "success": "Movement created successfully",
+    "validation": {
+      "account_required": "Select an account",
+      "amount_required": "Enter an amount",
+      "amount_invalid": "Enter a valid amount",
+      "amount_non_negative": "Amount must be greater than or equal to 0",
+      "description_required": "Enter a description",
+      "movement_type_required": "Select a movement type",
+      "category_required": "Select a category"
+    }
+  },
   "movement_type": {
     "income": "Income",
     "expense": "Expense"
@@ -12,6 +38,7 @@
   "errors": {
     "movement_store_error": "An error occurred while accessing the movement store.",
     "movement_not_found_error": "The requested movement could not be found.",
+    "insufficient_account_balance_error": "The account does not have enough balance for this movement.",
     "movement_delete_error": "The movement could not be deleted.",
     "unknown_error": "An unknown error occurred. Please try again later.",
     "too_many_requests_error": "Too many requests. Please try again later.",

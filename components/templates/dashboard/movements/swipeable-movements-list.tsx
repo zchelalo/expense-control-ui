@@ -10,6 +10,7 @@ import { Text } from '@/components/atoms/text'
 import { Badge } from '@/components/molecules/badge'
 import { Card } from '@/components/molecules/card'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
+import type { MovementListItem } from '@/components/templates/dashboard/movements/types'
 import { deleteMovementAction } from '@/modules/movement/adapters/in/delete-action'
 import { toast } from '@/utils/toast'
 
@@ -17,20 +18,11 @@ const DELETE_ACTION_WIDTH = 88
 const DELETE_OPEN_THRESHOLD = 44
 const DELETE_VELOCITY_THRESHOLD = -500
 
-type MovementListItem = {
-  id: string
-  description: string
-  categoryName: string
-  createdAt: string
-  movementTypeKey: string
-  movementTypeText: string
-  amount: string
-}
-
 type SwipeableMovementsListProps = {
   items: MovementListItem[]
   emptyText: string
   deleteLabel: string
+  onDeleteSuccess?: (id: string) => void
 }
 
 type SwipeableMovementCardProps = {
@@ -192,7 +184,7 @@ function SwipeableMovementCard({
                 typographyTextStyle='normal'
                 typographyWeight='medium'
               >
-                <LocalDateTime value={item.createdAt} />
+                {item.accountName}
               </Text>
             </FlexBox>
             <FlexBox
@@ -224,6 +216,14 @@ function SwipeableMovementCard({
               >
                 {item.amount}
               </Text>
+              <Text
+                variant='span'
+                typographySize='normal'
+                typographyTextStyle='normal'
+                typographyWeight='medium'
+              >
+                <LocalDateTime value={item.createdAt} />
+              </Text>
             </FlexBox>
           </FlexBox>
         </Card>
@@ -236,9 +236,9 @@ export function SwipeableMovementsList({
   items,
   emptyText,
   deleteLabel,
+  onDeleteSuccess,
 }: SwipeableMovementsListProps) {
   const router = useRouter()
-  const [movements, setMovements] = useState(items)
 
   const handleDelete = async (id: string) => {
     const result = await deleteMovementAction(id)
@@ -248,16 +248,14 @@ export function SwipeableMovementsList({
       return false
     }
 
-    setMovements((currentMovements) =>
-      currentMovements.filter((movement) => movement.id !== id),
-    )
+    onDeleteSuccess?.(id)
     toast.success(result.message)
     router.refresh()
 
     return true
   }
 
-  if (movements.length === 0) {
+  if (items.length === 0) {
     return (
       <Card className={styles.noMovementsCard}>
         <Text>{emptyText}</Text>
@@ -267,7 +265,7 @@ export function SwipeableMovementsList({
 
   return (
     <AnimatePresence initial={false}>
-      {movements.map((movement) => (
+      {items.map((movement) => (
         <SwipeableMovementCard
           key={movement.id}
           item={movement}

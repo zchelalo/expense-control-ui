@@ -77,3 +77,36 @@
 .amountContainer {
   align-self: stretch;
 }
+
+.form {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+
+  gap: var(--spacing-3);
+}
+
+.formGroup {
+  width: 100%;
+}
+
+.listError {
+  padding: 0 var(--spacing-4);
+}
+
+.selectError {
+  border-color: var(--error);
+  color: var(--foreground);
+}
+
+.selectError:hover,
+.selectError:focus {
+  border-color: var(--error-hover);
+}
+
+.submitButton {
+  width: 100%;
+}
