@@ -13,6 +13,7 @@ import { Box } from '@/components/atoms/box'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { InputText } from '@/components/atoms/input-text'
 import styles from '@/components/molecules/select/select.module.css'
+import { useInfiniteScrollList } from '@/hooks/use-infinite-scroll-list'
 import { mergeRefs } from '@/utils/refs'
 
 type SearchBy = 'label' | 'value' | 'both'
@@ -28,6 +29,7 @@ interface SelectProps {
   value?: string
   onChange?: (value: string) => void
   onSearchTextChange?: (value: string) => void
+  onLoadMore?: () => void
   placeholder?: string
   disabled?: boolean
   triggerClassName?: string
@@ -38,6 +40,8 @@ interface SelectProps {
   searchInput?: boolean
   searchPlaceholder?: string
   searchBy?: SearchBy
+  hasMore?: boolean
+  isLoadingMore?: boolean
 }
 
 export const Select = forwardRef<HTMLDivElement, SelectProps>(
@@ -48,6 +52,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       value,
       onChange,
       onSearchTextChange,
+      onLoadMore,
       placeholder,
       disabled = false,
       triggerClassName,
@@ -58,6 +63,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       searchInput = false,
       searchPlaceholder,
       searchBy = 'label',
+      hasMore = false,
+      isLoadingMore = false,
     }: SelectProps,
     ref,
   ) => {
@@ -115,6 +122,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         return false
       })
     }, [options, searchText, searchBy])
+    const { listRef, handleScroll } = useInfiniteScrollList<HTMLUListElement>({
+      isEnabled: isSelectOpen,
+      hasMore,
+      isLoadingMore,
+      itemCount: filteredOptions.length,
+      onLoadMore,
+    })
 
     const selectedOption = options.find((opt) => opt.value === value)
 
@@ -148,7 +162,11 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                 />
               </div>
             )}
-            <ul className={listClassnames}>
+            <ul
+              ref={listRef}
+              className={listClassnames}
+              onScroll={handleScroll}
+            >
               {filteredOptions.map((option) => (
                 <li
                   key={option.value}

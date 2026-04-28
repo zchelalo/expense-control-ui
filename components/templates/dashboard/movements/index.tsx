@@ -177,8 +177,10 @@ export async function Movements({
           }}
           accountId={accountId}
           accounts={accountOptions}
+          initialAccountNextCursor={accounts.nextCursor}
           movementTypes={movementTypeOptions}
           categories={categoryOptions}
+          initialCategoryNextCursor={categories.nextCursor}
           limit={Number(limit)}
           currentFilters={{
             accountId,

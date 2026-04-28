@@ -44,8 +44,10 @@ type MovementsClientProps = {
   createTranslations: CreateMovementTranslations
   accountId?: string | null
   accounts: SelectOption[]
+  initialAccountNextCursor: string | null
   movementTypes: MovementTypeOption[]
   categories: SelectOption[]
+  initialCategoryNextCursor: string | null
   limit: number
   currentFilters: CurrentFilters
 }
@@ -72,8 +74,10 @@ export function MovementsClient({
   createTranslations,
   accountId = null,
   accounts,
+  initialAccountNextCursor,
   movementTypes,
   categories,
+  initialCategoryNextCursor,
   limit,
   currentFilters,
 }: MovementsClientProps) {
@@ -124,8 +128,10 @@ export function MovementsClient({
           translations={createTranslations}
           accountId={accountId}
           accounts={accounts}
+          initialAccountNextCursor={initialAccountNextCursor}
           movementTypes={movementTypes}
           categories={categories}
+          initialCategoryNextCursor={initialCategoryNextCursor}
           onMovementCreated={handleMovementCreated}
         />
       </FlexBox>

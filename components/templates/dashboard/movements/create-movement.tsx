@@ -1,7 +1,14 @@
 'use client'
 
 import { Plus } from 'lucide-react'
-import { useActionState, useEffect, useId, useRef, useState } from 'react'
+import {
+  useActionState,
+  useEffect,
+  useEffectEvent,
+  useId,
+  useRef,
+  useState,
+} from 'react'
 import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { InputText } from '@/components/atoms/input-text'
@@ -9,14 +16,16 @@ import { Label } from '@/components/atoms/label'
 import { Modal } from '@/components/atoms/modal'
 import { ModalContent } from '@/components/atoms/modal/modal-content'
 import { Text } from '@/components/atoms/text'
-import { List } from '@/components/molecules/list'
-import { Select } from '@/components/molecules/select'
+import { CreateMovementSelectField } from '@/components/templates/dashboard/movements/create-movement-select-field'
+import { FormFieldErrors } from '@/components/templates/dashboard/movements/form-field-errors'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
+import { findOptionByValue } from '@/components/templates/dashboard/movements/select-option-utils'
 import type {
   MovementListItem,
   MovementTypeOption,
   SelectOption,
 } from '@/components/templates/dashboard/movements/types'
+import { useAsyncSelectOptions } from '@/hooks/use-async-select-options'
 import { searchAccountOptionsAction } from '@/modules/account/adapters/in/search-options-action'
 import { searchCategoryOptionsAction } from '@/modules/category/adapters/in/search-options-action'
 import {
@@ -24,27 +33,6 @@ import {
   createMovementAction,
 } from '@/modules/movement/adapters/in/create-action'
 import { toast } from '@/utils/toast'
-
-function findOptionByValue(
-  options: SelectOption[],
-  value: string | null | undefined,
-): SelectOption | null {
-  if (!value) return null
-
-  return options.find((option) => option.value === value) ?? null
-}
-
-function preserveSelectedOption(
-  options: SelectOption[],
-  selectedOption: SelectOption | null,
-): SelectOption[] {
-  if (!selectedOption) return options
-  if (options.some((option) => option.value === selectedOption.value)) {
-    return options
-  }
-
-  return [selectedOption, ...options]
-}
 
 type CreateMovementProps = {
   translations: {
@@ -66,44 +54,17 @@ type CreateMovementProps = {
   }
   accountId?: string | null
   accounts: SelectOption[]
+  initialAccountNextCursor: string | null
   movementTypes: MovementTypeOption[]
   categories: SelectOption[]
+  initialCategoryNextCursor: string | null
   onMovementCreated?: (movement: MovementListItem) => void
 }
 
-export function CreateMovement({
-  translations,
-  accountId = null,
-  accounts,
-  movementTypes,
-  categories,
-  onMovementCreated,
-}: CreateMovementProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [formVersion, setFormVersion] = useState(0)
-  const [accountOptions, setAccountOptions] = useState(accounts)
-  const [categoryOptions, setCategoryOptions] = useState(categories)
-  const [accountSearchText, setAccountSearchText] = useState('')
-  const [categorySearchText, setCategorySearchText] = useState('')
-  const [selectedAccountId, setSelectedAccountId] = useState(accountId ?? '')
-  const [selectedAccountOption, setSelectedAccountOption] =
-    useState<SelectOption | null>(findOptionByValue(accounts, accountId))
-  const [selectedMovementTypeId, setSelectedMovementTypeId] = useState('')
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
-  const [selectedCategoryOption, setSelectedCategoryOption] =
-    useState<SelectOption | null>(null)
-  const accountSearchRequestRef = useRef(0)
-  const categorySearchRequestRef = useRef(0)
-  const handledFeedbackTimestampRef = useRef<number | null>(null)
-  const selectedAccountIdRef = useRef(selectedAccountId)
-  const selectedAccountOptionRef = useRef(selectedAccountOption)
-  const selectedMovementTypeIdRef = useRef(selectedMovementTypeId)
-  const selectedCategoryOptionRef = useRef(selectedCategoryOption)
-  const accountOptionsRef = useRef(accountOptions)
-  const [state, formAction, pending] = useActionState<
-    CreateMovementFormState,
-    FormData
-  >(createMovementAction, {
+function buildInitialFormState(
+  accountId: string | null | undefined,
+): CreateMovementFormState {
+  return {
     errors: null,
     feedback: null,
     createdMovement: null,
@@ -114,6 +75,60 @@ export function CreateMovement({
       movementTypeId: '',
       categoryId: '',
     },
+  }
+}
+
+export function CreateMovement({
+  translations,
+  accountId = null,
+  accounts,
+  initialAccountNextCursor,
+  movementTypes,
+  categories,
+  initialCategoryNextCursor,
+  onMovementCreated,
+}: CreateMovementProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [formVersion, setFormVersion] = useState(0)
+  const [selectedMovementTypeId, setSelectedMovementTypeId] = useState('')
+  const handledFeedbackTimestampRef = useRef<number | null>(null)
+  const [state, formAction, pending] = useActionState<
+    CreateMovementFormState,
+    FormData
+  >(createMovementAction, buildInitialFormState(accountId))
+  const {
+    options: accountOptions,
+    selectedValue: selectedAccountId,
+    selectedOption: selectedAccountOption,
+    isLoadingMore: accountIsLoadingMore,
+    hasMore: accountHasMore,
+    setSearchText: setAccountSearchText,
+    handleChange: handleAccountChange,
+    handleLoadMore: handleAccountLoadMore,
+    selectValue: selectAccountValue,
+    reset: resetAccountSelect,
+  } = useAsyncSelectOptions({
+    initialOptions: accounts,
+    initialNextCursor: initialAccountNextCursor,
+    initialValue: accountId,
+    isOpen,
+    searchOptions: searchAccountOptionsAction,
+  })
+  const {
+    options: categoryOptions,
+    selectedValue: selectedCategoryId,
+    selectedOption: selectedCategoryOption,
+    isLoadingMore: categoryIsLoadingMore,
+    hasMore: categoryHasMore,
+    setSearchText: setCategorySearchText,
+    handleChange: handleCategoryChange,
+    handleLoadMore: handleCategoryLoadMore,
+    reset: resetCategorySelect,
+  } = useAsyncSelectOptions({
+    initialOptions: categories,
+    initialNextCursor: initialCategoryNextCursor,
+    isOpen,
+    searchOptions: searchCategoryOptionsAction,
   })
   const accountFieldId = useId()
   const amountId = useId()
@@ -122,192 +137,72 @@ export function CreateMovement({
   const categoryId = useId()
 
   useEffect(() => {
-    setAccountOptions(preserveSelectedOption(accounts, selectedAccountOption))
-  }, [accounts, selectedAccountOption])
-
-  useEffect(() => {
-    setCategoryOptions(
-      preserveSelectedOption(categories, selectedCategoryOption),
-    )
-  }, [categories, selectedCategoryOption])
-
-  useEffect(() => {
     if (!accountId) return
 
-    setSelectedAccountId(accountId)
-    setSelectedAccountOption(findOptionByValue(accounts, accountId))
-  }, [accountId, accounts])
+    selectAccountValue(accountId)
+  }, [accountId, selectAccountValue])
 
-  useEffect(() => {
-    selectedAccountIdRef.current = selectedAccountId
-  }, [selectedAccountId])
-
-  useEffect(() => {
-    selectedAccountOptionRef.current = selectedAccountOption
-  }, [selectedAccountOption])
-
-  useEffect(() => {
-    selectedMovementTypeIdRef.current = selectedMovementTypeId
-  }, [selectedMovementTypeId])
-
-  useEffect(() => {
-    selectedCategoryOptionRef.current = selectedCategoryOption
-  }, [selectedCategoryOption])
-
-  useEffect(() => {
-    accountOptionsRef.current = accountOptions
-  }, [accountOptions])
-
-  useEffect(() => {
+  const handleFeedback = useEffectEvent(() => {
     if (!state.feedback) return
-    if (handledFeedbackTimestampRef.current === state.feedback.timestamp) return
-
-    handledFeedbackTimestampRef.current = state.feedback.timestamp
 
     if (state.feedback.type === 'success') {
-      const nextSelectedAccountId = accountId ?? selectedAccountIdRef.current
+      const nextSelectedAccountId = accountId ?? selectedAccountId
       const nextSelectedAccountOption =
-        findOptionByValue(accountOptionsRef.current, nextSelectedAccountId) ??
+        findOptionByValue(accountOptions, nextSelectedAccountId) ??
         findOptionByValue(accounts, nextSelectedAccountId) ??
-        selectedAccountOptionRef.current
+        selectedAccountOption
 
       if (state.createdMovement) {
+        const createdMovement = state.createdMovement
         const nextSelectedMovementType =
           movementTypes.find(
             (movementType) =>
-              movementType.value === state.createdMovement?.movementTypeId,
+              movementType.value === createdMovement.movementTypeId,
           ) ??
           movementTypes.find(
-            (movementType) =>
-              movementType.value === selectedMovementTypeIdRef.current,
+            (movementType) => movementType.value === selectedMovementTypeId,
           ) ??
           null
 
         onMovementCreated?.({
-          id: state.createdMovement.id,
-          accountId: state.createdMovement.accountId,
+          id: createdMovement.id,
+          accountId: createdMovement.accountId,
           accountName: nextSelectedAccountOption?.label ?? '',
-          description: state.createdMovement.description,
-          categoryId: state.createdMovement.categoryId,
-          categoryName: selectedCategoryOptionRef.current?.label ?? '',
-          createdAt: state.createdMovement.createdAt,
-          movementTypeId: state.createdMovement.movementTypeId,
+          description: createdMovement.description,
+          categoryId: createdMovement.categoryId,
+          categoryName: selectedCategoryOption?.label ?? '',
+          createdAt: createdMovement.createdAt,
+          movementTypeId: createdMovement.movementTypeId,
           movementTypeKey: nextSelectedMovementType?.key ?? '',
           movementTypeText: nextSelectedMovementType?.label ?? '',
-          amount: state.createdMovement.amountFormatted,
+          amount: createdMovement.amountFormatted,
         })
       }
 
       setFormVersion((currentVersion) => currentVersion + 1)
-      setSelectedAccountId(nextSelectedAccountId)
-      setSelectedAccountOption(nextSelectedAccountOption)
+      resetAccountSelect(nextSelectedAccountId)
       setSelectedMovementTypeId('')
-      setSelectedCategoryId('')
-      setSelectedCategoryOption(null)
-      setAccountSearchText('')
-      setCategorySearchText('')
-      setAccountOptions(
-        preserveSelectedOption(accounts, nextSelectedAccountOption),
-      )
-      setCategoryOptions(categories)
+      resetCategorySelect('')
       toast.success(state.feedback.message)
       setIsOpen(false)
       return
     }
 
     toast.error(state.feedback.message)
-  }, [
-    accountId,
-    accounts,
-    categories,
-    movementTypes,
-    onMovementCreated,
-    state.createdMovement,
-    state.feedback,
-  ])
+  })
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!state.feedback) return
+    if (handledFeedbackTimestampRef.current === state.feedback.timestamp) return
 
-    const normalizedSearchText = accountSearchText.trim()
-    if (!normalizedSearchText) {
-      setAccountOptions(preserveSelectedOption(accounts, selectedAccountOption))
-      return
-    }
-
-    const timeout = setTimeout(() => {
-      const requestId = accountSearchRequestRef.current + 1
-      accountSearchRequestRef.current = requestId
-
-      void searchAccountOptionsAction(normalizedSearchText)
-        .then((nextAccountOptions) => {
-          if (accountSearchRequestRef.current !== requestId) return
-
-          setAccountOptions(
-            preserveSelectedOption(nextAccountOptions, selectedAccountOption),
-          )
-        })
-        .catch(() => undefined)
-    }, 250)
-
-    return () => clearTimeout(timeout)
-  }, [accountSearchText, accounts, isOpen, selectedAccountOption])
-
-  useEffect(() => {
-    if (!isOpen) return
-
-    const normalizedSearchText = categorySearchText.trim()
-    if (!normalizedSearchText) {
-      setCategoryOptions(
-        preserveSelectedOption(categories, selectedCategoryOption),
-      )
-      return
-    }
-
-    const timeout = setTimeout(() => {
-      const requestId = categorySearchRequestRef.current + 1
-      categorySearchRequestRef.current = requestId
-
-      void searchCategoryOptionsAction(normalizedSearchText)
-        .then((nextCategoryOptions) => {
-          if (categorySearchRequestRef.current !== requestId) return
-
-          setCategoryOptions(
-            preserveSelectedOption(nextCategoryOptions, selectedCategoryOption),
-          )
-        })
-        .catch(() => undefined)
-    }, 250)
-
-    return () => clearTimeout(timeout)
-  }, [categories, categorySearchText, isOpen, selectedCategoryOption])
+    handledFeedbackTimestampRef.current = state.feedback.timestamp
+    handleFeedback()
+  }, [handleFeedback, state.feedback])
 
   const handleClose = () => {
-    setAccountSearchText('')
-    setCategorySearchText('')
-    setAccountOptions(preserveSelectedOption(accounts, selectedAccountOption))
-    setCategoryOptions(
-      preserveSelectedOption(categories, selectedCategoryOption),
-    )
+    resetAccountSelect()
+    resetCategorySelect()
     setIsOpen(false)
-  }
-
-  const handleAccountChange = (value: string) => {
-    const nextSelectedAccountOption =
-      findOptionByValue(accountOptions, value) ??
-      findOptionByValue(accounts, value)
-
-    setSelectedAccountId(value)
-    setSelectedAccountOption(nextSelectedAccountOption)
-  }
-
-  const handleCategoryChange = (value: string) => {
-    const nextSelectedCategoryOption =
-      findOptionByValue(categoryOptions, value) ??
-      findOptionByValue(categories, value)
-
-    setSelectedCategoryId(value)
-    setSelectedCategoryOption(nextSelectedCategoryOption)
   }
 
   return (
@@ -315,40 +210,24 @@ export function CreateMovement({
       <Modal isOpen={isOpen}>
         <ModalContent title={translations.newMovement} onClose={handleClose}>
           <form key={formVersion} className={styles.form} action={formAction}>
-            <FlexBox
-              variant='div'
-              direction='column'
-              alignItems='stretch'
-              gap={2}
-              className={styles.formGroup}
-            >
-              <Label htmlFor={accountFieldId}>
-                {translations.accountLabel}
-              </Label>
-              <input type='hidden' name='accountId' value={selectedAccountId} />
-              <Select
-                id={accountFieldId}
-                options={accountOptions}
-                value={selectedAccountId}
-                onChange={handleAccountChange}
-                onSearchTextChange={setAccountSearchText}
-                placeholder={translations.accountPlaceholder}
-                searchInput
-                searchPlaceholder={translations.searchAccountPlaceholder}
-                triggerClassName={
-                  state.errors?.accountId ? styles.selectError : undefined
-                }
-                disabled={pending}
-              />
-              {state.errors?.accountId && state.errors.accountId.length > 0 && (
-                <List
-                  listStyle='disc'
-                  messages={state.errors.accountId}
-                  className={styles.listError}
-                  isErrorList
-                />
-              )}
-            </FlexBox>
+            <CreateMovementSelectField
+              id={accountFieldId}
+              label={translations.accountLabel}
+              name='accountId'
+              value={selectedAccountId}
+              options={accountOptions}
+              onChange={handleAccountChange}
+              placeholder={translations.accountPlaceholder}
+              errorMessages={state.errors?.accountId}
+              disabled={pending}
+              searchable={{
+                onSearchTextChange: setAccountSearchText,
+                onLoadMore: handleAccountLoadMore,
+                searchPlaceholder: translations.searchAccountPlaceholder,
+                hasMore: accountHasMore,
+                isLoadingMore: accountIsLoadingMore,
+              }}
+            />
             <FlexBox
               variant='div'
               direction='column'
@@ -369,14 +248,7 @@ export function CreateMovement({
                 disabled={pending}
                 defaultValue={state.values.amount}
               />
-              {state.errors?.amount && state.errors.amount.length > 0 && (
-                <List
-                  listStyle='disc'
-                  messages={state.errors.amount}
-                  className={styles.listError}
-                  isErrorList
-                />
-              )}
+              <FormFieldErrors messages={state.errors?.amount} />
             </FlexBox>
             <FlexBox
               variant='div'
@@ -396,89 +268,37 @@ export function CreateMovement({
                 disabled={pending}
                 defaultValue={state.values.description}
               />
-              {state.errors?.description &&
-                state.errors.description.length > 0 && (
-                  <List
-                    listStyle='disc'
-                    messages={state.errors.description}
-                    className={styles.listError}
-                    isErrorList
-                  />
-                )}
+              <FormFieldErrors messages={state.errors?.description} />
             </FlexBox>
-            <FlexBox
-              variant='div'
-              direction='column'
-              alignItems='stretch'
-              gap={2}
-              className={styles.formGroup}
-            >
-              <Label htmlFor={movementTypeId}>
-                {translations.movementTypeLabel}
-              </Label>
-              <input
-                type='hidden'
-                name='movementTypeId'
-                value={selectedMovementTypeId}
-              />
-              <Select
-                id={movementTypeId}
-                options={movementTypes}
-                value={selectedMovementTypeId}
-                onChange={setSelectedMovementTypeId}
-                placeholder={translations.movementTypePlaceholder}
-                triggerClassName={
-                  state.errors?.movementTypeId ? styles.selectError : undefined
-                }
-                disabled={pending}
-              />
-              {state.errors?.movementTypeId &&
-                state.errors.movementTypeId.length > 0 && (
-                  <List
-                    listStyle='disc'
-                    messages={state.errors.movementTypeId}
-                    className={styles.listError}
-                    isErrorList
-                  />
-                )}
-            </FlexBox>
-            <FlexBox
-              variant='div'
-              direction='column'
-              alignItems='stretch'
-              gap={2}
-              className={styles.formGroup}
-            >
-              <Label htmlFor={categoryId}>{translations.categoryLabel}</Label>
-              <input
-                type='hidden'
-                name='categoryId'
-                value={selectedCategoryId}
-              />
-              <Select
-                id={categoryId}
-                options={categoryOptions}
-                value={selectedCategoryId}
-                onChange={handleCategoryChange}
-                onSearchTextChange={setCategorySearchText}
-                placeholder={translations.categoryPlaceholder}
-                searchInput
-                searchPlaceholder={translations.searchCategoryPlaceholder}
-                triggerClassName={
-                  state.errors?.categoryId ? styles.selectError : undefined
-                }
-                disabled={pending}
-              />
-              {state.errors?.categoryId &&
-                state.errors.categoryId.length > 0 && (
-                  <List
-                    listStyle='disc'
-                    messages={state.errors.categoryId}
-                    className={styles.listError}
-                    isErrorList
-                  />
-                )}
-            </FlexBox>
+            <CreateMovementSelectField
+              id={movementTypeId}
+              label={translations.movementTypeLabel}
+              name='movementTypeId'
+              value={selectedMovementTypeId}
+              options={movementTypes}
+              onChange={setSelectedMovementTypeId}
+              placeholder={translations.movementTypePlaceholder}
+              errorMessages={state.errors?.movementTypeId}
+              disabled={pending}
+            />
+            <CreateMovementSelectField
+              id={categoryId}
+              label={translations.categoryLabel}
+              name='categoryId'
+              value={selectedCategoryId}
+              options={categoryOptions}
+              onChange={handleCategoryChange}
+              placeholder={translations.categoryPlaceholder}
+              errorMessages={state.errors?.categoryId}
+              disabled={pending}
+              searchable={{
+                onSearchTextChange: setCategorySearchText,
+                onLoadMore: handleCategoryLoadMore,
+                searchPlaceholder: translations.searchCategoryPlaceholder,
+                hasMore: categoryHasMore,
+                isLoadingMore: categoryIsLoadingMore,
+              }}
+            />
             <Button
               type='submit'
               className={styles.submitButton}

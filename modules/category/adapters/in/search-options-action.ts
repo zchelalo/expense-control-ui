@@ -8,6 +8,11 @@ type SelectOption = {
   value: string
 }
 
+type SearchOptionsResult = {
+  options: SelectOption[]
+  nextCursor: string | null
+}
+
 const categoryRepository = new CategoryRepository()
 const findAllUseCase = new FindAllUseCase(categoryRepository)
 const SEARCH_LIMIT = 10
@@ -18,11 +23,12 @@ function normalizeSearch(search: string): string {
 
 export async function searchCategoryOptionsAction(
   search: string,
-): Promise<SelectOption[]> {
+  afterCursor: string | null = null,
+): Promise<SearchOptionsResult> {
   const normalizedSearch = normalizeSearch(search)
   const categories = await findAllUseCase.execute(
     SEARCH_LIMIT,
-    null,
+    afterCursor,
     null,
     normalizedSearch || null,
   )
@@ -36,8 +42,11 @@ export async function searchCategoryOptionsAction(
       )
     : categories.items
 
-  return filteredCategories.map((category) => ({
-    value: category.getId(),
-    label: category.getName(),
-  }))
+  return {
+    options: filteredCategories.map((category) => ({
+      value: category.getId(),
+      label: category.getName(),
+    })),
+    nextCursor: categories.nextCursor,
+  }
 }
