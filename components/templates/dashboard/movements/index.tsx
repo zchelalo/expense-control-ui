@@ -3,6 +3,7 @@ import { FlexBox } from '@/components/atoms/flex-box'
 import { Text } from '@/components/atoms/text'
 import { Card } from '@/components/molecules/card'
 import { Paginator } from '@/components/molecules/paginator'
+import { getMovementTypeText } from '@/components/templates/dashboard/movements/get-movement-type-text'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
 import { MovementsClient } from '@/components/templates/dashboard/movements/movements-client'
 import { type Language, Namespace } from '@/constants/common'
@@ -99,17 +100,6 @@ export async function Movements({
         }).toString()}`
       : null
 
-    const getMovementTypeText = (movementTypeKey: string) => {
-      switch (movementTypeKey) {
-        case 'income':
-          return t('movement_type.income')
-        case 'expense':
-          return t('movement_type.expense')
-        default:
-          return movementTypeKey
-      }
-    }
-
     const movementItems = movements.items.map((movement) => ({
       id: movement.getId().getValue(),
       accountId: movement.getAccount().getId().getValue(),
@@ -122,6 +112,7 @@ export async function Movements({
       movementTypeKey: movement.getMovementType().getKey().getValue(),
       movementTypeText: getMovementTypeText(
         movement.getMovementType().getKey().getValue(),
+        t,
       ),
       amount: movement
         .getAmount()
@@ -131,7 +122,7 @@ export async function Movements({
     const movementTypeOptions = movementTypes.map((movementType) => ({
       value: movementType.getId(),
       label:
-        getMovementTypeText(movementType.getKey()) || movementType.getName(),
+        getMovementTypeText(movementType.getKey(), t) || movementType.getName(),
       key: movementType.getKey(),
     }))
 

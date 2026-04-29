@@ -4,6 +4,18 @@
 
 .body {
   width: 100%;
+  padding-bottom: calc(var(--spacing-16) + var(--spacing-12));
+}
+
+.filters {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.filterField {
+  min-width: 0;
 }
 
 .noMovementsCard {
@@ -109,4 +121,43 @@
 
 .submitButton {
   width: 100%;
+}
+
+.fabButton {
+  position: fixed;
+  left: var(--spacing-4);
+  bottom: var(--spacing-4);
+  z-index: var(--z-index-fifth);
+  inline-size: 3.5rem;
+  block-size: 3.5rem;
+  padding: 0;
+  border-radius: var(--border-radius-full);
+  box-shadow: var(--shadow-md);
+}
+
+.fabButton:hover,
+.fabButton:focus-visible {
+  box-shadow: var(--shadow-lg);
+}
+
+.fabButtonIcon {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+}
+
+@media (max-width: 1024px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .fabButton {
+    inline-size: 3rem;
+    block-size: 3rem;
+  }
 }

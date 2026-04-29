@@ -9,7 +9,7 @@
   right: 0;
   bottom: 0;
   overflow-y: auto;
-  z-index: var(--z-index-first);
+  z-index: 60;
 }
 
 .modalOpen {

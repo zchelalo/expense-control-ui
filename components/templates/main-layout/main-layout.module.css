@@ -81,6 +81,7 @@
 .footer {
   width: 100%;
   position: fixed;
+  z-index: var(--z-index-fifth);
 
   bottom: var(--spacing-4);
   padding-right: var(--spacing-4);

@@ -15,7 +15,6 @@ import { InputText } from '@/components/atoms/input-text'
 import { Label } from '@/components/atoms/label'
 import { Modal } from '@/components/atoms/modal'
 import { ModalContent } from '@/components/atoms/modal/modal-content'
-import { Text } from '@/components/atoms/text'
 import { CreateMovementSelectField } from '@/components/templates/dashboard/movements/create-movement-select-field'
 import { FormFieldErrors } from '@/components/templates/dashboard/movements/form-field-errors'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
@@ -311,13 +310,14 @@ export function CreateMovement({
           </form>
         </ModalContent>
       </Modal>
-      <Button type='button' onClick={() => setIsOpen(true)}>
-        <FlexBox variant='div' direction='row' alignItems='center' gap={2}>
-          <Text typographySize='small' typographyWeight='medium'>
-            {translations.newMovement}
-          </Text>
-          <Plus size={16} />
-        </FlexBox>
+      <Button
+        type='button'
+        className={styles.fabButton}
+        onClick={() => setIsOpen(true)}
+        aria-label={translations.newMovement}
+        title={translations.newMovement}
+      >
+        <Plus className={styles.fabButtonIcon} />
       </Button>
     </>
   )
