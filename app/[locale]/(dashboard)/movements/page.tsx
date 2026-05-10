@@ -14,6 +14,8 @@ type MovementsPageProps = {
     accountId?: string
     categoryId?: string
     movementTypeId?: string
+    dateFrom?: string
+    dateTo?: string
     cursorStack?: string
   }>
 }
@@ -29,6 +31,8 @@ export default async function MovementsPage({
     accountId,
     categoryId,
     movementTypeId,
+    dateFrom,
+    dateTo,
     cursorStack,
   } = params
 
@@ -40,6 +44,8 @@ export default async function MovementsPage({
       accountId={accountId}
       categoryId={categoryId}
       movementTypeId={movementTypeId}
+      dateFrom={dateFrom}
+      dateTo={dateTo}
       cursorStack={cursorStack}
     />
   )

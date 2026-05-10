@@ -7,6 +7,8 @@ export type FindAllMovementsFilters = {
   accountId?: string | null
   categoryId?: string | null
   movementTypeId?: string | null
+  dateFrom?: string | null
+  dateTo?: string | null
 }
 
 export type CreateMovementInput = {

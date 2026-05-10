@@ -5,6 +5,8 @@ type MovementQueryParams = {
   accountId?: string | null
   categoryId?: string | null
   movementTypeId?: string | null
+  dateFrom?: string | null
+  dateTo?: string | null
   cursorStack?: string | null
 }
 
@@ -22,6 +24,8 @@ export function buildMovementsSearchParams({
   accountId,
   categoryId,
   movementTypeId,
+  dateFrom,
+  dateTo,
   cursorStack,
 }: MovementQueryParams): URLSearchParams {
   const params = new URLSearchParams()
@@ -32,6 +36,8 @@ export function buildMovementsSearchParams({
   const normalizedAccountId = normalizeValue(accountId)
   const normalizedCategoryId = normalizeValue(categoryId)
   const normalizedMovementTypeId = normalizeValue(movementTypeId)
+  const normalizedDateFrom = normalizeValue(dateFrom)
+  const normalizedDateTo = normalizeValue(dateTo)
   const normalizedCursorStack = normalizeValue(cursorStack)
 
   if (normalizedLimit) params.set('limit', normalizedLimit)
@@ -41,6 +47,8 @@ export function buildMovementsSearchParams({
   if (normalizedCategoryId) params.set('categoryId', normalizedCategoryId)
   if (normalizedMovementTypeId)
     params.set('movementTypeId', normalizedMovementTypeId)
+  if (normalizedDateFrom) params.set('dateFrom', normalizedDateFrom)
+  if (normalizedDateTo) params.set('dateTo', normalizedDateTo)
   if (normalizedCursorStack) params.set('cursorStack', normalizedCursorStack)
 
   return params

@@ -1,14 +1,19 @@
 'use client'
 
-import { useEffect, useId, useState, useTransition } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
+import { Modal } from '@/components/atoms/modal'
+import { ModalContent } from '@/components/atoms/modal/modal-content'
 import { CreateMovement } from '@/components/templates/dashboard/movements/create-movement'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
-import { MovementSelectField } from '@/components/templates/dashboard/movements/select-field'
+import { MovementsFilters } from '@/components/templates/dashboard/movements/movements-filters'
 import { SwipeableMovementsList } from '@/components/templates/dashboard/movements/swipeable-movements-list'
 import type {
   CreateMovementTranslations,
   MovementFilters,
+  MovementFilterTranslations,
   MovementListItem,
   MovementTypeOption,
   SelectOption,
@@ -24,6 +29,7 @@ type MovementsClientProps = {
   emptyText: string
   deleteLabel: string
   createTranslations: CreateMovementTranslations
+  filterTranslations: MovementFilterTranslations
   accountId?: string | null
   accounts: SelectOption[]
   initialAccountNextCursor: string | null
@@ -32,6 +38,18 @@ type MovementsClientProps = {
   initialCategoryNextCursor: string | null
   limit: number
   currentFilters: MovementFilters
+}
+
+function toLocalDateValue(value: string): string | null {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) return null
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
 }
 
 function movementMatchesCurrentFilters(
@@ -45,8 +63,20 @@ function movementMatchesCurrentFilters(
   const matchesMovementType =
     !filters.movementTypeId ||
     movement.movementTypeId === filters.movementTypeId
+  const movementDate = toLocalDateValue(movement.createdAt)
+  const matchesDateFrom =
+    !filters.dateFrom ||
+    (movementDate !== null && movementDate >= filters.dateFrom)
+  const matchesDateTo =
+    !filters.dateTo || (movementDate !== null && movementDate <= filters.dateTo)
 
-  return matchesAccount && matchesCategory && matchesMovementType
+  return (
+    matchesAccount &&
+    matchesCategory &&
+    matchesMovementType &&
+    matchesDateFrom &&
+    matchesDateTo
+  )
 }
 
 function withPlaceholderOption<TOption extends SelectOption>(
@@ -67,6 +97,7 @@ export function MovementsClient({
   emptyText,
   deleteLabel,
   createTranslations,
+  filterTranslations,
   accountId = null,
   accounts,
   initialAccountNextCursor,
@@ -80,11 +111,15 @@ export function MovementsClient({
   const pathname = usePathname()
   const [isFiltering, startFilteringTransition] = useTransition()
   const [movements, setMovements] = useState(initialItems)
-  const movementTypeFilterId = useId()
-  const accountFilterId = useId()
-  const categoryFilterId = useId()
+  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false)
   const [selectedMovementTypeId, setSelectedMovementTypeId] = useState(
     currentFilters.movementTypeId ?? '',
+  )
+  const [selectedDateFrom, setSelectedDateFrom] = useState(
+    currentFilters.dateFrom ?? '',
+  )
+  const [selectedDateTo, setSelectedDateTo] = useState(
+    currentFilters.dateTo ?? '',
   )
   const {
     options: accountFilterOptions,
@@ -135,54 +170,83 @@ export function MovementsClient({
     setSelectedMovementTypeId(currentFilters.movementTypeId ?? '')
   }, [currentFilters.movementTypeId])
 
-  const navigateToFilters = ({
+  useEffect(() => {
+    setSelectedDateFrom(currentFilters.dateFrom ?? '')
+  }, [currentFilters.dateFrom])
+
+  useEffect(() => {
+    setSelectedDateTo(currentFilters.dateTo ?? '')
+  }, [currentFilters.dateTo])
+
+  const buildFiltersHref = ({
     accountId,
     categoryId,
     movementTypeId,
+    dateFrom,
+    dateTo,
   }: {
     accountId: string
     categoryId: string
     movementTypeId: string
+    dateFrom: string
+    dateTo: string
   }) => {
     const searchParams = buildMovementsSearchParams({
       limit: String(limit),
       accountId,
       categoryId,
       movementTypeId,
+      dateFrom,
+      dateTo,
     })
-    const href =
-      searchParams.size > 0 ? `${pathname}?${searchParams}` : pathname
+
+    return searchParams.size > 0 ? `${pathname}?${searchParams}` : pathname
+  }
+
+  const applyFilters = () => {
+    const href = buildFiltersHref({
+      accountId: selectedAccountId,
+      categoryId: selectedCategoryId,
+      movementTypeId: selectedMovementTypeId,
+      dateFrom: selectedDateFrom,
+      dateTo: selectedDateTo,
+    })
 
     startFilteringTransition(() => {
       router.push(href)
     })
   }
 
-  const handleAccountFilterChange = (nextAccountId: string) => {
-    selectAccountValue(nextAccountId)
-    navigateToFilters({
-      accountId: nextAccountId,
-      categoryId: selectedCategoryId,
-      movementTypeId: selectedMovementTypeId,
+  const resetFilters = () => {
+    resetAccountFilter('')
+    resetCategoryFilter('')
+    setSelectedMovementTypeId('')
+    setSelectedDateFrom('')
+    setSelectedDateTo('')
+
+    const href = buildFiltersHref({
+      accountId: '',
+      categoryId: '',
+      movementTypeId: '',
+      dateFrom: '',
+      dateTo: '',
+    })
+
+    startFilteringTransition(() => {
+      router.push(href)
     })
   }
 
-  const handleCategoryFilterChange = (nextCategoryId: string) => {
-    selectCategoryValue(nextCategoryId)
-    navigateToFilters({
-      accountId: selectedAccountId,
-      categoryId: nextCategoryId,
-      movementTypeId: selectedMovementTypeId,
-    })
+  const handleDateFromChange = (nextDateFrom: string) => {
+    setSelectedDateFrom(nextDateFrom)
+
+    if (selectedDateTo && nextDateFrom && selectedDateTo < nextDateFrom) {
+      setSelectedDateTo('')
+    }
   }
 
-  const handleMovementTypeFilterChange = (nextMovementTypeId: string) => {
-    setSelectedMovementTypeId(nextMovementTypeId)
-    navigateToFilters({
-      accountId: selectedAccountId,
-      categoryId: selectedCategoryId,
-      movementTypeId: nextMovementTypeId,
-    })
+  const handleDateToChange = (nextDateTo: string) => {
+    setSelectedDateTo(nextDateTo)
   }
 
   const handleMovementCreated = (movement: MovementListItem) => {
@@ -206,6 +270,35 @@ export function MovementsClient({
     )
   }
 
+  const accountSearchable = {
+    onSearchTextChange: setAccountSearchText,
+    onLoadMore: handleAccountLoadMore,
+    searchPlaceholder: createTranslations.searchAccountPlaceholder,
+    hasMore: accountHasMore,
+    isLoadingMore: accountIsLoadingMore,
+  }
+
+  const categorySearchable = {
+    onSearchTextChange: setCategorySearchText,
+    onLoadMore: handleCategoryLoadMore,
+    searchPlaceholder: createTranslations.searchCategoryPlaceholder,
+    hasMore: categoryHasMore,
+    isLoadingMore: categoryIsLoadingMore,
+  }
+
+  const accountOptions = withPlaceholderOption(
+    createTranslations.accountPlaceholder,
+    accountFilterOptions,
+  )
+  const movementTypeOptions = withPlaceholderOption(
+    createTranslations.movementTypePlaceholder,
+    movementTypes,
+  )
+  const categoryOptions = withPlaceholderOption(
+    createTranslations.categoryPlaceholder,
+    categoryFilterOptions,
+  )
+
   return (
     <FlexBox
       variant='div'
@@ -225,58 +318,79 @@ export function MovementsClient({
         initialCategoryNextCursor={initialCategoryNextCursor}
         onMovementCreated={handleMovementCreated}
       />
-      <div className={styles.filters}>
-        <MovementSelectField
-          id={accountFilterId}
-          value={selectedAccountId}
-          options={withPlaceholderOption(
-            createTranslations.accountPlaceholder,
-            accountFilterOptions,
-          )}
-          onChange={handleAccountFilterChange}
-          placeholder={createTranslations.accountPlaceholder}
+      <div className={styles.desktopFilters}>
+        <MovementsFilters
+          idPrefix='desktop'
+          createTranslations={createTranslations}
+          filterTranslations={filterTranslations}
+          accountId={selectedAccountId}
+          categoryId={selectedCategoryId}
+          movementTypeId={selectedMovementTypeId}
+          dateFrom={selectedDateFrom}
+          dateTo={selectedDateTo}
+          accountOptions={accountOptions}
+          categoryOptions={categoryOptions}
+          movementTypeOptions={movementTypeOptions}
+          accountSearchable={accountSearchable}
+          categorySearchable={categorySearchable}
           disabled={isFiltering}
-          searchable={{
-            onSearchTextChange: setAccountSearchText,
-            onLoadMore: handleAccountLoadMore,
-            searchPlaceholder: createTranslations.searchAccountPlaceholder,
-            hasMore: accountHasMore,
-            isLoadingMore: accountIsLoadingMore,
-          }}
-          className={styles.filterField}
-        />
-        <MovementSelectField
-          id={movementTypeFilterId}
-          value={selectedMovementTypeId}
-          options={withPlaceholderOption(
-            createTranslations.movementTypePlaceholder,
-            movementTypes,
-          )}
-          onChange={handleMovementTypeFilterChange}
-          placeholder={createTranslations.movementTypePlaceholder}
-          disabled={isFiltering}
-          className={styles.filterField}
-        />
-        <MovementSelectField
-          id={categoryFilterId}
-          value={selectedCategoryId}
-          options={withPlaceholderOption(
-            createTranslations.categoryPlaceholder,
-            categoryFilterOptions,
-          )}
-          onChange={handleCategoryFilterChange}
-          placeholder={createTranslations.categoryPlaceholder}
-          disabled={isFiltering}
-          searchable={{
-            onSearchTextChange: setCategorySearchText,
-            onLoadMore: handleCategoryLoadMore,
-            searchPlaceholder: createTranslations.searchCategoryPlaceholder,
-            hasMore: categoryHasMore,
-            isLoadingMore: categoryIsLoadingMore,
-          }}
-          className={styles.filterField}
+          onAccountChange={selectAccountValue}
+          onCategoryChange={selectCategoryValue}
+          onMovementTypeChange={setSelectedMovementTypeId}
+          onDateFromChange={handleDateFromChange}
+          onDateToChange={handleDateToChange}
+          onApply={applyFilters}
+          onReset={resetFilters}
         />
       </div>
+      <div className={styles.mobileFiltersBar}>
+        <Button
+          type='button'
+          appearance='outlined'
+          className={styles.mobileFiltersButton}
+          onClick={() => setIsFiltersModalOpen(true)}
+          disabled={isFiltering}
+        >
+          <SlidersHorizontal size={16} />
+          {filterTranslations.open}
+        </Button>
+      </div>
+      <Modal isOpen={isFiltersModalOpen}>
+        <ModalContent
+          title={filterTranslations.title}
+          onClose={() => setIsFiltersModalOpen(false)}
+        >
+          <MovementsFilters
+            idPrefix='mobile'
+            createTranslations={createTranslations}
+            filterTranslations={filterTranslations}
+            accountId={selectedAccountId}
+            categoryId={selectedCategoryId}
+            movementTypeId={selectedMovementTypeId}
+            dateFrom={selectedDateFrom}
+            dateTo={selectedDateTo}
+            accountOptions={accountOptions}
+            categoryOptions={categoryOptions}
+            movementTypeOptions={movementTypeOptions}
+            accountSearchable={accountSearchable}
+            categorySearchable={categorySearchable}
+            disabled={isFiltering}
+            onAccountChange={selectAccountValue}
+            onCategoryChange={selectCategoryValue}
+            onMovementTypeChange={setSelectedMovementTypeId}
+            onDateFromChange={handleDateFromChange}
+            onDateToChange={handleDateToChange}
+            onApply={() => {
+              setIsFiltersModalOpen(false)
+              applyFilters()
+            }}
+            onReset={() => {
+              setIsFiltersModalOpen(false)
+              resetFilters()
+            }}
+          />
+        </ModalContent>
+      </Modal>
       <SwipeableMovementsList
         items={movements}
         emptyText={emptyText}

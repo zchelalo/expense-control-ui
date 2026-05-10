@@ -35,6 +35,14 @@
     "action": "Delete",
     "success": "Movement deleted successfully"
   },
+  "filters": {
+    "title": "Filters",
+    "open": "Filter",
+    "apply": "Apply filters",
+    "reset": "Reset filters",
+    "date_from_label": "Date from",
+    "date_to_label": "Date to"
+  },
   "errors": {
     "movement_store_error": "An error occurred while accessing the movement store.",
     "movement_not_found_error": "The requested movement could not be found.",

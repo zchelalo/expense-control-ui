@@ -47,10 +47,21 @@ export type CreateMovementTranslations = {
   creatingMovement: string
 }
 
+export type MovementFilterTranslations = {
+  title: string
+  open: string
+  apply: string
+  reset: string
+  dateFromLabel: string
+  dateToLabel: string
+}
+
 export type MovementFilters = {
   accountId?: string | null
   categoryId?: string | null
   movementTypeId?: string | null
+  dateFrom?: string | null
+  dateTo?: string | null
   afterCursor?: string | null
   beforeCursor?: string | null
 }

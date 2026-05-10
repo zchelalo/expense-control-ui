@@ -35,6 +35,14 @@
     "action": "Eliminar",
     "success": "Movimiento eliminado correctamente"
   },
+  "filters": {
+    "title": "Filtros",
+    "open": "Filtrar",
+    "apply": "Aplicar filtros",
+    "reset": "Reiniciar filtros",
+    "date_from_label": "Fecha desde",
+    "date_to_label": "Fecha hasta"
+  },
   "errors": {
     "movement_store_error": "Se produjo un error al acceder al almacén de movimientos.",
     "movement_not_found_error": "No se encontró el movimiento solicitado.",

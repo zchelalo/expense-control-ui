@@ -1,4 +1,7 @@
-import type { CreateMovementTranslations } from '@/components/templates/dashboard/movements/types'
+import type {
+  CreateMovementTranslations,
+  MovementFilterTranslations,
+} from '@/components/templates/dashboard/movements/types'
 
 type Translate = (key: string) => string
 
@@ -21,5 +24,18 @@ export function buildCreateMovementTranslations(
     searchCategoryPlaceholder: translate('form.search_category_placeholder'),
     createMovement: translate('form.submit_button'),
     creatingMovement: translate('form.submitting'),
+  }
+}
+
+export function buildMovementFilterTranslations(
+  translate: Translate,
+): MovementFilterTranslations {
+  return {
+    title: translate('filters.title'),
+    open: translate('filters.open'),
+    apply: translate('filters.apply'),
+    reset: translate('filters.reset'),
+    dateFromLabel: translate('filters.date_from_label'),
+    dateToLabel: translate('filters.date_to_label'),
   }
 }

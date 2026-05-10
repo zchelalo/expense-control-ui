@@ -102,6 +102,8 @@ export class MovementRepository implements MovementStore {
     accountId,
     categoryId,
     movementTypeId,
+    dateFrom,
+    dateTo,
   }: FindAllMovementsFilters): Promise<PaginatedResult> {
     try {
       const queryParams = new URLSearchParams({
@@ -113,6 +115,8 @@ export class MovementRepository implements MovementStore {
       if (accountId) queryParams.append('account_id', accountId)
       if (categoryId) queryParams.append('category_id', categoryId)
       if (movementTypeId) queryParams.append('movement_type_id', movementTypeId)
+      if (dateFrom) queryParams.append('date_from', dateFrom)
+      if (dateTo) queryParams.append('date_to', dateTo)
 
       const response = await fetchWithAuth(
         `/v1/movement?${queryParams.toString()}`,

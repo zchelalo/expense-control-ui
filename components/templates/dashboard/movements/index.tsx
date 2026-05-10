@@ -6,7 +6,10 @@ import { Paginator } from '@/components/molecules/paginator'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
 import { MovementsClient } from '@/components/templates/dashboard/movements/movements-client'
 import { buildMovementsPaginationLinks } from '@/components/templates/dashboard/movements/pagination'
-import { buildCreateMovementTranslations } from '@/components/templates/dashboard/movements/translations'
+import {
+  buildCreateMovementTranslations,
+  buildMovementFilterTranslations,
+} from '@/components/templates/dashboard/movements/translations'
 import {
   mapAccountToSelectOption,
   mapCategoryToSelectOption,
@@ -43,6 +46,8 @@ type MovementsProps = {
   accountId?: string | null
   categoryId?: string | null
   movementTypeId?: string | null
+  dateFrom?: string | null
+  dateTo?: string | null
   cursorStack?: string | null
 }
 
@@ -53,12 +58,15 @@ export async function Movements({
   accountId = null,
   categoryId = null,
   movementTypeId = null,
+  dateFrom = null,
+  dateTo = null,
   cursorStack = null,
 }: MovementsProps) {
   const locale = await getLocale()
   const t = await getTranslations(Namespace.Movement)
   const currentCursorStack = parseCursorStack(cursorStack)
   const createTranslations = buildCreateMovementTranslations(t)
+  const filterTranslations = buildMovementFilterTranslations(t)
 
   try {
     const [movements, movementTypes, categories, accounts] = await Promise.all([
@@ -69,6 +77,8 @@ export async function Movements({
         accountId,
         categoryId,
         movementTypeId,
+        dateFrom,
+        dateTo,
       }),
       movementTypeFindAllUseCase.execute(),
       categoryFindAllUseCase.execute(100, null, null, null),
@@ -82,6 +92,8 @@ export async function Movements({
       accountId,
       categoryId,
       movementTypeId,
+      dateFrom,
+      dateTo,
     })
 
     const movementItems = movements.items.map((movement) =>
@@ -107,6 +119,7 @@ export async function Movements({
           emptyText={t('no_movements')}
           deleteLabel={t('delete.action')}
           createTranslations={createTranslations}
+          filterTranslations={filterTranslations}
           accountId={accountId}
           accounts={accountOptions}
           initialAccountNextCursor={accounts.nextCursor}
@@ -118,6 +131,8 @@ export async function Movements({
             accountId,
             categoryId,
             movementTypeId,
+            dateFrom,
+            dateTo,
             afterCursor,
             beforeCursor,
           }}

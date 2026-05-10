@@ -10,6 +10,8 @@ type BuildMovementsPaginationLinksParams = {
   accountId?: string | null
   categoryId?: string | null
   movementTypeId?: string | null
+  dateFrom?: string | null
+  dateTo?: string | null
 }
 
 export function buildMovementsPaginationLinks({
@@ -19,6 +21,8 @@ export function buildMovementsPaginationLinks({
   accountId,
   categoryId,
   movementTypeId,
+  dateFrom,
+  dateTo,
 }: BuildMovementsPaginationLinksParams) {
   const previousCursorStack = currentCursorStack.slice(0, -1)
   const previousAfterCursor =
@@ -34,6 +38,8 @@ export function buildMovementsPaginationLinks({
           accountId,
           categoryId,
           movementTypeId,
+          dateFrom,
+          dateTo,
           cursorStack: stringifyCursorStack(previousCursorStack),
         }).toString()}`
       : null
@@ -47,6 +53,8 @@ export function buildMovementsPaginationLinks({
         accountId,
         categoryId,
         movementTypeId,
+        dateFrom,
+        dateTo,
         cursorStack: stringifyCursorStack(nextCursorStack),
       }).toString()}`
     : null

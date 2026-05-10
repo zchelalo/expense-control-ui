@@ -1,46 +1,33 @@
 import clsx from 'clsx'
-import type { ChangeEventHandler, InputHTMLAttributes } from 'react'
 import { FlexBox } from '@/components/atoms/flex-box'
-import { InputText } from '@/components/atoms/input-text'
+import { InputDate } from '@/components/atoms/input-date'
 import { Label } from '@/components/atoms/label'
 import { FormFieldErrors } from '@/components/templates/dashboard/movements/form-field-errors'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
 
-type MovementTextFieldProps = {
+type MovementDateFieldProps = {
   id: string
   label?: string
-  name?: string
-  placeholder?: string
+  value: string
+  onChange: (value: string) => void
   errorMessages?: string[] | null
   disabled?: boolean
-  defaultValue?: string
-  value?: string
-  onChange?: ChangeEventHandler<HTMLInputElement>
-  type?: InputHTMLAttributes<HTMLInputElement>['type']
   min?: string
   max?: string
-  step?: string
-  inputMode?: InputHTMLAttributes<HTMLInputElement>['inputMode']
   className?: string
 }
 
-export function MovementTextField({
+export function MovementDateField({
   id,
   label,
-  name,
-  placeholder,
-  errorMessages,
-  disabled = false,
-  defaultValue,
   value,
   onChange,
-  type,
+  errorMessages,
+  disabled = false,
   min,
   max,
-  step,
-  inputMode,
   className,
-}: MovementTextFieldProps) {
+}: MovementDateFieldProps) {
   const hasErrors = !!errorMessages && errorMessages.length > 0
 
   return (
@@ -52,20 +39,14 @@ export function MovementTextField({
       className={clsx(styles.formGroup, className)}
     >
       {label && <Label htmlFor={id}>{label}</Label>}
-      <InputText
+      <InputDate
         id={id}
-        name={name}
-        type={type}
-        min={min}
-        max={max}
-        step={step}
-        inputMode={inputMode}
-        placeholder={placeholder}
-        error={hasErrors}
-        disabled={disabled}
-        defaultValue={defaultValue}
         value={value}
         onChange={onChange}
+        min={min}
+        max={max}
+        error={hasErrors}
+        disabled={disabled}
       />
       <FormFieldErrors messages={errorMessages} />
     </FlexBox>

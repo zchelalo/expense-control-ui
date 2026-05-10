@@ -6,6 +6,10 @@
   width: 100%;
 }
 
+.filtersPanel {
+  width: 100%;
+}
+
 .filters {
   width: 100%;
   display: grid;
@@ -15,6 +19,31 @@
 
 .filterField {
   min-width: 0;
+}
+
+.filtersActions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+}
+
+.filtersActionButton {
+  min-width: 11rem;
+}
+
+.desktopFilters {
+  width: 100%;
+}
+
+.mobileFiltersBar {
+  width: 100%;
+  display: none;
+  justify-content: flex-end;
+}
+
+.mobileFiltersButton {
+  gap: var(--spacing-2);
 }
 
 .noMovementsCard {
@@ -151,8 +180,25 @@
 }
 
 @media (max-width: 768px) {
+  .desktopFilters {
+    display: none;
+  }
+
+  .mobileFiltersBar {
+    display: flex;
+  }
+
   .filters {
     grid-template-columns: 1fr;
+  }
+
+  .filtersActions {
+    flex-direction: column-reverse;
+  }
+
+  .filtersActionButton {
+    width: 100%;
+    min-width: 0;
   }
 
   .fabButton {
