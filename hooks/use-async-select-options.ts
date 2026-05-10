@@ -5,36 +5,36 @@ import {
   findOptionByValue,
   mergeSelectOptions,
   preserveSelectedOption,
-} from '@/components/templates/dashboard/movements/select-option-utils'
-import type { SelectOption } from '@/components/templates/dashboard/movements/types'
+  type SelectOptionLike,
+} from '@/utils/select-options'
 
-type SearchOptionsResult = {
-  options: SelectOption[]
+type SearchOptionsResult<TOption extends SelectOptionLike> = {
+  options: TOption[]
   nextCursor: string | null
 }
 
-type SearchOptionsAction = (
+type SearchOptionsAction<TOption extends SelectOptionLike> = (
   search: string,
   afterCursor?: string | null,
-) => Promise<SearchOptionsResult>
+) => Promise<SearchOptionsResult<TOption>>
 
-type UseAsyncSelectOptionsParams = {
-  initialOptions: SelectOption[]
+type UseAsyncSelectOptionsParams<TOption extends SelectOptionLike> = {
+  initialOptions: TOption[]
   initialNextCursor: string | null
   initialValue?: string | null
   isOpen: boolean
-  searchOptions: SearchOptionsAction
+  searchOptions: SearchOptionsAction<TOption>
   debounceMs?: number
 }
 
-export function useAsyncSelectOptions({
+export function useAsyncSelectOptions<TOption extends SelectOptionLike>({
   initialOptions,
   initialNextCursor,
   initialValue = '',
   isOpen,
   searchOptions,
   debounceMs = 250,
-}: UseAsyncSelectOptionsParams) {
+}: UseAsyncSelectOptionsParams<TOption>) {
   const initialSelectedOption = findOptionByValue(initialOptions, initialValue)
   const [options, setOptions] = useState(() =>
     preserveSelectedOption(initialOptions, initialSelectedOption),
@@ -43,7 +43,7 @@ export function useAsyncSelectOptions({
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [searchText, setSearchText] = useState('')
   const [selectedValue, setSelectedValue] = useState(initialValue ?? '')
-  const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
+  const [selectedOption, setSelectedOption] = useState<TOption | null>(
     initialSelectedOption,
   )
   const requestIdRef = useRef(0)

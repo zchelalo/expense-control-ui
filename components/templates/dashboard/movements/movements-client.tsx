@@ -2,12 +2,13 @@
 
 import { useEffect, useId, useState, useTransition } from 'react'
 import { FlexBox } from '@/components/atoms/flex-box'
-import { Label } from '@/components/atoms/label'
-import { Select } from '@/components/molecules/select'
 import { CreateMovement } from '@/components/templates/dashboard/movements/create-movement'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
+import { MovementSelectField } from '@/components/templates/dashboard/movements/select-field'
 import { SwipeableMovementsList } from '@/components/templates/dashboard/movements/swipeable-movements-list'
 import type {
+  CreateMovementTranslations,
+  MovementFilters,
   MovementListItem,
   MovementTypeOption,
   SelectOption,
@@ -17,49 +18,6 @@ import { usePathname, useRouter } from '@/i18n/navigation'
 import { searchAccountOptionsAction } from '@/modules/account/adapters/in/search-options-action'
 import { searchCategoryOptionsAction } from '@/modules/category/adapters/in/search-options-action'
 import { buildMovementsSearchParams } from '@/modules/movement/adapters/in/query-params'
-
-type CreateMovementTranslations = {
-  newMovement: string
-  accountLabel: string
-  accountPlaceholder: string
-  amountLabel: string
-  amountPlaceholder: string
-  descriptionLabel: string
-  descriptionPlaceholder: string
-  movementTypeLabel: string
-  movementTypePlaceholder: string
-  categoryLabel: string
-  categoryPlaceholder: string
-  searchAccountPlaceholder: string
-  searchCategoryPlaceholder: string
-  createMovement: string
-  creatingMovement: string
-}
-
-type CurrentFilters = {
-  accountId?: string | null
-  categoryId?: string | null
-  movementTypeId?: string | null
-  afterCursor?: string | null
-  beforeCursor?: string | null
-}
-
-type MovementFilterFieldProps = {
-  id: string
-  label?: string
-  value: string
-  options: SelectOption[]
-  placeholder: string
-  disabled?: boolean
-  onChange: (value: string) => void
-  searchable?: {
-    onSearchTextChange: (value: string) => void
-    onLoadMore: () => void
-    searchPlaceholder: string
-    hasMore: boolean
-    isLoadingMore: boolean
-  }
-}
 
 type MovementsClientProps = {
   initialItems: MovementListItem[]
@@ -73,49 +31,12 @@ type MovementsClientProps = {
   categories: SelectOption[]
   initialCategoryNextCursor: string | null
   limit: number
-  currentFilters: CurrentFilters
-}
-
-function MovementFilterField({
-  id,
-  label,
-  value,
-  options,
-  placeholder,
-  disabled = false,
-  onChange,
-  searchable,
-}: MovementFilterFieldProps) {
-  return (
-    <FlexBox
-      variant='div'
-      direction='column'
-      alignItems='stretch'
-      gap={2}
-      className={styles.filterField}
-    >
-      {label && <Label htmlFor={id}>{label}</Label>}
-      <Select
-        id={id}
-        options={options}
-        value={value}
-        onChange={onChange}
-        onSearchTextChange={searchable?.onSearchTextChange}
-        onLoadMore={searchable?.onLoadMore}
-        placeholder={placeholder}
-        searchInput={!!searchable}
-        searchPlaceholder={searchable?.searchPlaceholder}
-        hasMore={searchable?.hasMore ?? false}
-        isLoadingMore={searchable?.isLoadingMore ?? false}
-        disabled={disabled}
-      />
-    </FlexBox>
-  )
+  currentFilters: MovementFilters
 }
 
 function movementMatchesCurrentFilters(
   movement: MovementListItem,
-  filters: CurrentFilters,
+  filters: MovementFilters,
 ) {
   const matchesAccount =
     !filters.accountId || movement.accountId === filters.accountId
@@ -126,6 +47,19 @@ function movementMatchesCurrentFilters(
     movement.movementTypeId === filters.movementTypeId
 
   return matchesAccount && matchesCategory && matchesMovementType
+}
+
+function withPlaceholderOption<TOption extends SelectOption>(
+  placeholder: string,
+  options: TOption[],
+): SelectOption[] {
+  return [
+    {
+      value: '',
+      label: placeholder,
+    },
+    ...options,
+  ]
 }
 
 export function MovementsClient({
@@ -292,16 +226,13 @@ export function MovementsClient({
         onMovementCreated={handleMovementCreated}
       />
       <div className={styles.filters}>
-        <MovementFilterField
+        <MovementSelectField
           id={accountFilterId}
           value={selectedAccountId}
-          options={[
-            {
-              value: '',
-              label: createTranslations.accountPlaceholder,
-            },
-            ...accountFilterOptions,
-          ]}
+          options={withPlaceholderOption(
+            createTranslations.accountPlaceholder,
+            accountFilterOptions,
+          )}
           onChange={handleAccountFilterChange}
           placeholder={createTranslations.accountPlaceholder}
           disabled={isFiltering}
@@ -312,31 +243,27 @@ export function MovementsClient({
             hasMore: accountHasMore,
             isLoadingMore: accountIsLoadingMore,
           }}
+          className={styles.filterField}
         />
-        <MovementFilterField
+        <MovementSelectField
           id={movementTypeFilterId}
           value={selectedMovementTypeId}
-          options={[
-            {
-              value: '',
-              label: createTranslations.movementTypePlaceholder,
-            },
-            ...movementTypes,
-          ]}
+          options={withPlaceholderOption(
+            createTranslations.movementTypePlaceholder,
+            movementTypes,
+          )}
           onChange={handleMovementTypeFilterChange}
           placeholder={createTranslations.movementTypePlaceholder}
           disabled={isFiltering}
+          className={styles.filterField}
         />
-        <MovementFilterField
+        <MovementSelectField
           id={categoryFilterId}
           value={selectedCategoryId}
-          options={[
-            {
-              value: '',
-              label: createTranslations.categoryPlaceholder,
-            },
-            ...categoryFilterOptions,
-          ]}
+          options={withPlaceholderOption(
+            createTranslations.categoryPlaceholder,
+            categoryFilterOptions,
+          )}
           onChange={handleCategoryFilterChange}
           placeholder={createTranslations.categoryPlaceholder}
           disabled={isFiltering}
@@ -347,6 +274,7 @@ export function MovementsClient({
             hasMore: categoryHasMore,
             isLoadingMore: categoryIsLoadingMore,
           }}
+          className={styles.filterField}
         />
       </div>
       <SwipeableMovementsList

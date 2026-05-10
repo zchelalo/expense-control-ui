@@ -20,3 +20,37 @@ export type SelectOption = {
 export type MovementTypeOption = SelectOption & {
   key: string
 }
+
+export type SearchableSelectProps = {
+  onSearchTextChange: (value: string) => void
+  onLoadMore: () => void
+  searchPlaceholder: string
+  hasMore: boolean
+  isLoadingMore: boolean
+}
+
+export type CreateMovementTranslations = {
+  newMovement: string
+  accountLabel: string
+  accountPlaceholder: string
+  amountLabel: string
+  amountPlaceholder: string
+  descriptionLabel: string
+  descriptionPlaceholder: string
+  movementTypeLabel: string
+  movementTypePlaceholder: string
+  categoryLabel: string
+  categoryPlaceholder: string
+  searchAccountPlaceholder: string
+  searchCategoryPlaceholder: string
+  createMovement: string
+  creatingMovement: string
+}
+
+export type MovementFilters = {
+  accountId?: string | null
+  categoryId?: string | null
+  movementTypeId?: string | null
+  afterCursor?: string | null
+  beforeCursor?: string | null
+}

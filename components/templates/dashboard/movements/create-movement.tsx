@@ -10,16 +10,13 @@ import {
   useState,
 } from 'react'
 import { Button } from '@/components/atoms/button'
-import { FlexBox } from '@/components/atoms/flex-box'
-import { InputText } from '@/components/atoms/input-text'
-import { Label } from '@/components/atoms/label'
 import { Modal } from '@/components/atoms/modal'
 import { ModalContent } from '@/components/atoms/modal/modal-content'
-import { CreateMovementSelectField } from '@/components/templates/dashboard/movements/create-movement-select-field'
-import { FormFieldErrors } from '@/components/templates/dashboard/movements/form-field-errors'
+import { CreateMovementForm } from '@/components/templates/dashboard/movements/create-movement-form'
+import { buildCreatedMovementListItem } from '@/components/templates/dashboard/movements/create-movement-list-item'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
-import { findOptionByValue } from '@/components/templates/dashboard/movements/select-option-utils'
 import type {
+  CreateMovementTranslations,
   MovementListItem,
   MovementTypeOption,
   SelectOption,
@@ -31,26 +28,11 @@ import {
   type CreateMovementFormState,
   createMovementAction,
 } from '@/modules/movement/adapters/in/create-action'
+import { findOptionByValue } from '@/utils/select-options'
 import { toast } from '@/utils/toast'
 
 type CreateMovementProps = {
-  translations: {
-    newMovement: string
-    accountLabel: string
-    accountPlaceholder: string
-    amountLabel: string
-    amountPlaceholder: string
-    descriptionLabel: string
-    descriptionPlaceholder: string
-    movementTypeLabel: string
-    movementTypePlaceholder: string
-    categoryLabel: string
-    categoryPlaceholder: string
-    searchAccountPlaceholder: string
-    searchCategoryPlaceholder: string
-    createMovement: string
-    creatingMovement: string
-  }
+  translations: CreateMovementTranslations
   accountId?: string | null
   accounts: SelectOption[]
   initialAccountNextCursor: string | null
@@ -152,30 +134,15 @@ export function CreateMovement({
         selectedAccountOption
 
       if (state.createdMovement) {
-        const createdMovement = state.createdMovement
-        const nextSelectedMovementType =
-          movementTypes.find(
-            (movementType) =>
-              movementType.value === createdMovement.movementTypeId,
-          ) ??
-          movementTypes.find(
-            (movementType) => movementType.value === selectedMovementTypeId,
-          ) ??
-          null
-
-        onMovementCreated?.({
-          id: createdMovement.id,
-          accountId: createdMovement.accountId,
-          accountName: nextSelectedAccountOption?.label ?? '',
-          description: createdMovement.description,
-          categoryId: createdMovement.categoryId,
-          categoryName: selectedCategoryOption?.label ?? '',
-          createdAt: createdMovement.createdAt,
-          movementTypeId: createdMovement.movementTypeId,
-          movementTypeKey: nextSelectedMovementType?.key ?? '',
-          movementTypeText: nextSelectedMovementType?.label ?? '',
-          amount: createdMovement.amountFormatted,
-        })
+        onMovementCreated?.(
+          buildCreatedMovementListItem({
+            createdMovement: state.createdMovement,
+            accountName: nextSelectedAccountOption?.label ?? '',
+            categoryName: selectedCategoryOption?.label ?? '',
+            movementTypes,
+            selectedMovementTypeId,
+          }),
+        )
       }
 
       setFormVersion((currentVersion) => currentVersion + 1)
@@ -204,110 +171,49 @@ export function CreateMovement({
     setIsOpen(false)
   }
 
+  const accountSearchable = {
+    onSearchTextChange: setAccountSearchText,
+    onLoadMore: handleAccountLoadMore,
+    searchPlaceholder: translations.searchAccountPlaceholder,
+    hasMore: accountHasMore,
+    isLoadingMore: accountIsLoadingMore,
+  }
+
+  const categorySearchable = {
+    onSearchTextChange: setCategorySearchText,
+    onLoadMore: handleCategoryLoadMore,
+    searchPlaceholder: translations.searchCategoryPlaceholder,
+    hasMore: categoryHasMore,
+    isLoadingMore: categoryIsLoadingMore,
+  }
+
   return (
     <>
       <Modal isOpen={isOpen}>
         <ModalContent title={translations.newMovement} onClose={handleClose}>
-          <form key={formVersion} className={styles.form} action={formAction}>
-            <CreateMovementSelectField
-              id={accountFieldId}
-              label={translations.accountLabel}
-              name='accountId'
-              value={selectedAccountId}
-              options={accountOptions}
-              onChange={handleAccountChange}
-              placeholder={translations.accountPlaceholder}
-              errorMessages={state.errors?.accountId}
-              disabled={pending}
-              searchable={{
-                onSearchTextChange: setAccountSearchText,
-                onLoadMore: handleAccountLoadMore,
-                searchPlaceholder: translations.searchAccountPlaceholder,
-                hasMore: accountHasMore,
-                isLoadingMore: accountIsLoadingMore,
-              }}
-            />
-            <FlexBox
-              variant='div'
-              direction='column'
-              alignItems='stretch'
-              gap={2}
-              className={styles.formGroup}
-            >
-              <Label htmlFor={amountId}>{translations.amountLabel}</Label>
-              <InputText
-                id={amountId}
-                name='amount'
-                type='number'
-                min='0'
-                step='0.01'
-                inputMode='decimal'
-                placeholder={translations.amountPlaceholder}
-                error={!!state.errors?.amount}
-                disabled={pending}
-                defaultValue={state.values.amount}
-              />
-              <FormFieldErrors messages={state.errors?.amount} />
-            </FlexBox>
-            <FlexBox
-              variant='div'
-              direction='column'
-              alignItems='stretch'
-              gap={2}
-              className={styles.formGroup}
-            >
-              <Label htmlFor={descriptionId}>
-                {translations.descriptionLabel}
-              </Label>
-              <InputText
-                id={descriptionId}
-                name='description'
-                placeholder={translations.descriptionPlaceholder}
-                error={!!state.errors?.description}
-                disabled={pending}
-                defaultValue={state.values.description}
-              />
-              <FormFieldErrors messages={state.errors?.description} />
-            </FlexBox>
-            <CreateMovementSelectField
-              id={movementTypeId}
-              label={translations.movementTypeLabel}
-              name='movementTypeId'
-              value={selectedMovementTypeId}
-              options={movementTypes}
-              onChange={setSelectedMovementTypeId}
-              placeholder={translations.movementTypePlaceholder}
-              errorMessages={state.errors?.movementTypeId}
-              disabled={pending}
-            />
-            <CreateMovementSelectField
-              id={categoryId}
-              label={translations.categoryLabel}
-              name='categoryId'
-              value={selectedCategoryId}
-              options={categoryOptions}
-              onChange={handleCategoryChange}
-              placeholder={translations.categoryPlaceholder}
-              errorMessages={state.errors?.categoryId}
-              disabled={pending}
-              searchable={{
-                onSearchTextChange: setCategorySearchText,
-                onLoadMore: handleCategoryLoadMore,
-                searchPlaceholder: translations.searchCategoryPlaceholder,
-                hasMore: categoryHasMore,
-                isLoadingMore: categoryIsLoadingMore,
-              }}
-            />
-            <Button
-              type='submit'
-              className={styles.submitButton}
-              disabled={pending}
-            >
-              {pending
-                ? translations.creatingMovement
-                : translations.createMovement}
-            </Button>
-          </form>
+          <CreateMovementForm
+            formVersion={formVersion}
+            formAction={formAction}
+            pending={pending}
+            state={state}
+            translations={translations}
+            accountFieldId={accountFieldId}
+            amountId={amountId}
+            descriptionId={descriptionId}
+            movementTypeId={movementTypeId}
+            categoryId={categoryId}
+            selectedAccountId={selectedAccountId}
+            selectedMovementTypeId={selectedMovementTypeId}
+            selectedCategoryId={selectedCategoryId}
+            accountOptions={accountOptions}
+            movementTypes={movementTypes}
+            categoryOptions={categoryOptions}
+            onAccountChange={handleAccountChange}
+            onMovementTypeChange={setSelectedMovementTypeId}
+            onCategoryChange={handleCategoryChange}
+            accountSearchable={accountSearchable}
+            categorySearchable={categorySearchable}
+          />
         </ModalContent>
       </Modal>
       <Button

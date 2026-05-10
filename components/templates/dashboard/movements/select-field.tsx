@@ -1,32 +1,29 @@
+import clsx from 'clsx'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { Label } from '@/components/atoms/label'
 import { Select } from '@/components/molecules/select'
 import { FormFieldErrors } from '@/components/templates/dashboard/movements/form-field-errors'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
-import type { SelectOption } from '@/components/templates/dashboard/movements/types'
+import type {
+  SearchableSelectProps,
+  SelectOption,
+} from '@/components/templates/dashboard/movements/types'
 
-type SearchableProps = {
-  onSearchTextChange: (value: string) => void
-  onLoadMore: () => void
-  searchPlaceholder: string
-  hasMore: boolean
-  isLoadingMore: boolean
-}
-
-type CreateMovementSelectFieldProps = {
+type MovementSelectFieldProps = {
   id: string
-  label: string
-  name: string
+  label?: string
+  name?: string
   value: string
   options: SelectOption[]
   onChange: (value: string) => void
   placeholder: string
   errorMessages?: string[] | null
   disabled?: boolean
-  searchable?: SearchableProps
+  searchable?: SearchableSelectProps
+  className?: string
 }
 
-export function CreateMovementSelectField({
+export function MovementSelectField({
   id,
   label,
   name,
@@ -37,17 +34,20 @@ export function CreateMovementSelectField({
   errorMessages,
   disabled = false,
   searchable,
-}: CreateMovementSelectFieldProps) {
+  className,
+}: MovementSelectFieldProps) {
+  const hasErrors = !!errorMessages && errorMessages.length > 0
+
   return (
     <FlexBox
       variant='div'
       direction='column'
       alignItems='stretch'
       gap={2}
-      className={styles.formGroup}
+      className={clsx(className)}
     >
-      <Label htmlFor={id}>{label}</Label>
-      <input type='hidden' name={name} value={value} />
+      {label && <Label htmlFor={id}>{label}</Label>}
+      {name && <input type='hidden' name={name} value={value} />}
       <Select
         id={id}
         options={options}
@@ -60,7 +60,7 @@ export function CreateMovementSelectField({
         searchPlaceholder={searchable?.searchPlaceholder}
         hasMore={searchable?.hasMore ?? false}
         isLoadingMore={searchable?.isLoadingMore ?? false}
-        triggerClassName={errorMessages ? styles.selectError : undefined}
+        triggerClassName={hasErrors ? styles.selectError : undefined}
         disabled={disabled}
       />
       <FormFieldErrors messages={errorMessages} />
