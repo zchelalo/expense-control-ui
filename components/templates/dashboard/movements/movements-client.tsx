@@ -46,7 +46,7 @@ type CurrentFilters = {
 
 type MovementFilterFieldProps = {
   id: string
-  label: string
+  label?: string
   value: string
   options: SelectOption[]
   placeholder: string
@@ -94,7 +94,7 @@ function MovementFilterField({
       gap={2}
       className={styles.filterField}
     >
-      <Label htmlFor={id}>{label}</Label>
+      {label && <Label htmlFor={id}>{label}</Label>}
       <Select
         id={id}
         options={options}
@@ -294,7 +294,6 @@ export function MovementsClient({
       <div className={styles.filters}>
         <MovementFilterField
           id={accountFilterId}
-          label={createTranslations.accountLabel}
           value={selectedAccountId}
           options={[
             {
@@ -316,7 +315,6 @@ export function MovementsClient({
         />
         <MovementFilterField
           id={movementTypeFilterId}
-          label={createTranslations.movementTypeLabel}
           value={selectedMovementTypeId}
           options={[
             {
@@ -331,7 +329,6 @@ export function MovementsClient({
         />
         <MovementFilterField
           id={categoryFilterId}
-          label={createTranslations.categoryLabel}
           value={selectedCategoryId}
           options={[
             {
