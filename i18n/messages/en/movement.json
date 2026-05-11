@@ -43,6 +43,25 @@
     "date_from_label": "Date from",
     "date_to_label": "Date to"
   },
+  "stats": {
+    "show": "Show charts",
+    "hide": "Hide charts",
+    "overview_title": "Overview",
+    "overview_summary": "Consolidated balance based on the active filters.",
+    "by_account_title": "By account",
+    "by_account_summary": "Movement, income, and expense comparison by account.",
+    "by_category_title": "By category",
+    "by_category_summary": "Movement distribution by category for the current range.",
+    "total_movements": "Total movements",
+    "income": "Income",
+    "expense": "Expense",
+    "net_total": "Net balance",
+    "movement_count": "Movements",
+    "income_count": "Income",
+    "expense_count": "Expense",
+    "no_data": "There is no data for the current filters.",
+    "other": "Others"
+  },
   "errors": {
     "movement_store_error": "An error occurred while accessing the movement store.",
     "movement_not_found_error": "The requested movement could not be found.",

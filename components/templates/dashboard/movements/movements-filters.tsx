@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { MovementDateField } from '@/components/templates/dashboard/movements/date-field'
@@ -26,6 +27,7 @@ type MovementsFiltersProps = {
   movementTypeOptions: SelectOption[]
   accountSearchable: SearchableSelectProps
   categorySearchable: SearchableSelectProps
+  extraActions?: ReactNode
   disabled?: boolean
   onAccountChange: (value: string) => void
   onCategoryChange: (value: string) => void
@@ -50,6 +52,7 @@ export function MovementsFilters({
   movementTypeOptions,
   accountSearchable,
   categorySearchable,
+  extraActions,
   disabled = false,
   onAccountChange,
   onCategoryChange,
@@ -120,6 +123,7 @@ export function MovementsFilters({
         />
       </div>
       <div className={styles.filtersActions}>
+        {extraActions}
         <Button
           type='button'
           variant='primary'

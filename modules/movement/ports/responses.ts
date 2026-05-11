@@ -14,6 +14,13 @@ type AccountResponse = {
   name: string
 }
 
+type StatsCategoryResponse = {
+  id: string
+  name: string
+  is_system: boolean
+  system_key: string
+}
+
 type MovementResponse = {
   id: string
   amount: number
@@ -38,6 +45,54 @@ export type FindAllResponse = {
     movements: MovementResponse[]
     prev_cursor?: string
     next_cursor?: string
+  }
+  request_id: string
+}
+
+export type StatsOverviewResponse = {
+  data: {
+    overview: {
+      total_movements: number
+      income: {
+        count: number
+        total: number
+      }
+      expense: {
+        count: number
+        total: number
+      }
+      net_total: number
+    }
+  }
+  request_id: string
+}
+
+export type StatsByAccountResponse = {
+  data: {
+    accounts: Array<{
+      account: AccountResponse
+      movement_count: number
+      income_count: number
+      expense_count: number
+      income_total: number
+      expense_total: number
+      net_total: number
+    }>
+  }
+  request_id: string
+}
+
+export type StatsByCategoryResponse = {
+  data: {
+    categories: Array<{
+      category: StatsCategoryResponse
+      movement_count: number
+      income_count: number
+      expense_count: number
+      income_total: number
+      expense_total: number
+      net_total: number
+    }>
   }
   request_id: string
 }

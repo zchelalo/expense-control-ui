@@ -9,6 +9,7 @@ import { buildMovementsPaginationLinks } from '@/components/templates/dashboard/
 import {
   buildCreateMovementTranslations,
   buildMovementFilterTranslations,
+  buildMovementStatsTranslations,
 } from '@/components/templates/dashboard/movements/translations'
 import {
   mapAccountToSelectOption,
@@ -25,11 +26,14 @@ import { mapMovementErrorToMessage } from '@/modules/movement/adapters/in/error-
 import { parseCursorStack } from '@/modules/movement/adapters/in/query-params'
 import { MovementRepository } from '@/modules/movement/adapters/out/movement-repository'
 import { FindAllUseCase as FindAllMovementsUseCase } from '@/modules/movement/application/use-cases/find-all'
+import { GetStatsUseCase as GetMovementStatsUseCase } from '@/modules/movement/application/use-cases/get-stats'
 import { MovementTypeRepository } from '@/modules/movement-type/adapters/out/movement-type-repository'
 import { FindAllUseCase as FindAllMovementTypesUseCase } from '@/modules/movement-type/application/use-cases/find-all'
+import { logger } from '@/utils/logger'
 
 const movementRepository = new MovementRepository()
 const movementFindAllUseCase = new FindAllMovementsUseCase(movementRepository)
+const movementStatsUseCase = new GetMovementStatsUseCase(movementRepository)
 const movementTypeRepository = new MovementTypeRepository()
 const movementTypeFindAllUseCase = new FindAllMovementTypesUseCase(
   movementTypeRepository,
@@ -67,8 +71,22 @@ export async function Movements({
   const currentCursorStack = parseCursorStack(cursorStack)
   const createTranslations = buildCreateMovementTranslations(t)
   const filterTranslations = buildMovementFilterTranslations(t)
+  const statsTranslations = buildMovementStatsTranslations(t)
 
   try {
+    const movementStatsPromise = movementStatsUseCase
+      .execute({
+        accountId,
+        categoryId,
+        movementTypeId,
+        dateFrom,
+        dateTo,
+      })
+      .catch((error) => {
+        logger.warn('Failed to load movement stats', error)
+
+        return null
+      })
     const [movements, movementTypes, categories, accounts] = await Promise.all([
       movementFindAllUseCase.execute({
         limit: Number(limit),
@@ -104,6 +122,7 @@ export async function Movements({
     )
     const categoryOptions = categories.items.map(mapCategoryToSelectOption)
     const accountOptions = accounts.items.map(mapAccountToSelectOption)
+    const movementStats = await movementStatsPromise
 
     return (
       <FlexBox
@@ -127,6 +146,9 @@ export async function Movements({
           categories={categoryOptions}
           initialCategoryNextCursor={categories.nextCursor}
           limit={Number(limit)}
+          locale={locale}
+          stats={movementStats}
+          statsTranslations={statsTranslations}
           currentFilters={{
             accountId,
             categoryId,

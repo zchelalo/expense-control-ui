@@ -28,6 +28,7 @@ const apiUrl = getApiUrl()
 const refreshRequests = new Map<string, Promise<AppSession | null>>()
 
 async function buildServerHeaders(
+  locale: string,
   optionsHeaders?: HeadersInit,
   body?: RequestInit['body'],
 ): Promise<Headers> {
@@ -37,6 +38,10 @@ async function buildServerHeaders(
 
   if (!mergedHeaders.has('Content-Type') && !isFormDataBody) {
     mergedHeaders.set('Content-Type', 'application/json')
+  }
+
+  if (locale && !mergedHeaders.has('Accept-Language')) {
+    mergedHeaders.set('Accept-Language', locale)
   }
 
   try {
@@ -181,7 +186,11 @@ export async function fetchWithAuth(
   const locale = await getLocale()
   const isRefreshRequest = url === '/v1/auth/refresh'
   const redirectOnAuthFailure = options.redirectOnAuthFailure ?? true
-  const requestHeaders = await buildServerHeaders(options.headers, options.body)
+  const requestHeaders = await buildServerHeaders(
+    locale,
+    options.headers,
+    options.body,
+  )
   const session = await readAppSession()
 
   if (!isAuthenticatedSession(session)) {

@@ -43,6 +43,25 @@
     "date_from_label": "Fecha desde",
     "date_to_label": "Fecha hasta"
   },
+  "stats": {
+    "show": "Ver gráficas",
+    "hide": "Ocultar gráficas",
+    "overview_title": "Resumen general",
+    "overview_summary": "Balance consolidado según los filtros activos.",
+    "by_account_title": "Por cuenta",
+    "by_account_summary": "Comparativo de movimientos, ingresos y gastos por cuenta.",
+    "by_category_title": "Por categoría",
+    "by_category_summary": "Distribución de movimientos por categoría para el periodo actual.",
+    "total_movements": "Movimientos totales",
+    "income": "Ingresos",
+    "expense": "Gastos",
+    "net_total": "Balance neto",
+    "movement_count": "Movimientos",
+    "income_count": "Ingresos",
+    "expense_count": "Gastos",
+    "no_data": "No hay datos para los filtros actuales.",
+    "other": "Otros"
+  },
   "errors": {
     "movement_store_error": "Se produjo un error al acceder al almacén de movimientos.",
     "movement_not_found_error": "No se encontró el movimiento solicitado.",

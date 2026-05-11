@@ -1,0 +1,125 @@
+.statsLayout {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.overviewCard {
+  grid-column: 1 / -1;
+  min-width: 0;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.categoryCard {
+  grid-column: span 6;
+  min-width: 0;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.accountsCard {
+  grid-column: span 6;
+  min-width: 0;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardHeader {
+  width: 100%;
+}
+
+.mutedText {
+  color: var(--foreground-muted);
+}
+
+.overviewContent {
+  width: 100%;
+}
+
+.overviewTopGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.overviewBottomGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.balanceValue,
+.metricValue,
+.incomeValue,
+.expenseValue {
+  font-variant-numeric: tabular-nums;
+}
+
+.incomeValue {
+  color: var(--success-hover);
+}
+
+.expenseValue {
+  color: var(--error-hover);
+}
+
+.metricItem {
+  min-width: 0;
+  padding: var(--spacing-3);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--background-muted);
+}
+
+.overviewPrimaryItem {
+  justify-content: center;
+}
+
+.categoryChartFrame,
+.accountsChartFrame {
+  width: 100%;
+  position: relative;
+}
+
+.categoryChartFrame {
+  height: 23rem;
+}
+
+.emptyState {
+  min-height: 12rem;
+  width: 100%;
+}
+
+@media (max-width: 1280px) {
+  .overviewCard,
+  .categoryCard,
+  .accountsCard {
+    grid-column: 1 / -1;
+  }
+
+  .overviewTopGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .overviewBottomGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .statsLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .overviewBottomGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .categoryChartFrame {
+    height: 20rem;
+  }
+}

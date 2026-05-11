@@ -1,12 +1,18 @@
 'use client'
 
-import { SlidersHorizontal } from 'lucide-react'
+import {
+  BarChart3,
+  ChevronDown,
+  ChevronUp,
+  SlidersHorizontal,
+} from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { Modal } from '@/components/atoms/modal'
 import { ModalContent } from '@/components/atoms/modal/modal-content'
 import { CreateMovement } from '@/components/templates/dashboard/movements/create-movement'
+import { MovementStats } from '@/components/templates/dashboard/movements/movement-stats'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
 import { MovementsFilters } from '@/components/templates/dashboard/movements/movements-filters'
 import { SwipeableMovementsList } from '@/components/templates/dashboard/movements/swipeable-movements-list'
@@ -15,6 +21,7 @@ import type {
   MovementFilters,
   MovementFilterTranslations,
   MovementListItem,
+  MovementStatsTranslations,
   MovementTypeOption,
   SelectOption,
 } from '@/components/templates/dashboard/movements/types'
@@ -23,6 +30,7 @@ import { usePathname, useRouter } from '@/i18n/navigation'
 import { searchAccountOptionsAction } from '@/modules/account/adapters/in/search-options-action'
 import { searchCategoryOptionsAction } from '@/modules/category/adapters/in/search-options-action'
 import { buildMovementsSearchParams } from '@/modules/movement/adapters/in/query-params'
+import type { MovementStats as MovementStatsData } from '@/modules/movement/ports/movement-store'
 
 type MovementsClientProps = {
   initialItems: MovementListItem[]
@@ -37,6 +45,9 @@ type MovementsClientProps = {
   categories: SelectOption[]
   initialCategoryNextCursor: string | null
   limit: number
+  locale: string
+  stats: MovementStatsData | null
+  statsTranslations: MovementStatsTranslations
   currentFilters: MovementFilters
 }
 
@@ -105,6 +116,9 @@ export function MovementsClient({
   categories,
   initialCategoryNextCursor,
   limit,
+  locale,
+  stats,
+  statsTranslations,
   currentFilters,
 }: MovementsClientProps) {
   const router = useRouter()
@@ -112,6 +126,7 @@ export function MovementsClient({
   const [isFiltering, startFilteringTransition] = useTransition()
   const [movements, setMovements] = useState(initialItems)
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false)
+  const [isStatsVisible, setIsStatsVisible] = useState(false)
   const [selectedMovementTypeId, setSelectedMovementTypeId] = useState(
     currentFilters.movementTypeId ?? '',
   )
@@ -298,6 +313,19 @@ export function MovementsClient({
     createTranslations.categoryPlaceholder,
     categoryFilterOptions,
   )
+  const statsToggleButton = stats ? (
+    <Button
+      type='button'
+      appearance='outlined'
+      className={styles.mobileStatsButton}
+      onClick={() => setIsStatsVisible((currentValue) => !currentValue)}
+      aria-expanded={isStatsVisible}
+    >
+      <BarChart3 size={16} />
+      {isStatsVisible ? statsTranslations.hide : statsTranslations.show}
+      {isStatsVisible ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+    </Button>
+  ) : null
 
   return (
     <FlexBox
@@ -334,6 +362,13 @@ export function MovementsClient({
           accountSearchable={accountSearchable}
           categorySearchable={categorySearchable}
           disabled={isFiltering}
+          extraActions={
+            statsToggleButton ? (
+              <div className={styles.desktopStatsToggle}>
+                {statsToggleButton}
+              </div>
+            ) : null
+          }
           onAccountChange={selectAccountValue}
           onCategoryChange={selectCategoryValue}
           onMovementTypeChange={setSelectedMovementTypeId}
@@ -343,7 +378,7 @@ export function MovementsClient({
           onReset={resetFilters}
         />
       </div>
-      <div className={styles.mobileFiltersBar}>
+      <div className={styles.mobileControlsBar}>
         <Button
           type='button'
           appearance='outlined'
@@ -354,6 +389,36 @@ export function MovementsClient({
           <SlidersHorizontal size={16} />
           {filterTranslations.open}
         </Button>
+        {statsToggleButton}
+      </div>
+      <div
+        className={`${styles.dashboardContent} ${
+          !stats ? styles.dashboardContentSingle : ''
+        }`}
+      >
+        {stats && (
+          <div className={styles.statsColumn}>
+            <div
+              className={`${styles.statsPanelContainer} ${
+                isStatsVisible ? styles.statsPanelContainerOpen : ''
+              }`}
+            >
+              <MovementStats
+                stats={stats}
+                locale={locale}
+                translations={statsTranslations}
+              />
+            </div>
+          </div>
+        )}
+        <aside className={styles.movementsColumn}>
+          <SwipeableMovementsList
+            items={movements}
+            emptyText={emptyText}
+            deleteLabel={deleteLabel}
+            onDeleteSuccess={handleMovementDeleted}
+          />
+        </aside>
       </div>
       <Modal isOpen={isFiltersModalOpen}>
         <ModalContent
@@ -391,12 +456,6 @@ export function MovementsClient({
           />
         </ModalContent>
       </Modal>
-      <SwipeableMovementsList
-        items={movements}
-        emptyText={emptyText}
-        deleteLabel={deleteLabel}
-        onDeleteSuccess={handleMovementDeleted}
-      />
     </FlexBox>
   )
 }

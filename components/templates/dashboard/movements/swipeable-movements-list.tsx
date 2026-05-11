@@ -49,15 +49,17 @@ export function SwipeableMovementsList({
   }
 
   return (
-    <AnimatePresence initial={false}>
-      {items.map((movement) => (
-        <SwipeableMovementCard
-          key={movement.id}
-          item={movement}
-          deleteLabel={deleteLabel}
-          onDelete={handleDelete}
-        />
-      ))}
-    </AnimatePresence>
+    <div className={styles.movementsList}>
+      <AnimatePresence initial={false}>
+        {items.map((movement) => (
+          <SwipeableMovementCard
+            key={movement.id}
+            item={movement}
+            deleteLabel={deleteLabel}
+            onDelete={handleDelete}
+          />
+        ))}
+      </AnimatePresence>
+    </div>
   )
 }

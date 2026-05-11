@@ -6,6 +6,38 @@
   width: 100%;
 }
 
+.dashboardContent {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  gap: var(--spacing-3);
+  align-items: start;
+}
+
+.dashboardContentSingle {
+  grid-template-columns: 1fr;
+}
+
+.statsColumn {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.movementsColumn {
+  min-width: 0;
+  position: sticky;
+  top: var(--spacing-4);
+}
+
+.movementsList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
 .filtersPanel {
   width: 100%;
 }
@@ -36,14 +68,29 @@
   width: 100%;
 }
 
-.mobileFiltersBar {
+.mobileControlsBar {
   width: 100%;
   display: none;
   justify-content: flex-end;
+  gap: var(--spacing-2);
 }
 
 .mobileFiltersButton {
   gap: var(--spacing-2);
+  flex: 1;
+}
+
+.mobileStatsButton {
+  gap: var(--spacing-2);
+  flex: 1;
+}
+
+.desktopStatsToggle {
+  display: none;
+}
+
+.statsPanelContainer {
+  width: 100%;
 }
 
 .noMovementsCard {
@@ -114,8 +161,20 @@
   width: 100%;
 }
 
+.movementDetails {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .amountContainer {
   align-self: stretch;
+  flex: 0 0 auto;
+  min-width: fit-content;
+}
+
+.movementDate {
+  white-space: nowrap;
+  text-align: right;
 }
 
 .form {
@@ -173,7 +232,33 @@
   height: var(--icon-size-lg);
 }
 
+@media (max-width: 1280px) {
+  .dashboardContent {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1024px) {
+  .dashboardContent {
+    grid-template-columns: 1fr;
+  }
+
+  .movementsColumn {
+    position: static;
+  }
+
+  .desktopStatsToggle {
+    display: block;
+  }
+
+  .statsPanelContainer {
+    display: none;
+  }
+
+  .statsPanelContainerOpen {
+    display: block;
+  }
+
   .filters {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -184,7 +269,7 @@
     display: none;
   }
 
-  .mobileFiltersBar {
+  .mobileControlsBar {
     display: flex;
   }
 

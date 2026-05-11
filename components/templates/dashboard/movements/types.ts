@@ -47,6 +47,26 @@ export type CreateMovementTranslations = {
   creatingMovement: string
 }
 
+export type MovementStatsTranslations = {
+  show: string
+  hide: string
+  overviewTitle: string
+  overviewSummary: string
+  byAccountTitle: string
+  byAccountSummary: string
+  byCategoryTitle: string
+  byCategorySummary: string
+  totalMovements: string
+  income: string
+  expense: string
+  netTotal: string
+  movementCount: string
+  incomeCount: string
+  expenseCount: string
+  noData: string
+  other: string
+}
+
 export type MovementFilterTranslations = {
   title: string
   open: string

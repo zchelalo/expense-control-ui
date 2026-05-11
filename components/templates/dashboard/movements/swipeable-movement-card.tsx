@@ -151,6 +151,7 @@ export function SwipeableMovementCard({
               alignItems='start'
               justifyContent='center'
               gap={2}
+              className={styles.movementDetails}
             >
               <Text
                 variant='span'
@@ -208,9 +209,10 @@ export function SwipeableMovementCard({
               </Text>
               <Text
                 variant='span'
-                typographySize='normal'
+                typographySize='small'
                 typographyTextStyle='normal'
                 typographyWeight='medium'
+                className={styles.movementDate}
               >
                 <LocalDateTime value={item.createdAt} />
               </Text>
