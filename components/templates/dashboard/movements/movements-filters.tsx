@@ -62,6 +62,54 @@ export function MovementsFilters({
   onApply,
   onReset,
 }: MovementsFiltersProps) {
+  const selectFields = [
+    {
+      key: 'account',
+      label: createTranslations.accountLabel,
+      value: accountId,
+      options: accountOptions,
+      onChange: onAccountChange,
+      placeholder: createTranslations.accountPlaceholder,
+      searchable: accountSearchable,
+    },
+    {
+      key: 'movement-type',
+      label: createTranslations.movementTypeLabel,
+      value: movementTypeId,
+      options: movementTypeOptions,
+      onChange: onMovementTypeChange,
+      placeholder: createTranslations.movementTypePlaceholder,
+    },
+    {
+      key: 'category',
+      label: createTranslations.categoryLabel,
+      value: categoryId,
+      options: categoryOptions,
+      onChange: onCategoryChange,
+      placeholder: createTranslations.categoryPlaceholder,
+      searchable: categorySearchable,
+    },
+  ]
+
+  const dateFields = [
+    {
+      key: 'date-from',
+      label: filterTranslations.dateFromLabel,
+      value: dateFrom,
+      min: undefined,
+      max: dateTo || undefined,
+      onChange: onDateFromChange,
+    },
+    {
+      key: 'date-to',
+      label: filterTranslations.dateToLabel,
+      value: dateTo,
+      min: dateFrom || undefined,
+      max: undefined,
+      onChange: onDateToChange,
+    },
+  ]
+
   return (
     <FlexBox
       variant='div'
@@ -71,56 +119,33 @@ export function MovementsFilters({
       className={styles.filtersPanel}
     >
       <div className={styles.filters}>
-        <MovementSelectField
-          id={`${idPrefix}-account`}
-          label={createTranslations.accountLabel}
-          value={accountId}
-          options={accountOptions}
-          onChange={onAccountChange}
-          placeholder={createTranslations.accountPlaceholder}
-          disabled={disabled}
-          searchable={accountSearchable}
-          className={styles.filterField}
-        />
-        <MovementSelectField
-          id={`${idPrefix}-movement-type`}
-          label={createTranslations.movementTypeLabel}
-          value={movementTypeId}
-          options={movementTypeOptions}
-          onChange={onMovementTypeChange}
-          placeholder={createTranslations.movementTypePlaceholder}
-          disabled={disabled}
-          className={styles.filterField}
-        />
-        <MovementSelectField
-          id={`${idPrefix}-category`}
-          label={createTranslations.categoryLabel}
-          value={categoryId}
-          options={categoryOptions}
-          onChange={onCategoryChange}
-          placeholder={createTranslations.categoryPlaceholder}
-          disabled={disabled}
-          searchable={categorySearchable}
-          className={styles.filterField}
-        />
-        <MovementDateField
-          id={`${idPrefix}-date-from`}
-          label={filterTranslations.dateFromLabel}
-          value={dateFrom}
-          max={dateTo || undefined}
-          onChange={onDateFromChange}
-          disabled={disabled}
-          className={styles.filterField}
-        />
-        <MovementDateField
-          id={`${idPrefix}-date-to`}
-          label={filterTranslations.dateToLabel}
-          value={dateTo}
-          min={dateFrom || undefined}
-          onChange={onDateToChange}
-          disabled={disabled}
-          className={styles.filterField}
-        />
+        {selectFields.map((field) => (
+          <MovementSelectField
+            key={field.key}
+            id={`${idPrefix}-${field.key}`}
+            label={field.label}
+            value={field.value}
+            options={field.options}
+            onChange={field.onChange}
+            placeholder={field.placeholder}
+            disabled={disabled}
+            searchable={field.searchable}
+            className={styles.filterField}
+          />
+        ))}
+        {dateFields.map((field) => (
+          <MovementDateField
+            key={field.key}
+            id={`${idPrefix}-${field.key}`}
+            label={field.label}
+            value={field.value}
+            min={field.min}
+            max={field.max}
+            onChange={field.onChange}
+            disabled={disabled}
+            className={styles.filterField}
+          />
+        ))}
       </div>
       <div className={styles.filtersActions}>
         {extraActions}

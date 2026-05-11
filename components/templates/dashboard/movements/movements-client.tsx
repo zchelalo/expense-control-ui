@@ -1,12 +1,7 @@
 'use client'
 
-import {
-  BarChart3,
-  ChevronDown,
-  ChevronUp,
-  SlidersHorizontal,
-} from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/atoms/button'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { Modal } from '@/components/atoms/modal'
@@ -14,7 +9,12 @@ import { ModalContent } from '@/components/atoms/modal/modal-content'
 import { CreateMovement } from '@/components/templates/dashboard/movements/create-movement'
 import { MovementStats } from '@/components/templates/dashboard/movements/movement-stats'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
+import {
+  isFirstMovementsPage,
+  movementMatchesCurrentFilters,
+} from '@/components/templates/dashboard/movements/movements-client.utils'
 import { MovementsFilters } from '@/components/templates/dashboard/movements/movements-filters'
+import { StatsToggleButton } from '@/components/templates/dashboard/movements/stats-toggle-button'
 import { SwipeableMovementsList } from '@/components/templates/dashboard/movements/swipeable-movements-list'
 import type {
   CreateMovementTranslations,
@@ -25,11 +25,7 @@ import type {
   MovementTypeOption,
   SelectOption,
 } from '@/components/templates/dashboard/movements/types'
-import { useAsyncSelectOptions } from '@/hooks/use-async-select-options'
-import { usePathname, useRouter } from '@/i18n/navigation'
-import { searchAccountOptionsAction } from '@/modules/account/adapters/in/search-options-action'
-import { searchCategoryOptionsAction } from '@/modules/category/adapters/in/search-options-action'
-import { buildMovementsSearchParams } from '@/modules/movement/adapters/in/query-params'
+import { useMovementsFilters } from '@/components/templates/dashboard/movements/use-movements-filters'
 import type { MovementStats as MovementStatsData } from '@/modules/movement/ports/movement-store'
 
 type MovementsClientProps = {
@@ -51,58 +47,6 @@ type MovementsClientProps = {
   currentFilters: MovementFilters
 }
 
-function toLocalDateValue(value: string): string | null {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) return null
-
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-
-function movementMatchesCurrentFilters(
-  movement: MovementListItem,
-  filters: MovementFilters,
-) {
-  const matchesAccount =
-    !filters.accountId || movement.accountId === filters.accountId
-  const matchesCategory =
-    !filters.categoryId || movement.categoryId === filters.categoryId
-  const matchesMovementType =
-    !filters.movementTypeId ||
-    movement.movementTypeId === filters.movementTypeId
-  const movementDate = toLocalDateValue(movement.createdAt)
-  const matchesDateFrom =
-    !filters.dateFrom ||
-    (movementDate !== null && movementDate >= filters.dateFrom)
-  const matchesDateTo =
-    !filters.dateTo || (movementDate !== null && movementDate <= filters.dateTo)
-
-  return (
-    matchesAccount &&
-    matchesCategory &&
-    matchesMovementType &&
-    matchesDateFrom &&
-    matchesDateTo
-  )
-}
-
-function withPlaceholderOption<TOption extends SelectOption>(
-  placeholder: string,
-  options: TOption[],
-): SelectOption[] {
-  return [
-    {
-      value: '',
-      label: placeholder,
-    },
-    ...options,
-  ]
-}
-
 export function MovementsClient({
   initialItems,
   emptyText,
@@ -121,154 +65,41 @@ export function MovementsClient({
   statsTranslations,
   currentFilters,
 }: MovementsClientProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [isFiltering, startFilteringTransition] = useTransition()
   const [movements, setMovements] = useState(initialItems)
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false)
   const [isStatsVisible, setIsStatsVisible] = useState(false)
-  const [selectedMovementTypeId, setSelectedMovementTypeId] = useState(
-    currentFilters.movementTypeId ?? '',
-  )
-  const [selectedDateFrom, setSelectedDateFrom] = useState(
-    currentFilters.dateFrom ?? '',
-  )
-  const [selectedDateTo, setSelectedDateTo] = useState(
-    currentFilters.dateTo ?? '',
-  )
   const {
-    options: accountFilterOptions,
-    selectedValue: selectedAccountId,
-    isLoadingMore: accountIsLoadingMore,
-    hasMore: accountHasMore,
-    setSearchText: setAccountSearchText,
-    handleChange: selectAccountValue,
-    handleLoadMore: handleAccountLoadMore,
-    reset: resetAccountFilter,
-  } = useAsyncSelectOptions({
-    initialOptions: accounts,
-    initialNextCursor: initialAccountNextCursor,
-    initialValue: currentFilters.accountId,
-    isOpen: true,
-    searchOptions: searchAccountOptionsAction,
-  })
-  const {
-    options: categoryFilterOptions,
-    selectedValue: selectedCategoryId,
-    isLoadingMore: categoryIsLoadingMore,
-    hasMore: categoryHasMore,
-    setSearchText: setCategorySearchText,
-    handleChange: selectCategoryValue,
-    handleLoadMore: handleCategoryLoadMore,
-    reset: resetCategoryFilter,
-  } = useAsyncSelectOptions({
-    initialOptions: categories,
-    initialNextCursor: initialCategoryNextCursor,
-    initialValue: currentFilters.categoryId,
-    isOpen: true,
-    searchOptions: searchCategoryOptionsAction,
+    isFiltering,
+    filterValues,
+    accountOptions,
+    categoryOptions,
+    movementTypeOptions,
+    accountSearchable,
+    categorySearchable,
+    onAccountChange,
+    onCategoryChange,
+    onMovementTypeChange,
+    onDateFromChange,
+    onDateToChange,
+    applyFilters,
+    resetFilters,
+  } = useMovementsFilters({
+    accounts,
+    initialAccountNextCursor,
+    movementTypes,
+    categories,
+    initialCategoryNextCursor,
+    limit,
+    createTranslations,
+    currentFilters,
   })
 
   useEffect(() => {
     setMovements(initialItems)
   }, [initialItems])
 
-  useEffect(() => {
-    resetAccountFilter(currentFilters.accountId)
-  }, [currentFilters.accountId, resetAccountFilter])
-
-  useEffect(() => {
-    resetCategoryFilter(currentFilters.categoryId)
-  }, [currentFilters.categoryId, resetCategoryFilter])
-
-  useEffect(() => {
-    setSelectedMovementTypeId(currentFilters.movementTypeId ?? '')
-  }, [currentFilters.movementTypeId])
-
-  useEffect(() => {
-    setSelectedDateFrom(currentFilters.dateFrom ?? '')
-  }, [currentFilters.dateFrom])
-
-  useEffect(() => {
-    setSelectedDateTo(currentFilters.dateTo ?? '')
-  }, [currentFilters.dateTo])
-
-  const buildFiltersHref = ({
-    accountId,
-    categoryId,
-    movementTypeId,
-    dateFrom,
-    dateTo,
-  }: {
-    accountId: string
-    categoryId: string
-    movementTypeId: string
-    dateFrom: string
-    dateTo: string
-  }) => {
-    const searchParams = buildMovementsSearchParams({
-      limit: String(limit),
-      accountId,
-      categoryId,
-      movementTypeId,
-      dateFrom,
-      dateTo,
-    })
-
-    return searchParams.size > 0 ? `${pathname}?${searchParams}` : pathname
-  }
-
-  const applyFilters = () => {
-    const href = buildFiltersHref({
-      accountId: selectedAccountId,
-      categoryId: selectedCategoryId,
-      movementTypeId: selectedMovementTypeId,
-      dateFrom: selectedDateFrom,
-      dateTo: selectedDateTo,
-    })
-
-    startFilteringTransition(() => {
-      router.push(href)
-    })
-  }
-
-  const resetFilters = () => {
-    resetAccountFilter('')
-    resetCategoryFilter('')
-    setSelectedMovementTypeId('')
-    setSelectedDateFrom('')
-    setSelectedDateTo('')
-
-    const href = buildFiltersHref({
-      accountId: '',
-      categoryId: '',
-      movementTypeId: '',
-      dateFrom: '',
-      dateTo: '',
-    })
-
-    startFilteringTransition(() => {
-      router.push(href)
-    })
-  }
-
-  const handleDateFromChange = (nextDateFrom: string) => {
-    setSelectedDateFrom(nextDateFrom)
-
-    if (selectedDateTo && nextDateFrom && selectedDateTo < nextDateFrom) {
-      setSelectedDateTo('')
-    }
-  }
-
-  const handleDateToChange = (nextDateTo: string) => {
-    setSelectedDateTo(nextDateTo)
-  }
-
   const handleMovementCreated = (movement: MovementListItem) => {
-    const isFirstPage =
-      !currentFilters.afterCursor && !currentFilters.beforeCursor
-
-    if (!isFirstPage) return
+    if (!isFirstMovementsPage(currentFilters)) return
     if (!movementMatchesCurrentFilters(movement, currentFilters)) return
 
     setMovements((currentMovements) =>
@@ -285,46 +116,35 @@ export function MovementsClient({
     )
   }
 
-  const accountSearchable = {
-    onSearchTextChange: setAccountSearchText,
-    onLoadMore: handleAccountLoadMore,
-    searchPlaceholder: createTranslations.searchAccountPlaceholder,
-    hasMore: accountHasMore,
-    isLoadingMore: accountIsLoadingMore,
+  const sharedFiltersProps = {
+    createTranslations,
+    filterTranslations,
+    accountId: filterValues.accountId,
+    categoryId: filterValues.categoryId,
+    movementTypeId: filterValues.movementTypeId,
+    dateFrom: filterValues.dateFrom,
+    dateTo: filterValues.dateTo,
+    accountOptions,
+    categoryOptions,
+    movementTypeOptions,
+    accountSearchable,
+    categorySearchable,
+    disabled: isFiltering,
+    onAccountChange,
+    onCategoryChange,
+    onMovementTypeChange,
+    onDateFromChange,
+    onDateToChange,
   }
 
-  const categorySearchable = {
-    onSearchTextChange: setCategorySearchText,
-    onLoadMore: handleCategoryLoadMore,
-    searchPlaceholder: createTranslations.searchCategoryPlaceholder,
-    hasMore: categoryHasMore,
-    isLoadingMore: categoryIsLoadingMore,
-  }
-
-  const accountOptions = withPlaceholderOption(
-    createTranslations.accountPlaceholder,
-    accountFilterOptions,
-  )
-  const movementTypeOptions = withPlaceholderOption(
-    createTranslations.movementTypePlaceholder,
-    movementTypes,
-  )
-  const categoryOptions = withPlaceholderOption(
-    createTranslations.categoryPlaceholder,
-    categoryFilterOptions,
-  )
   const statsToggleButton = stats ? (
-    <Button
-      type='button'
-      appearance='outlined'
+    <StatsToggleButton
       className={styles.mobileStatsButton}
-      onClick={() => setIsStatsVisible((currentValue) => !currentValue)}
-      aria-expanded={isStatsVisible}
-    >
-      <BarChart3 size={16} />
-      {isStatsVisible ? statsTranslations.hide : statsTranslations.show}
-      {isStatsVisible ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-    </Button>
+      isVisible={isStatsVisible}
+      showLabel={statsTranslations.show}
+      hideLabel={statsTranslations.hide}
+      onToggle={() => setIsStatsVisible((currentValue) => !currentValue)}
+    />
   ) : null
 
   return (
@@ -349,19 +169,6 @@ export function MovementsClient({
       <div className={styles.desktopFilters}>
         <MovementsFilters
           idPrefix='desktop'
-          createTranslations={createTranslations}
-          filterTranslations={filterTranslations}
-          accountId={selectedAccountId}
-          categoryId={selectedCategoryId}
-          movementTypeId={selectedMovementTypeId}
-          dateFrom={selectedDateFrom}
-          dateTo={selectedDateTo}
-          accountOptions={accountOptions}
-          categoryOptions={categoryOptions}
-          movementTypeOptions={movementTypeOptions}
-          accountSearchable={accountSearchable}
-          categorySearchable={categorySearchable}
-          disabled={isFiltering}
           extraActions={
             statsToggleButton ? (
               <div className={styles.desktopStatsToggle}>
@@ -369,13 +176,9 @@ export function MovementsClient({
               </div>
             ) : null
           }
-          onAccountChange={selectAccountValue}
-          onCategoryChange={selectCategoryValue}
-          onMovementTypeChange={setSelectedMovementTypeId}
-          onDateFromChange={handleDateFromChange}
-          onDateToChange={handleDateToChange}
           onApply={applyFilters}
           onReset={resetFilters}
+          {...sharedFiltersProps}
         />
       </div>
       <div className={styles.mobileControlsBar}>
@@ -396,7 +199,7 @@ export function MovementsClient({
           !stats ? styles.dashboardContentSingle : ''
         }`}
       >
-        {stats && (
+        {stats ? (
           <div className={styles.statsColumn}>
             <div
               className={`${styles.statsPanelContainer} ${
@@ -410,7 +213,7 @@ export function MovementsClient({
               />
             </div>
           </div>
-        )}
+        ) : null}
         <aside className={styles.movementsColumn}>
           <SwipeableMovementsList
             items={movements}
@@ -427,24 +230,6 @@ export function MovementsClient({
         >
           <MovementsFilters
             idPrefix='mobile'
-            createTranslations={createTranslations}
-            filterTranslations={filterTranslations}
-            accountId={selectedAccountId}
-            categoryId={selectedCategoryId}
-            movementTypeId={selectedMovementTypeId}
-            dateFrom={selectedDateFrom}
-            dateTo={selectedDateTo}
-            accountOptions={accountOptions}
-            categoryOptions={categoryOptions}
-            movementTypeOptions={movementTypeOptions}
-            accountSearchable={accountSearchable}
-            categorySearchable={categorySearchable}
-            disabled={isFiltering}
-            onAccountChange={selectAccountValue}
-            onCategoryChange={selectCategoryValue}
-            onMovementTypeChange={setSelectedMovementTypeId}
-            onDateFromChange={handleDateFromChange}
-            onDateToChange={handleDateToChange}
             onApply={() => {
               setIsFiltersModalOpen(false)
               applyFilters()
@@ -453,6 +238,7 @@ export function MovementsClient({
               setIsFiltersModalOpen(false)
               resetFilters()
             }}
+            {...sharedFiltersProps}
           />
         </ModalContent>
       </Modal>
