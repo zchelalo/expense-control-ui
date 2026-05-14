@@ -1,0 +1,20 @@
+{
+  "new_category": "Nueva categoría",
+  "form": {
+    "name_label": "Nombre",
+    "name_placeholder": "Ingresa el nombre de la categoría",
+    "submit_button": "Crear categoría",
+    "submitting": "Creando categoría...",
+    "success": "Categoría creada correctamente",
+    "validation": {
+      "name_required": "Ingresa el nombre de la categoría"
+    }
+  },
+  "errors": {
+    "category_store_error": "Se produjo un error al acceder al almacén de categorías.",
+    "category_not_found_error": "No se encontró la categoría solicitada.",
+    "unknown_error": "Se produjo un error desconocido. Por favor, inténtalo de nuevo más tarde.",
+    "too_many_requests_error": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde.",
+    "network_error": "Se produjo un error de red. Por favor, inténtalo de nuevo más tarde."
+  }
+}

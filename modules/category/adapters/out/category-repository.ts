@@ -2,8 +2,12 @@ import {
   CategoryEntity,
   type PaginatedResult,
 } from '@/modules/category/domain/category-entity'
+import type { CategoryStore } from '@/modules/category/ports/category-store'
 import { CategoryError } from '@/modules/category/ports/errors'
-import type { FindAllResponse } from '@/modules/category/ports/responses'
+import type {
+  CreateResponse,
+  FindAllResponse,
+} from '@/modules/category/ports/responses'
 import { fetchWithAuth } from '@/utils/api'
 import { type ErrorResponse, parseApiError } from '@/utils/parse'
 
@@ -30,7 +34,36 @@ function mapToCategoryError(
   throw new CategoryError('unknown_error', error?.message)
 }
 
-export class CategoryRepository {
+export class CategoryRepository implements CategoryStore {
+  async create(name: string): Promise<CategoryEntity> {
+    try {
+      const response = await fetchWithAuth('/v1/category', {
+        method: 'POST',
+        body: JSON.stringify({
+          name,
+        }),
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        const error = await parseApiError(response)
+        mapToCategoryError(response.status, error)
+      }
+
+      const categoryData: CreateResponse = await response.json()
+
+      return new CategoryEntity(
+        categoryData.data.category.id,
+        categoryData.data.category.name,
+      )
+    } catch (error) {
+      if (error instanceof CategoryError) throw error
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT')
+        throw error
+      throw new CategoryError('network_error', (error as Error).message)
+    }
+  }
+
   async findAll(
     limit: number,
     afterCursor: string | null,

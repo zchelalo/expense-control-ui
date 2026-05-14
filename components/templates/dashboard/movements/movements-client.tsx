@@ -27,6 +27,7 @@ import type {
 } from '@/components/templates/dashboard/movements/types'
 import { useMovementsFilters } from '@/components/templates/dashboard/movements/use-movements-filters'
 import type { MovementStats as MovementStatsData } from '@/modules/movement/ports/movement-store'
+import { mergeSelectOptions } from '@/utils/select-options'
 
 type MovementsClientProps = {
   initialItems: MovementListItem[]
@@ -66,6 +67,7 @@ export function MovementsClient({
   currentFilters,
 }: MovementsClientProps) {
   const [movements, setMovements] = useState(initialItems)
+  const [availableCategories, setAvailableCategories] = useState(categories)
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false)
   const [isStatsVisible, setIsStatsVisible] = useState(false)
   const {
@@ -87,7 +89,7 @@ export function MovementsClient({
     accounts,
     initialAccountNextCursor,
     movementTypes,
-    categories,
+    categories: availableCategories,
     initialCategoryNextCursor,
     limit,
     createTranslations,
@@ -97,6 +99,10 @@ export function MovementsClient({
   useEffect(() => {
     setMovements(initialItems)
   }, [initialItems])
+
+  useEffect(() => {
+    setAvailableCategories(categories)
+  }, [categories])
 
   const handleMovementCreated = (movement: MovementListItem) => {
     if (!isFirstMovementsPage(currentFilters)) return
@@ -113,6 +119,12 @@ export function MovementsClient({
   const handleMovementDeleted = (id: string) => {
     setMovements((currentMovements) =>
       currentMovements.filter((movement) => movement.id !== id),
+    )
+  }
+
+  const handleCategoryCreated = (category: SelectOption) => {
+    setAvailableCategories((currentCategories) =>
+      mergeSelectOptions([category], currentCategories),
     )
   }
 
@@ -162,9 +174,10 @@ export function MovementsClient({
         accounts={accounts}
         initialAccountNextCursor={initialAccountNextCursor}
         movementTypes={movementTypes}
-        categories={categories}
+        categories={availableCategories}
         initialCategoryNextCursor={initialCategoryNextCursor}
         onMovementCreated={handleMovementCreated}
+        onCategoryCreated={handleCategoryCreated}
       />
       <div className={styles.desktopFilters}>
         <MovementsFilters

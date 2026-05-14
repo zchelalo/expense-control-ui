@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Button } from '@/components/atoms/button'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
 import { MovementSelectField } from '@/components/templates/dashboard/movements/select-field'
@@ -32,6 +33,7 @@ type CreateMovementFormProps = {
   onCategoryChange: (value: string) => void
   accountSearchable: SearchableSelectProps
   categorySearchable: SearchableSelectProps
+  categoryAction?: ReactNode
 }
 
 export function CreateMovementForm({
@@ -56,6 +58,7 @@ export function CreateMovementForm({
   onCategoryChange,
   accountSearchable,
   categorySearchable,
+  categoryAction,
 }: CreateMovementFormProps) {
   return (
     <form key={formVersion} className={styles.form} action={formAction}>
@@ -118,6 +121,7 @@ export function CreateMovementForm({
         disabled={pending}
         searchable={categorySearchable}
         className={styles.formGroup}
+        action={categoryAction}
       />
       <Button type='submit' className={styles.submitButton} disabled={pending}>
         {pending ? translations.creatingMovement : translations.createMovement}

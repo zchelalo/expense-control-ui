@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/atoms/button'
 import { Modal } from '@/components/atoms/modal'
 import { ModalContent } from '@/components/atoms/modal/modal-content'
+import { CreateCategory } from '@/components/templates/dashboard/movements/create-category'
 import { CreateMovementForm } from '@/components/templates/dashboard/movements/create-movement-form'
 import { buildCreatedMovementListItem } from '@/components/templates/dashboard/movements/create-movement-list-item'
 import styles from '@/components/templates/dashboard/movements/movements.module.css'
@@ -40,6 +41,7 @@ type CreateMovementProps = {
   categories: SelectOption[]
   initialCategoryNextCursor: string | null
   onMovementCreated?: (movement: MovementListItem) => void
+  onCategoryCreated?: (category: SelectOption) => void
 }
 
 function buildInitialFormState(
@@ -68,8 +70,10 @@ export function CreateMovement({
   categories,
   initialCategoryNextCursor,
   onMovementCreated,
+  onCategoryCreated,
 }: CreateMovementProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isCreateCategoryOpen, setIsCreateCategoryOpen] = useState(false)
   const [formVersion, setFormVersion] = useState(0)
   const [selectedMovementTypeId, setSelectedMovementTypeId] = useState('')
   const handledFeedbackTimestampRef = useRef<number | null>(null)
@@ -105,6 +109,7 @@ export function CreateMovement({
     handleChange: handleCategoryChange,
     handleLoadMore: handleCategoryLoadMore,
     reset: resetCategorySelect,
+    upsertOption: upsertCategoryOption,
   } = useAsyncSelectOptions({
     initialOptions: categories,
     initialNextCursor: initialCategoryNextCursor,
@@ -168,7 +173,15 @@ export function CreateMovement({
   const handleClose = () => {
     resetAccountSelect()
     resetCategorySelect()
+    setIsCreateCategoryOpen(false)
     setIsOpen(false)
+  }
+
+  const handleCreatedCategory = (category: SelectOption) => {
+    upsertCategoryOption(category, true)
+    setCategorySearchText('')
+    onCategoryCreated?.(category)
+    setIsCreateCategoryOpen(false)
   }
 
   const accountSearchable = {
@@ -213,6 +226,15 @@ export function CreateMovement({
             onCategoryChange={handleCategoryChange}
             accountSearchable={accountSearchable}
             categorySearchable={categorySearchable}
+            categoryAction={
+              <CreateCategory
+                isOpen={isCreateCategoryOpen}
+                onOpen={() => setIsCreateCategoryOpen(true)}
+                onClose={() => setIsCreateCategoryOpen(false)}
+                disabled={pending}
+                onCategoryCreated={handleCreatedCategory}
+              />
+            }
           />
         </ModalContent>
       </Modal>

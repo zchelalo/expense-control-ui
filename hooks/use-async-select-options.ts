@@ -48,8 +48,13 @@ export function useAsyncSelectOptions<TOption extends SelectOptionLike>({
   )
   const requestIdRef = useRef(0)
   const isLoadingMoreRef = useRef(false)
+  const selectedValueRef = useRef(initialValue ?? '')
 
   const getSelectedOption = useEffectEvent(() => selectedOption)
+
+  useEffect(() => {
+    selectedValueRef.current = selectedValue
+  }, [selectedValue])
 
   const cancelPendingRequests = useCallback(() => {
     requestIdRef.current += 1
@@ -80,8 +85,8 @@ export function useAsyncSelectOptions<TOption extends SelectOptionLike>({
   )
 
   const reset = useCallback(
-    (value: string | null | undefined = selectedValue) => {
-      const nextSelectedValue = value ?? ''
+    (value?: string | null) => {
+      const nextSelectedValue = value ?? selectedValueRef.current ?? ''
       const nextSelectedOption = resolveOption(nextSelectedValue)
 
       cancelPendingRequests()
@@ -91,13 +96,7 @@ export function useAsyncSelectOptions<TOption extends SelectOptionLike>({
       setOptions(preserveSelectedOption(initialOptions, nextSelectedOption))
       setNextCursor(initialNextCursor)
     },
-    [
-      cancelPendingRequests,
-      initialNextCursor,
-      initialOptions,
-      resolveOption,
-      selectedValue,
-    ],
+    [cancelPendingRequests, initialNextCursor, initialOptions, resolveOption],
   )
 
   useEffect(() => {
@@ -175,6 +174,23 @@ export function useAsyncSelectOptions<TOption extends SelectOptionLike>({
       })
   }, [getSelectedOption, nextCursor, searchOptions, searchText])
 
+  const upsertOption = useCallback(
+    (option: TOption, shouldSelect = false) => {
+      setOptions((currentOptions) =>
+        preserveSelectedOption(
+          mergeSelectOptions([option], currentOptions),
+          shouldSelect ? option : getSelectedOption(),
+        ),
+      )
+
+      if (!shouldSelect) return
+
+      setSelectedValue(option.value)
+      setSelectedOption(option)
+    },
+    [getSelectedOption],
+  )
+
   return {
     options,
     selectedValue,
@@ -186,5 +202,6 @@ export function useAsyncSelectOptions<TOption extends SelectOptionLike>({
     handleLoadMore,
     selectValue,
     reset,
+    upsertOption,
   }
 }

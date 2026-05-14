@@ -3,6 +3,13 @@ type CategoryResponse = {
   name: string
 }
 
+export type CreateResponse = {
+  data: {
+    category: CategoryResponse
+  }
+  request_id: string
+}
+
 export type FindAllResponse = {
   data: {
     categories: CategoryResponse[]

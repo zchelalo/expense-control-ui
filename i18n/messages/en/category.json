@@ -1,0 +1,20 @@
+{
+  "new_category": "New Category",
+  "form": {
+    "name_label": "Name",
+    "name_placeholder": "Enter the category name",
+    "submit_button": "Create category",
+    "submitting": "Creating category...",
+    "success": "Category created successfully",
+    "validation": {
+      "name_required": "Enter the category name"
+    }
+  },
+  "errors": {
+    "category_store_error": "An error occurred while accessing the category store.",
+    "category_not_found_error": "The requested category could not be found.",
+    "unknown_error": "An unknown error occurred. Please try again later.",
+    "too_many_requests_error": "Too many requests. Please try again later.",
+    "network_error": "A network error occurred. Please try again later."
+  }
+}

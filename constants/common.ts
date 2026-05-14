@@ -14,5 +14,6 @@ export enum Namespace {
   Common = 'common',
   Landing = 'landing',
   Account = 'account',
+  Category = 'category',
   Movement = 'movement',
 }

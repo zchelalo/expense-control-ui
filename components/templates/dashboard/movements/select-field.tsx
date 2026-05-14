@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import type { ReactNode } from 'react'
 import { FlexBox } from '@/components/atoms/flex-box'
 import { Label } from '@/components/atoms/label'
 import { Select } from '@/components/molecules/select'
@@ -21,6 +22,7 @@ type MovementSelectFieldProps = {
   disabled?: boolean
   searchable?: SearchableSelectProps
   className?: string
+  action?: ReactNode
 }
 
 export function MovementSelectField({
@@ -35,6 +37,7 @@ export function MovementSelectField({
   disabled = false,
   searchable,
   className,
+  action,
 }: MovementSelectFieldProps) {
   const hasErrors = !!errorMessages && errorMessages.length > 0
 
@@ -48,21 +51,28 @@ export function MovementSelectField({
     >
       {label && <Label htmlFor={id}>{label}</Label>}
       {name && <input type='hidden' name={name} value={value} />}
-      <Select
-        id={id}
-        options={options}
-        value={value}
-        onChange={onChange}
-        onSearchTextChange={searchable?.onSearchTextChange}
-        onLoadMore={searchable?.onLoadMore}
-        placeholder={placeholder}
-        searchInput={!!searchable}
-        searchPlaceholder={searchable?.searchPlaceholder}
-        hasMore={searchable?.hasMore ?? false}
-        isLoadingMore={searchable?.isLoadingMore ?? false}
-        triggerClassName={hasErrors ? styles.selectError : undefined}
-        disabled={disabled}
-      />
+      <div className={styles.selectFieldControl}>
+        <div className={styles.selectFieldMain}>
+          <Select
+            id={id}
+            options={options}
+            value={value}
+            onChange={onChange}
+            onSearchTextChange={searchable?.onSearchTextChange}
+            onLoadMore={searchable?.onLoadMore}
+            placeholder={placeholder}
+            searchInput={!!searchable}
+            searchPlaceholder={searchable?.searchPlaceholder}
+            hasMore={searchable?.hasMore ?? false}
+            isLoadingMore={searchable?.isLoadingMore ?? false}
+            triggerClassName={hasErrors ? styles.selectError : undefined}
+            disabled={disabled}
+          />
+        </div>
+        {action ? (
+          <div className={styles.selectFieldAction}>{action}</div>
+        ) : null}
+      </div>
       <FormFieldErrors messages={errorMessages} />
     </FlexBox>
   )
