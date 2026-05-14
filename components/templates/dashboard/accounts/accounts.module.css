@@ -13,6 +13,26 @@
   padding: var(--spacing-1);
 }
 
+.modalForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-3);
+}
+
+.modalFormGroup {
+  width: 100%;
+}
+
+.listError {
+  padding: 0 var(--spacing-4);
+}
+
+.submitButton {
+  width: 100%;
+}
+
 .accounts {
   width: 100%;
   display: grid;
@@ -34,6 +54,28 @@
 .accountContent {
   flex-grow: 1;
   padding-right: var(--spacing-4);
+}
+
+.fabButton {
+  position: fixed;
+  left: var(--spacing-4);
+  bottom: var(--spacing-4);
+  z-index: var(--z-index-fifth);
+  inline-size: 3.5rem;
+  block-size: 3.5rem;
+  padding: 0;
+  border-radius: var(--border-radius-full);
+  box-shadow: var(--shadow-md);
+}
+
+.fabButton:hover,
+.fabButton:focus-visible {
+  box-shadow: var(--shadow-lg);
+}
+
+.fabButtonIcon {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
 }
 
 @media (max-width: 1024px) {

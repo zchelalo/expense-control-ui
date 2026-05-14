@@ -1,14 +1,11 @@
-import { ChevronRight } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { Box } from '@/components/atoms/box'
 import { FlexBox } from '@/components/atoms/flex-box'
-import { Text } from '@/components/atoms/text'
-import { Card } from '@/components/molecules/card'
 import { Paginator } from '@/components/molecules/paginator'
 import styles from '@/components/templates/dashboard/accounts/accounts.module.css'
+import { AccountsClient } from '@/components/templates/dashboard/accounts/accounts-client'
 import { Search } from '@/components/templates/dashboard/accounts/search'
+import type { AccountListItem } from '@/components/templates/dashboard/accounts/types'
 import { type Language, Namespace } from '@/constants/common'
-import { Link } from '@/i18n/navigation'
 import {
   buildAccountsSearchParams,
   parseCursorStack,
@@ -16,10 +13,24 @@ import {
 } from '@/modules/account/adapters/in/query-params'
 import { AccountRepository } from '@/modules/account/adapters/out/account-repository'
 import { FindAllUseCase } from '@/modules/account/application/use-cases/find-all'
+import type { AccountEntity } from '@/modules/account/domain/account-entity'
 import { getCurrencyFromLanguage } from '@/utils/currency'
 
 const accountRepository = new AccountRepository()
 const findAllUseCase = new FindAllUseCase(accountRepository)
+
+function mapAccountToListItem(
+  account: AccountEntity,
+  locale: string,
+): AccountListItem {
+  return {
+    id: account.getId().getValue(),
+    name: account.getName().getValue(),
+    balanceFormatted: account
+      .getBalance()
+      .toCurrency(locale, getCurrencyFromLanguage(locale as Language)),
+  }
+}
 
 type AccountsProps = {
   limit?: string
@@ -70,6 +81,20 @@ export async function Accounts({
         cursorStack: stringifyCursorStack(nextCursorStack ?? []),
       }).toString()}`
     : null
+  const accountItems = accounts.items.map((account) =>
+    mapAccountToListItem(account, locale),
+  )
+  const canPrependCreatedAccount =
+    currentCursorStack.length === 0 && !afterCursor && !beforeCursor
+  const createTranslations = {
+    newAccount: t('new_account'),
+    nameLabel: t('form.name_label'),
+    namePlaceholder: t('form.name_placeholder'),
+    balanceLabel: t('form.balance_label'),
+    balancePlaceholder: t('form.balance_placeholder'),
+    createAccount: t('form.submit_button'),
+    creatingAccount: t('form.submitting'),
+  }
 
   return (
     <FlexBox
@@ -89,55 +114,14 @@ export async function Accounts({
         search={search}
         limit={limit}
       />
-      <Box variant='div' className={styles.accounts}>
-        {accounts.items.length > 0 &&
-          accounts.items.map((account) => (
-            <Link
-              key={account.getId().getValue()}
-              href={`/movements?accountId=${account.getId().getValue()}`}
-            >
-              <Card className={styles.account}>
-                <FlexBox
-                  variant='div'
-                  alignItems='center'
-                  justifyContent='spaceBetween'
-                  gap={8}
-                  className={styles.accountContent}
-                >
-                  <Text
-                    variant='span'
-                    typographySize='normal'
-                    typographyTextStyle='normal'
-                    typographyWeight='medium'
-                  >
-                    {account.getName().getValue()}
-                  </Text>
-                  <Text
-                    variant='span'
-                    typographySize='normal'
-                    typographyTextStyle='normal'
-                    typographyWeight='medium'
-                  >
-                    {account
-                      .getBalance()
-                      .toCurrency(
-                        locale,
-                        getCurrencyFromLanguage(locale as Language),
-                      )}
-                  </Text>
-                </FlexBox>
-                <FlexBox
-                  variant='div'
-                  alignItems='center'
-                  justifyContent='center'
-                >
-                  <ChevronRight size={18} />
-                </FlexBox>
-              </Card>
-            </Link>
-          ))}
-        {accounts.items.length === 0 && <Text variant='p'>{t('empty')}</Text>}
-      </Box>
+      <AccountsClient
+        initialItems={accountItems}
+        emptyText={t('empty')}
+        createTranslations={createTranslations}
+        limit={Number(limit)}
+        search={search}
+        canPrependCreatedAccount={canPrependCreatedAccount}
+      />
       <Paginator previousHref={previousHref} nextHref={nextHref} />
     </FlexBox>
   )

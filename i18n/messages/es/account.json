@@ -1,8 +1,32 @@
 {
+  "new_account": "Nueva Cuenta",
+  "form": {
+    "name_label": "Nombre",
+    "name_placeholder": "Ingresa el nombre de la cuenta",
+    "balance_label": "Saldo",
+    "balance_placeholder": "Ingresa el saldo inicial",
+    "submit_button": "Crear cuenta",
+    "submitting": "Creando cuenta...",
+    "success": "Cuenta creada correctamente",
+    "validation": {
+      "name_required": "Ingresa el nombre de la cuenta",
+      "balance_required": "Ingresa el saldo inicial",
+      "balance_invalid": "Ingresa un saldo válido"
+    }
+  },
   "search": {
     "label": "Buscar",
     "placeholder": "Buscar cuentas...",
     "submit_button": "Buscar"
   },
-  "empty": "No hay cuentas para mostrar."
+  "empty": "No hay cuentas para mostrar.",
+  "errors": {
+    "account_store_error": "Se produjo un error al acceder al almacén de cuentas.",
+    "account_not_found_error": "No se encontró la cuenta solicitada.",
+    "account_update_error": "No fue posible actualizar la cuenta.",
+    "account_delete_error": "No fue posible eliminar la cuenta.",
+    "unknown_error": "Se produjo un error desconocido. Por favor, inténtalo de nuevo más tarde.",
+    "too_many_requests_error": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde.",
+    "network_error": "Se produjo un error de red. Por favor, inténtalo de nuevo más tarde."
+  }
 }

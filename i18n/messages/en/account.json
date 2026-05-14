@@ -1,8 +1,32 @@
 {
+  "new_account": "New Account",
+  "form": {
+    "name_label": "Name",
+    "name_placeholder": "Enter the account name",
+    "balance_label": "Balance",
+    "balance_placeholder": "Enter the initial balance",
+    "submit_button": "Create account",
+    "submitting": "Creating account...",
+    "success": "Account created successfully",
+    "validation": {
+      "name_required": "Enter the account name",
+      "balance_required": "Enter the initial balance",
+      "balance_invalid": "Enter a valid balance"
+    }
+  },
   "search": {
     "label": "Search",
     "placeholder": "Search accounts...",
     "submit_button": "Search"
   },
-  "empty": "There are no accounts to display."
+  "empty": "There are no accounts to display.",
+  "errors": {
+    "account_store_error": "An error occurred while accessing the account store.",
+    "account_not_found_error": "The requested account could not be found.",
+    "account_update_error": "The account could not be updated.",
+    "account_delete_error": "The account could not be deleted.",
+    "unknown_error": "An unknown error occurred. Please try again later.",
+    "too_many_requests_error": "Too many requests. Please try again later.",
+    "network_error": "A network error occurred. Please try again later."
+  }
 }
