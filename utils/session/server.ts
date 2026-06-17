@@ -9,6 +9,7 @@ import {
   encodeSessionCookie,
   getSessionCookieName,
   isAuthenticatedSession,
+  shouldUseSecureSessionCookies,
 } from '@/utils/session/shared'
 
 function buildSessionCookieOptions(
@@ -16,7 +17,7 @@ function buildSessionCookieOptions(
 ): Partial<ResponseCookie> {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: shouldUseSecureSessionCookies(),
     sameSite: 'lax',
     path: '/',
     expires: new Date(session.refreshTokenExpiresAt),

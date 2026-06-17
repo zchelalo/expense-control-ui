@@ -10,10 +10,8 @@ export type AppSession = {
 
 const SESSION_REFRESH_LEEWAY_MS = 5_000
 const SESSION_EXPIRY_SKEW_MS = 15_000
-const SESSION_COOKIE_NAME =
-  process.env.NODE_ENV === 'production'
-    ? '__Host-expense-control-session'
-    : 'expense-control-session'
+const SECURE_SESSION_COOKIE_NAME = '__Host-expense-control-session'
+const INSECURE_SESSION_COOKIE_NAME = 'expense-control-session'
 const DEV_FALLBACK_SECRET = 'dev-only-auth-session-secret'
 
 let sessionKeyPromise: Promise<CryptoKey> | null = null
@@ -99,7 +97,18 @@ function isAppSession(value: unknown): value is AppSession {
 }
 
 export function getSessionCookieName() {
-  return SESSION_COOKIE_NAME
+  return shouldUseSecureSessionCookies()
+    ? SECURE_SESSION_COOKIE_NAME
+    : INSECURE_SESSION_COOKIE_NAME
+}
+
+export function shouldUseSecureSessionCookies() {
+  const configuredValue = process.env.AUTH_SECURE_COOKIES?.trim().toLowerCase()
+
+  if (configuredValue === 'true') return true
+  if (configuredValue === 'false') return false
+
+  return process.env.NODE_ENV === 'production'
 }
 
 export function hasValidRefreshToken(

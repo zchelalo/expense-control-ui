@@ -13,6 +13,7 @@ import {
   hasRecoverableSession,
   isAuthenticatedSession,
   shouldRefreshAccessToken,
+  shouldUseSecureSessionCookies,
 } from '@/utils/session/shared'
 
 const intlMiddleware = createMiddleware(routing)
@@ -87,7 +88,7 @@ function writeSessionCookie(
 ) {
   response.cookies.set(getSessionCookieName(), encodedSession, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: shouldUseSecureSessionCookies(),
     sameSite: 'lax',
     path: '/',
     expires: new Date(refreshTokenExpiresAt),
