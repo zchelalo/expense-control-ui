@@ -79,16 +79,17 @@
 }
 
 .footer {
-  width: 100%;
   position: fixed;
+  right: var(--spacing-4);
+  width: auto;
   z-index: var(--z-index-fifth);
-
   bottom: var(--spacing-4);
-  padding-right: var(--spacing-4);
+  pointer-events: none;
 }
 
 .footer > button {
   padding: var(--spacing-1);
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {

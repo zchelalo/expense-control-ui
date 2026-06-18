@@ -117,12 +117,15 @@ export async function Accounts({
       <AccountsClient
         initialItems={accountItems}
         emptyText={t('empty')}
+        deleteLabel={t('delete.action')}
         createTranslations={createTranslations}
         limit={Number(limit)}
         search={search}
         canPrependCreatedAccount={canPrependCreatedAccount}
       />
-      <Paginator previousHref={previousHref} nextHref={nextHref} />
+      {accountItems.length > 0 && (
+        <Paginator previousHref={previousHref} nextHref={nextHref} />
+      )}
     </FlexBox>
   )
 }

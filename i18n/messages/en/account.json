@@ -14,6 +14,10 @@
       "balance_invalid": "Enter a valid balance"
     }
   },
+  "delete": {
+    "action": "Delete",
+    "success": "Account deleted successfully"
+  },
   "search": {
     "label": "Search",
     "placeholder": "Search accounts...",
